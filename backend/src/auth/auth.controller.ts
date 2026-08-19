@@ -1,6 +1,14 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -8,7 +16,7 @@ import { LoginDto } from './dto/login.dto';
 
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
-
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -90,6 +98,15 @@ export class AuthController {
 
     return {
       message: 'User logged out successfully',
+    };
+  }
+
+  @Get('status')
+  @UseGuards(JwtAuthGuard)
+  getStatus(@Req() req: Request) {
+    return {
+      message: 'User is authenticated',
+      user: req.user,
     };
   }
 }

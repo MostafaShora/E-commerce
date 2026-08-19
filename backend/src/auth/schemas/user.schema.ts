@@ -1,19 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { compareValue, hashValue } from '../../common/utils/bcrypt.util';
-import {
-  USER_ROLE_VALUES,
-  USER_ROLES,
-  UserRole,
-} from '../../common/utils/';
 
-export type UserDocument = HydratedDocument<User>;
+import { compareValue, hashValue } from '../../common/utils/bcrypt.util';
+
+import { USER_ROLE_VALUES, USER_ROLES } from '../../common/constants/enums';
+
+import type { UserRole } from '../../common/constants/enums';
+
+export type UserDocument = HydratedDocument<User> & {
+  comparePassword(candidatePassword: string): Promise<boolean>;
+};
 
 @Schema({
   timestamps: true,
   toJSON: {
     transform(_doc, ret) {
-      delete ret.password;
+      delete (ret as { password?: string }).password;
       return ret;
     },
   },
@@ -36,6 +38,7 @@ export class User {
   @Prop({
     required: true,
     minlength: 6,
+    select: false,
   })
   password: string;
 
@@ -69,6 +72,6 @@ UserSchema.pre('save', async function () {
 
 UserSchema.methods.comparePassword = async function (
   candidatePassword: string,
-) {
+): Promise<boolean> {
   return compareValue(candidatePassword, this.password);
 };

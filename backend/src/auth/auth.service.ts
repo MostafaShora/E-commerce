@@ -29,13 +29,15 @@ export class AuthService {
 
     const user = await this.userModel.create(data);
 
-    return user;
+    return user.toJSON();
   }
 
   async login(data: LoginDto) {
-    const user = await this.userModel.findOne({
-      email: data.email,
-    });
+    const user = await this.userModel
+      .findOne({
+        email: data.email,
+      })
+      .select('+password');
 
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
@@ -47,10 +49,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    return user;
+    return user.toJSON();
   }
 
   async findUserById(userId: string) {
-    return this.userModel.findById(userId).lean();
+    return this.userModel.findById(userId).select('-password').lean();
   }
 }
