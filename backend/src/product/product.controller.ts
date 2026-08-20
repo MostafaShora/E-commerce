@@ -1,12 +1,43 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import { ProductService } from './product.service';
 import { GetProductsDto } from './dto/get-products.dto';
 import { GetProductBySlugDto } from './dto/get-product-by-slug.dto';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
+
+  @Post()
+  @UseInterceptors(FileInterceptor('image'))
+  async createProduct(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: CreateProductDto & { userId: string },
+  ) {
+    const { userId, ...productData } = body;
+
+    const product = await this.productService.createProduct(
+      userId,
+      productData,
+      file,
+    );
+
+    return {
+      message: 'Product created successfully',
+      product,
+    };
+  }
 
   @Get()
   async getProducts(@Query() query: GetProductsDto) {

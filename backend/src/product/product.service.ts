@@ -199,7 +199,11 @@ export class ProductService {
     };
   }
 
-  async createProduct(userId: string, data: CreateProductDto) {
+  async createProduct(
+    userId: string,
+    data: CreateProductDto,
+    file?: Express.Multer.File,
+  ) {
     if (!Types.ObjectId.isValid(data.categoryId)) {
       throw new BadRequestException('Invalid category ID');
     }
@@ -214,6 +218,8 @@ export class ProductService {
       ...data,
       userId: new Types.ObjectId(userId),
       categoryId: new Types.ObjectId(data.categoryId),
+
+      images: file ? [`/uploads/${file.filename}`] : [],
     });
 
     return product;
