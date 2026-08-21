@@ -8,7 +8,9 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+
 import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 import { ProductService } from './product.service';
 import { GetProductsDto } from './dto/get-products.dto';
@@ -20,7 +22,11 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: memoryStorage(),
+    }),
+  )
   async createProduct(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: CreateProductDto & { userId: string },

@@ -6,6 +6,17 @@ import { calculateSalePrice } from '../../common/utils/price.util';
 
 export type ProductDocument = HydratedDocument<Product>;
 
+@Schema({ _id: false })
+export class ProductImage {
+  @Prop({ required: true })
+  url: string;
+
+  @Prop({ required: true })
+  publicId: string;
+}
+
+export const ProductImageSchema = SchemaFactory.createForClass(ProductImage);
+
 @Schema({
   timestamps: true,
 })
@@ -44,10 +55,10 @@ export class Product {
   description?: string;
 
   @Prop({
-    type: [String],
+    type: [ProductImageSchema],
     default: [],
   })
-  images: string[];
+  images: ProductImage[];
 
   @Prop({
     required: true,
@@ -106,26 +117,6 @@ export class Product {
 export const ProductSchema = SchemaFactory.createForClass(Product);
 
 ProductSchema.pre('validate', function () {
-  if (this.isModified('name')) {
-    this.slug = slugify(this.name, {
-      lower: true,
-      strict: true,
-    });
-  }
-
-  if (this.isModified('originalPrice') || this.isModified('discountPercent')) {
-    if (this.discountPercent > 0) {
-      this.salePrice = calculateSalePrice(
-        this.originalPrice,
-        this.discountPercent,
-      );
-    } else {
-      this.salePrice = this.originalPrice;
-    }
-  }
-});
-
-ProductSchema.pre('save', function () {
   if (this.isModified('name')) {
     this.slug = slugify(this.name, {
       lower: true,

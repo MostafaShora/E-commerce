@@ -17,6 +17,8 @@ import {
   CategoryDocument,
 } from '../category/schemas/category.schema';
 
+import { uploadImageToCloudinary } from '../common/utils/cloudinary.util';
+
 @Injectable()
 export class ProductService {
   constructor(
@@ -145,6 +147,7 @@ export class ProductService {
       },
     };
   }
+
   async getDeals(limit: number) {
     const products = await this.productModel
       .find({
@@ -204,22 +207,52 @@ export class ProductService {
     data: CreateProductDto,
     file?: Express.Multer.File,
   ) {
+    // Validate userId
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    // Validate categoryId
     if (!Types.ObjectId.isValid(data.categoryId)) {
       throw new BadRequestException('Invalid category ID');
     }
 
+    // Check category exists
     const category = await this.categoryModel.findById(data.categoryId).lean();
 
     if (!category) {
       throw new BadRequestException('Category not found');
     }
 
+    // Upload image to Cloudinary
+    let images: {
+      url: string;
+      publicId: string;
+    }[] = [];
+
+    if (file) {
+      const uploadedImage = await uploadImageToCloudinary(
+        file,
+        'ecommerce/products',
+      );
+
+      images = [
+        {
+          url: uploadedImage.url,
+          publicId: uploadedImage.publicId,
+        },
+      ];
+    }
+
+    // Create product
     const product = await this.productModel.create({
       ...data,
+
       userId: new Types.ObjectId(userId),
+
       categoryId: new Types.ObjectId(data.categoryId),
 
-      images: file ? [`/uploads/${file.filename}`] : [],
+      images,
     });
 
     return product;

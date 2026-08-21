@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
 import { AddressModule } from './address/address.module';
 import { OrderModule } from './order/order.module';
+import { ENV } from './config/env.config';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { OrderModule } from './order/order.module';
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
+        uri: ENV.MONGO_URI,
       }),
     }),
 

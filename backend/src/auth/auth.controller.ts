@@ -17,6 +17,7 @@ import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ENV } from '../config/env.config';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -35,7 +36,7 @@ export class AuthController {
       {
         userId: user._id.toString(),
       },
-      this.configService.get<string>('JWT_SECRET')!,
+      ENV.JWT_SECRET!,
       {
         audience: ['user'],
         expiresIn: '7d',
@@ -44,11 +45,8 @@ export class AuthController {
 
     res.cookie('instant_access_token', token, {
       httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite:
-        this.configService.get<string>('NODE_ENV') === 'production'
-          ? 'strict'
-          : 'lax',
+      secure: ENV.NODE_ENV === 'production',
+      sameSite: ENV.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -69,7 +67,7 @@ export class AuthController {
       {
         userId: user._id.toString(),
       },
-      this.configService.get<string>('JWT_SECRET')!,
+      ENV.JWT_SECRET!,
       {
         audience: ['user'],
         expiresIn: '7d',
@@ -78,11 +76,8 @@ export class AuthController {
 
     res.cookie('instant_access_token', token, {
       httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite:
-        this.configService.get<string>('NODE_ENV') === 'production'
-          ? 'strict'
-          : 'lax',
+      secure: ENV.NODE_ENV === 'production',
+      sameSite: ENV.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

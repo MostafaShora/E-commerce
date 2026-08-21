@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import dns from 'dns';
+import { ENV } from './config/env.config';
 
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 
@@ -22,7 +23,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: process.env.CLIENT_URL,
+    origin: ENV.FRONTEND_ORIGIN,
     credentials: true,
   });
 
@@ -36,9 +37,9 @@ async function bootstrap() {
     }),
   );
 
-  console.log('Server is running on port:', process.env.PORT ?? 3000);
+  console.log('Server is running on port:', ENV.PORT ?? 3000);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(ENV.PORT ?? 3000);
 }
 
 bootstrap();
