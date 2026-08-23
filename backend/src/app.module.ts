@@ -10,6 +10,7 @@ import { CartModule } from './cart/cart.module';
 import { AddressModule } from './address/address.module';
 import { OrderModule } from './order/order.module';
 import { ENV } from './config/env.config';
+import { StripeModule } from './webhooks/stripe-webhook.module';
 
 @Module({
   imports: [
@@ -19,22 +20,18 @@ import { ENV } from './config/env.config';
 
     MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: () => ({
         uri: ENV.MONGO_URI,
       }),
     }),
 
     AuthModule,
-
     CategoryModule,
-
     ProductModule,
-
     CartModule,
-
     AddressModule,
-
     OrderModule,
+    StripeModule,
   ],
 
   controllers: [AppController],

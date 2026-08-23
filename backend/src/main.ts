@@ -18,7 +18,9 @@ async function bootstrap() {
     return;
   }
 
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
+    rawBody: true,
+  });
 
   app.use(express.json({ limit: '10mb' }));
 

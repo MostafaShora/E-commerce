@@ -6,6 +6,7 @@ import {
 
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import Stripe from 'stripe';
 
 import { Order, OrderDocument } from './schemas/order.schema';
 import { Cart, CartDocument } from '../cart/schemas/cart.schema';
@@ -24,6 +25,9 @@ import {
 } from '../common/constants/enums';
 
 import { generateOrderNo } from '../common/utils/order.util';
+
+import stripeClient from '../config/stripe.config';
+import { ENV } from '../config/env.config';
 
 @Injectable()
 export class OrderService {
@@ -151,6 +155,69 @@ export class OrderService {
      * For now we return null so the order flow
      * works without Stripe.
      */
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+      orderItems.map((item) => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.name,
+            images: item.image ? [item.image] : [],
+          },
+          unit_amount: Math.round(item.salePrice * 100),
+        },
+        quantity: item.quantity,
+      }));
+
+    if (totals.deliveryFee > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Delivery Fee',
+          },
+          unit_amount: Math.round(totals.deliveryFee * 100),
+        },
+        quantity: 1,
+      });
+    }
+
+    if (totals.tax > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Tax',
+          },
+          unit_amount: Math.round(totals.tax * 100),
+        },
+        quantity: 1,
+      });
+    }
+
+    const user = await this.userModel
+      .findById(new Types.ObjectId(userId))
+      .select('email')
+      .lean();
+
+    const session = await stripeClient.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      customer_email: user?.email,
+      line_items: lineItems,
+
+      metadata: {
+        orderId: order._id.toString(),
+      },
+
+      success_url: `${ENV.FRONTEND_ORIGIN}/orders/${order._id}`,
+      cancel_url: `${ENV.FRONTEND_ORIGIN}/checkout`,
+    });
+
+    return {
+      order,
+      stripeUrl: session.url,
+    };
     return {
       order,
       stripeUrl: null,
