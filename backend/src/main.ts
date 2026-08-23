@@ -6,16 +6,22 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import dns from 'dns';
 import { ENV } from './config/env.config';
-// import { Express } from 'express';
 
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 const server = express();
 
+let appInitialized = false;
+
 async function bootstrap() {
+  if (appInitialized) {
+    return;
+  }
+
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
   app.use(express.json({ limit: '10mb' }));
+
   app.use(
     express.urlencoded({
       extended: true,
@@ -42,13 +48,25 @@ async function bootstrap() {
 
   await app.init();
 
-  if (process.env.NODE_ENV !== 'production') {
-    const port = ENV.PORT ?? 3000;
-    await app.listen(port);
-    console.log(`Server is running on port: ${port}`);
-  }
+  appInitialized = true;
+
+  console.log('Nest application initialized successfully');
 }
 
-bootstrap();
+const handler = async (req: express.Request, res: express.Response) => {
+  await bootstrap();
 
-export default server;
+  server(req, res);
+};
+
+if (process.env.NODE_ENV !== 'production') {
+  bootstrap().then(() => {
+    const port = ENV.PORT ?? 3000;
+
+    server.listen(port, () => {
+      console.log(`Server is running on port: ${port}`);
+    });
+  });
+}
+
+export default handler;
