@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 
-import { envConfig } from '../../common/config/env.config';
+import { ENV } from '../../config/env.config';
 import { Product, ProductSchema } from '../../product/schemas/product.schema';
 import {
   Category,
@@ -11,7 +11,7 @@ import { User, UserSchema } from '../../auth/schemas/user.schema';
 
 const seedProducts = async () => {
   try {
-    await mongoose.connect(envConfig.MONGO_URI);
+    await mongoose.connect(ENV.MONGO_URI);
 
     console.log('Database connected');
 

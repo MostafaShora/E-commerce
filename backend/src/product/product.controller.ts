@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -21,6 +22,30 @@ import { CreateProductDto } from './dto/create-product.dto';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  // @Post()
+  // @UseInterceptors(
+  //   FileInterceptor('image', {
+  //     storage: memoryStorage(),
+  //   }),
+  // )
+  // async createProduct(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Body() body: CreateProductDto & { userId: string },
+  // ) {
+  //   const { userId, ...productData } = body;
+
+  //   const product = await this.productService.createProduct(
+  //     userId,
+  //     productData,
+  //     file,
+  //   );
+
+  //   return {
+  //     message: 'Product created successfully',
+  //     product,
+  //   };
+  // }
+
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -31,7 +56,19 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: CreateProductDto & { userId: string },
   ) {
+    if (!body) {
+      throw new BadRequestException('Request body is missing');
+    }
+
+    if (!file) {
+      throw new BadRequestException('Image file is missing');
+    }
+
     const { userId, ...productData } = body;
+
+    if (!userId) {
+      throw new BadRequestException('userId is required');
+    }
 
     const product = await this.productService.createProduct(
       userId,

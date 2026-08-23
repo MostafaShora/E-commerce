@@ -16,7 +16,12 @@ import { User, UserDocument } from '../auth/schemas/user.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 import { calculateCartTotals } from '../common/utils/cart.util';
-import { PAYMENT_METHODS, PaymentMethod } from '../common/constants/enums';
+import {
+  PAYMENT_METHODS,
+  PaymentMethod,
+  ORDER_STATUS,
+  OrderStatus,
+} from '../common/constants/enums';
 
 import { generateOrderNo } from '../common/utils/order.util';
 
@@ -69,7 +74,10 @@ export class OrderService {
       productId: {
         _id: Types.ObjectId;
         name: string;
-        images: string[];
+        images: {
+          url: string;
+          publicId: string;
+        }[];
         originalPrice: number;
         discountPercent: number;
         salePrice: number;
@@ -78,14 +86,12 @@ export class OrderService {
       quantity: number;
     }>;
 
-    // Calculate totals
     const totals = calculateCartTotals(items);
 
-    // Prepare order items
     const orderItems = items.map((item) => ({
       productId: item.productId._id,
       name: item.productId.name,
-      image: item.productId.images?.[0] ?? '',
+      image: item.productId.images?.[0]?.url ?? '',
       originalPrice: item.productId.originalPrice,
       discountPercent: item.productId.discountPercent,
       salePrice: item.productId.salePrice,
@@ -93,7 +99,6 @@ export class OrderService {
       isReviewed: false,
     }));
 
-    // Snapshot shipping address
     const shippingAddress = {
       recipientName: address.recipientName,
       phone: address.phone,
@@ -104,16 +109,12 @@ export class OrderService {
       country: address.country,
     };
 
-    // Create order
     const order = await this.orderModel.create({
-      userId,
+      userId: new Types.ObjectId(userId),
       orderNo: generateOrderNo(),
       items: orderItems,
-
       shippingAddress,
-
       paymentMethod: paymentMethod as PaymentMethod,
-
       subtotal: totals.subtotal,
       deliveryFee: totals.deliveryFee,
       tax: totals.tax,
@@ -122,12 +123,10 @@ export class OrderService {
 
     // Cash on delivery
     if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
-      // Delete cart
       await this.cartModel.deleteOne({
         userId: new Types.ObjectId(userId),
       });
 
-      // Decrease stock
       await Promise.all(
         items.map((item) =>
           this.productModel.findByIdAndUpdate(item.productId._id, {
@@ -188,6 +187,166 @@ export class OrderService {
     if (!order) {
       throw new NotFoundException('Order not found');
     }
+
+    return {
+      order,
+    };
+  }
+
+  async updateOrderStatus(
+    userId: string,
+    orderId: string,
+    status: OrderStatus,
+  ) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findOne({
+      _id: new Types.ObjectId(orderId),
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const currentStatus = order.status;
+
+    const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
+      [ORDER_STATUS.PLACED]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
+
+      [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.ASSIGNED, ORDER_STATUS.CANCELLED],
+
+      [ORDER_STATUS.ASSIGNED]: [ORDER_STATUS.PACKED, ORDER_STATUS.CANCELLED],
+
+      [ORDER_STATUS.PACKED]: [ORDER_STATUS.OUT_FOR_DELIVERY],
+
+      [ORDER_STATUS.OUT_FOR_DELIVERY]: [ORDER_STATUS.DELIVERED],
+
+      [ORDER_STATUS.DELIVERED]: [],
+
+      [ORDER_STATUS.CANCELLED]: [],
+    };
+
+    if (!allowedTransitions[currentStatus].includes(status)) {
+      throw new BadRequestException(
+        `Cannot change order status from ${currentStatus} to ${status}`,
+      );
+    }
+
+    order.status = status;
+
+    order.statusHistory.push({
+      status,
+      note: '',
+      date: new Date(),
+    });
+
+    await order.save();
+
+    return {
+      order,
+    };
+  }
+
+  async getAllOrdersForAdmin(status?: OrderStatus, page = 1, limit = 10) {
+    const filter: { status?: OrderStatus } = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      this.orderModel
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      this.orderModel.countDocuments(filter),
+    ]);
+
+    return {
+      orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getAdminOrderById(orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel
+      .findById(new Types.ObjectId(orderId))
+      .lean();
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return {
+      order,
+    };
+  }
+
+  async updateAdminOrderStatus(
+    orderId: string,
+    status: OrderStatus,
+    note = '',
+  ) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findById(new Types.ObjectId(orderId));
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const currentStatus = order.status;
+
+    const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
+      [ORDER_STATUS.PLACED]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
+
+      [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.ASSIGNED, ORDER_STATUS.CANCELLED],
+
+      [ORDER_STATUS.ASSIGNED]: [ORDER_STATUS.PACKED, ORDER_STATUS.CANCELLED],
+
+      [ORDER_STATUS.PACKED]: [ORDER_STATUS.OUT_FOR_DELIVERY],
+
+      [ORDER_STATUS.OUT_FOR_DELIVERY]: [ORDER_STATUS.DELIVERED],
+
+      [ORDER_STATUS.DELIVERED]: [],
+
+      [ORDER_STATUS.CANCELLED]: [],
+    };
+
+    if (!allowedTransitions[currentStatus].includes(status)) {
+      throw new BadRequestException(
+        `Cannot change order status from ${currentStatus} to ${status}`,
+      );
+    }
+
+    order.status = status;
+
+    order.statusHistory.push({
+      status,
+      note,
+      date: new Date(),
+    });
+
+    await order.save();
 
     return {
       order,
