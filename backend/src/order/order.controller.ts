@@ -116,25 +116,25 @@ export class OrderController {
     };
   }
 
-  @Patch(':id/status')
-  @Roles(USER_ROLES.ADMIN)
-  @UseGuards(RolesGuard)
-  async updateOrderStatus(
-    @Req() req: Request,
-    @Param('id') id: string,
-    @Body() data: UpdateOrderStatusDto,
-  ) {
-    const userId = req.user!._id.toString();
+  // @Patch(':id/status')
+  // @Roles(USER_ROLES.ADMIN)
+  // @UseGuards(RolesGuard)
+  // async updateOrderStatus(
+  //   @Req() req: Request,
+  //   @Param('id') id: string,
+  //   @Body() data: UpdateOrderStatusDto,
+  // ) {
+  //   const userId = req.user!._id.toString();
 
-    const result = await this.orderService.updateOrderStatus(
-      userId,
-      id,
-      data.status,
-    );
+  //   const result = await this.orderService.updateOrderStatus(
+  //     userId,
+  //     id,
+  //     data.status,
+  //   );
 
-    return {
-      message: 'Order status updated successfully',
-      ...result,
-    };
-  }
+  //   return {
+  //     message: 'Order status updated successfully',
+  //     ...result,
+  //   };
+  // }
 }

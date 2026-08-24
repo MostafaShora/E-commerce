@@ -176,6 +176,26 @@ export class Order {
 
   @Prop({
     type: String,
+    default: null,
+    unique: true,
+    sparse: true,
+  })
+  stripeSessionId?: string;
+
+  @Prop({
+    type: String,
+    default: null,
+  })
+  stripePaymentIntentId?: string;
+
+  @Prop({
+    type: Date,
+    default: null,
+  })
+  paidAt?: Date;
+
+  @Prop({
+    type: String,
     enum: ORDER_STATUS_VALUES,
     default: ORDER_STATUS.PLACED,
   })

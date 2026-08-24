@@ -215,13 +215,12 @@ export class OrderService {
       cancel_url: `${ENV.FRONTEND_ORIGIN}/checkout`,
     });
 
+    order.stripeSessionId = session.id;
+    await order.save();
+
     return {
       order,
       stripeUrl: session.url,
-    };
-    return {
-      order,
-      stripeUrl: null,
     };
   }
 
@@ -261,69 +260,69 @@ export class OrderService {
     };
   }
 
-  async updateOrderStatus(
-    userId: string,
-    orderId: string,
-    status: OrderStatus,
-  ) {
-    if (!Types.ObjectId.isValid(orderId)) {
-      throw new BadRequestException('Invalid order ID');
-    }
+  // async updateOrderStatus(
+  //   userId: string,
+  //   orderId: string,
+  //   status: OrderStatus,
+  // ) {
+  //   if (!Types.ObjectId.isValid(orderId)) {
+  //     throw new BadRequestException('Invalid order ID');
+  //   }
 
-    const order = await this.orderModel.findOne({
-      _id: new Types.ObjectId(orderId),
-      userId: new Types.ObjectId(userId),
-    });
+  //   const order = await this.orderModel.findOne({
+  //     _id: new Types.ObjectId(orderId),
+  //     userId: new Types.ObjectId(userId),
+  //   });
 
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
+  //   if (!order) {
+  //     throw new NotFoundException('Order not found');
+  //   }
 
-    const currentStatus = order.status;
+  //   const currentStatus = order.status;
 
-    const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
-      [ORDER_STATUS.PLACED]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
+  //   const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
+  //     [ORDER_STATUS.PLACED]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
 
-      [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.ASSIGNED, ORDER_STATUS.CANCELLED],
+  //     [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.ASSIGNED, ORDER_STATUS.CANCELLED],
 
-      [ORDER_STATUS.ASSIGNED]: [ORDER_STATUS.PACKED, ORDER_STATUS.CANCELLED],
+  //     [ORDER_STATUS.ASSIGNED]: [ORDER_STATUS.PACKED, ORDER_STATUS.CANCELLED],
 
-      [ORDER_STATUS.PACKED]: [ORDER_STATUS.OUT_FOR_DELIVERY],
+  //     [ORDER_STATUS.PACKED]: [ORDER_STATUS.OUT_FOR_DELIVERY],
 
-      [ORDER_STATUS.OUT_FOR_DELIVERY]: [ORDER_STATUS.DELIVERED],
+  //     [ORDER_STATUS.OUT_FOR_DELIVERY]: [ORDER_STATUS.DELIVERED],
 
-      [ORDER_STATUS.DELIVERED]: [],
+  //     [ORDER_STATUS.DELIVERED]: [],
 
-      [ORDER_STATUS.CANCELLED]: [],
-    };
+  //     [ORDER_STATUS.CANCELLED]: [],
+  //   };
 
-    if (!allowedTransitions[currentStatus].includes(status)) {
-      throw new BadRequestException(
-        `Cannot change order status from ${currentStatus} to ${status}`,
-      );
-    }
+  //   if (!allowedTransitions[currentStatus].includes(status)) {
+  //     throw new BadRequestException(
+  //       `Cannot change order status from ${currentStatus} to ${status}`,
+  //     );
+  //   }
 
-    order.status = status;
+  //   order.status = status;
 
-    order.statusHistory.push({
-      status,
-      note: '',
-      date: new Date(),
-    });
+  //   order.statusHistory.push({
+  //     status,
+  //     note: '',
+  //     date: new Date(),
+  //   });
 
-    if (
-      status === ORDER_STATUS.DELIVERED &&
-      order.paymentStatus !== PAYMENT_STATUS.PAID
-    ) {
-      order.paymentStatus = PAYMENT_STATUS.PAID;
-    }
+  //   if (
+  //     status === ORDER_STATUS.DELIVERED &&
+  //     order.paymentStatus !== PAYMENT_STATUS.PAID
+  //   ) {
+  //     order.paymentStatus = PAYMENT_STATUS.PAID;
+  //   }
 
-    await order.save();
+  //   await order.save();
 
-    return {
-      order,
-    };
-  }
+  //   return {
+  //     order,
+  //   };
+  // }
 
   async getAllOrdersForAdmin(status?: OrderStatus, page = 1, limit = 10) {
     const filter: { status?: OrderStatus } = {};
@@ -423,6 +422,7 @@ export class OrderService {
 
     if (
       status === ORDER_STATUS.DELIVERED &&
+      order.paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY &&
       order.paymentStatus !== PAYMENT_STATUS.PAID
     ) {
       order.paymentStatus = PAYMENT_STATUS.PAID;
@@ -432,6 +432,135 @@ export class OrderService {
 
     return {
       order,
+    };
+  }
+
+  async handleStripePaymentSuccess(
+    orderId: string,
+    session: Stripe.Checkout.Session,
+  ) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findById(new Types.ObjectId(orderId));
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    // Security check
+    if (order.paymentMethod !== PAYMENT_METHODS.CARD) {
+      throw new BadRequestException('Order is not a card payment order');
+    }
+
+    // Idempotency:
+    // Stripe may send the same webhook more than once.
+    if (order.paymentStatus === PAYMENT_STATUS.PAID) {
+      return {
+        order,
+        alreadyProcessed: true,
+      };
+    }
+
+    // Make sure the Stripe session belongs to this order
+    if (session.metadata?.orderId !== order._id.toString()) {
+      throw new BadRequestException(
+        'Stripe session metadata does not match order',
+      );
+    }
+
+    // Make sure the Stripe session ID matches the one stored in the order
+    if (order.stripeSessionId !== session.id) {
+      throw new BadRequestException(
+        'Stripe session does not belong to this order',
+      );
+    }
+
+    // Make sure Stripe actually completed the checkout
+    if (session.payment_status !== 'paid') {
+      throw new BadRequestException('Stripe payment is not completed');
+    }
+
+    order.paymentStatus = PAYMENT_STATUS.PAID;
+
+    order.stripeSessionId = session.id;
+
+    if (typeof session.payment_intent === 'string') {
+      order.stripePaymentIntentId = session.payment_intent;
+    }
+
+    order.paidAt = new Date();
+
+    await order.save();
+
+    // Clear cart only after successful payment
+    await this.cartModel.deleteOne({
+      userId: order.userId,
+    });
+
+    // Decrease stock only after successful payment
+    await Promise.all(
+      order.items.map((item) =>
+        this.productModel.findByIdAndUpdate(item.productId, {
+          $inc: {
+            stockCount: -item.quantity,
+          },
+        }),
+      ),
+    );
+
+    return {
+      order,
+      alreadyProcessed: false,
+    };
+  }
+
+  async handleStripePaymentFailed(
+    orderId: string,
+    session: Stripe.Checkout.Session,
+  ) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findById(new Types.ObjectId(orderId));
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (order.paymentMethod !== PAYMENT_METHODS.CARD) {
+      throw new BadRequestException('Order is not a card payment order');
+    }
+
+    if (session.metadata?.orderId !== order._id.toString()) {
+      throw new BadRequestException(
+        'Stripe session metadata does not match order',
+      );
+    }
+
+    if (order.stripeSessionId !== session.id) {
+      throw new BadRequestException(
+        'Stripe session does not belong to this order',
+      );
+    }
+
+    // Never turn a successful payment into failed
+    if (order.paymentStatus === PAYMENT_STATUS.PAID) {
+      return {
+        order,
+        alreadyPaid: true,
+      };
+    }
+
+    order.paymentStatus = PAYMENT_STATUS.FAILED;
+
+    await order.save();
+
+    return {
+      order,
+      alreadyPaid: false,
     };
   }
 }
