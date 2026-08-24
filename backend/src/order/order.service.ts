@@ -22,6 +22,7 @@ import {
   PaymentMethod,
   ORDER_STATUS,
   OrderStatus,
+  PAYMENT_STATUS,
 } from '../common/constants/enums';
 
 import { generateOrderNo } from '../common/utils/order.util';
@@ -310,6 +311,13 @@ export class OrderService {
       date: new Date(),
     });
 
+    if (
+      status === ORDER_STATUS.DELIVERED &&
+      order.paymentStatus !== PAYMENT_STATUS.PAID
+    ) {
+      order.paymentStatus = PAYMENT_STATUS.PAID;
+    }
+
     await order.save();
 
     return {
@@ -412,6 +420,13 @@ export class OrderService {
       note,
       date: new Date(),
     });
+
+    if (
+      status === ORDER_STATUS.DELIVERED &&
+      order.paymentStatus !== PAYMENT_STATUS.PAID
+    ) {
+      order.paymentStatus = PAYMENT_STATUS.PAID;
+    }
 
     await order.save();
 

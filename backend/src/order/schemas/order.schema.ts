@@ -19,6 +19,8 @@ export type OrderDocument = HydratedDocument<Order>;
 
 @Schema()
 export class OrderItem {
+  _id: Types.ObjectId;
+
   @Prop({
     type: Types.ObjectId,
     ref: 'Product',

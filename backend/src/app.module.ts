@@ -11,6 +11,7 @@ import { AddressModule } from './address/address.module';
 import { OrderModule } from './order/order.module';
 import { ENV } from './config/env.config';
 import { StripeModule } from './webhooks/stripe-webhook.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { StripeModule } from './webhooks/stripe-webhook.module';
     AddressModule,
     OrderModule,
     StripeModule,
+    ReviewModule,
   ],
 
   controllers: [AppController],
