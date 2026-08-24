@@ -27,6 +27,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { USER_ROLES } from '../common/constants/enums';
 
 import { GetAdminOrdersDto } from './dto/get-admin-orders.dto';
+import { CancelOrderDto } from './dto/cancel-order.dto';
 
 @Controller('order')
 @UseGuards(JwtAuthGuard)
@@ -137,4 +138,20 @@ export class OrderController {
   //     ...result,
   //   };
   // }
+
+  @Patch(':id/cancel')
+  async cancelOrder(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() data: CancelOrderDto,
+  ) {
+    const userId = req.user!._id.toString();
+
+    const result = await this.orderService.cancelOrder(userId, id, data.reason);
+
+    return {
+      message: 'Order cancelled successfully',
+      ...result,
+    };
+  }
 }

@@ -7,6 +7,7 @@ import {
   Req,
 } from '@nestjs/common';
 
+import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
 import Stripe from 'stripe';
 
@@ -21,18 +22,23 @@ export class StripeWebhookController {
   @Post('stripe')
   @HttpCode(200)
   async handleStripeWebhook(
-    @Req() req: Request & { rawBody?: Buffer },
+    @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,
   ) {
     if (!signature) {
       throw new BadRequestException('Missing Stripe signature');
     }
 
+    if (!req.rawBody) {
+      console.error('Stripe webhook rawBody is missing');
+      throw new BadRequestException('Missing raw webhook body');
+    }
+
     let event: Stripe.Event;
 
     try {
       event = stripeClient.webhooks.constructEvent(
-        req.rawBody!,
+        req.rawBody,
         signature,
         ENV.STRIPE_WEBHOOK_SECRET,
       );

@@ -1,7 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import {
+  ExpressAdapter,
+  NestExpressApplication,
+} from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import dns from 'dns';
@@ -18,18 +21,24 @@ async function bootstrap() {
     return;
   }
 
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
-    rawBody: true,
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+    new ExpressAdapter(server),
+    {
+      rawBody: true,
+    },
+  );
+
+  // Let Nest manage JSON/urlencoded parsing.
+  // This also preserves req.rawBody because rawBody: true is enabled.
+  app.useBodyParser('json', {
+    limit: '10mb',
   });
 
-  app.use(express.json({ limit: '10mb' }));
-
-  app.use(
-    express.urlencoded({
-      extended: true,
-      limit: '10mb',
-    }),
-  );
+  app.useBodyParser('urlencoded', {
+    limit: '10mb',
+    extended: true,
+  });
 
   app.setGlobalPrefix('api');
 

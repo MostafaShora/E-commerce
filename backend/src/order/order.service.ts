@@ -142,6 +142,9 @@ export class OrderService {
         ),
       );
 
+      order.stockDeducted = true;
+      await order.save();
+
       return {
         order,
         stripeUrl: null,
@@ -510,6 +513,9 @@ export class OrderService {
       ),
     );
 
+    order.stockDeducted = true;
+    await order.save();
+
     return {
       order,
       alreadyProcessed: false,
@@ -562,5 +568,171 @@ export class OrderService {
       order,
       alreadyPaid: false,
     };
+  }
+
+  async cancelOrder(userId: string, orderId: string, reason = '') {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findOne({
+      _id: new Types.ObjectId(orderId),
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    // User can only cancel an order while it is still placed.
+    if (order.status !== ORDER_STATUS.PLACED) {
+      throw new BadRequestException(
+        `Order cannot be cancelled from ${order.status} status`,
+      );
+    }
+
+    // 1. CARD PAYMENT
+
+    if (order.paymentMethod === PAYMENT_METHODS.CARD) {
+      // Payment is still pending.
+      // No refund is required because no money was captured.
+      if (order.paymentStatus === PAYMENT_STATUS.PENDING) {
+        order.status = ORDER_STATUS.CANCELLED;
+
+        order.statusHistory.push({
+          status: ORDER_STATUS.CANCELLED,
+          note: reason,
+          date: new Date(),
+        });
+
+        await order.save();
+
+        return {
+          order,
+          refunded: false,
+        };
+      }
+
+      // Payment failed previously.
+      // Nothing needs to be refunded.
+      if (order.paymentStatus === PAYMENT_STATUS.FAILED) {
+        order.status = ORDER_STATUS.CANCELLED;
+
+        order.statusHistory.push({
+          status: ORDER_STATUS.CANCELLED,
+          note: reason,
+          date: new Date(),
+        });
+
+        await order.save();
+
+        return {
+          order,
+          refunded: false,
+        };
+      }
+
+      // Payment was already refunded.
+      if (order.paymentStatus === PAYMENT_STATUS.REFUNDED) {
+        throw new BadRequestException('Order has already been refunded');
+      }
+
+      // Payment is paid → Stripe refund is required.
+      if (order.paymentStatus === PAYMENT_STATUS.PAID) {
+        if (!order.stripePaymentIntentId) {
+          throw new BadRequestException(
+            'Cannot refund order: Stripe payment intent is missing',
+          );
+        }
+
+        const refund = await stripeClient.refunds.create({
+          payment_intent: order.stripePaymentIntentId,
+          metadata: {
+            orderId: order._id.toString(),
+            orderNo: order.orderNo,
+          },
+        });
+
+        // Stripe refund request was successfully created.
+        if (refund.status !== 'succeeded') {
+          throw new BadRequestException(
+            `Stripe refund was not completed. Refund status: ${refund.status}`,
+          );
+        }
+
+        order.paymentStatus = PAYMENT_STATUS.REFUNDED;
+        order.status = ORDER_STATUS.CANCELLED;
+
+        order.statusHistory.push({
+          status: ORDER_STATUS.CANCELLED,
+          note: reason
+            ? `${reason} | Refund ID: ${refund.id}`
+            : `Refund ID: ${refund.id}`,
+          date: new Date(),
+        });
+
+        // Restore stock only if it was previously deducted.
+        if (order.stockDeducted) {
+          await Promise.all(
+            order.items.map((item) =>
+              this.productModel.findByIdAndUpdate(item.productId, {
+                $inc: {
+                  stockCount: item.quantity,
+                },
+              }),
+            ),
+          );
+
+          order.stockDeducted = false;
+        }
+
+        await order.save();
+
+        return {
+          order,
+          refunded: true,
+          refundId: refund.id,
+        };
+      }
+    }
+
+    // 2. CASH ON DELIVERY
+
+    if (order.paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
+      // COD should normally still be pending before delivery.
+      // No Stripe refund is required.
+      order.status = ORDER_STATUS.CANCELLED;
+
+      order.statusHistory.push({
+        status: ORDER_STATUS.CANCELLED,
+        note: reason,
+        date: new Date(),
+      });
+
+      // Stock was already deducted when the COD order was created.
+      // Restore it only once.
+      if (order.stockDeducted) {
+        await Promise.all(
+          order.items.map((item) =>
+            this.productModel.findByIdAndUpdate(item.productId, {
+              $inc: {
+                stockCount: item.quantity,
+              },
+            }),
+          ),
+        );
+
+        order.stockDeducted = false;
+      }
+
+      await order.save();
+
+      return {
+        order,
+        refunded: false,
+      };
+    }
+
+    throw new BadRequestException('Unsupported payment method');
   }
 }

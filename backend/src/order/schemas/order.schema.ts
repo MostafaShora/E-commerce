@@ -176,7 +176,6 @@ export class Order {
 
   @Prop({
     type: String,
-    default: null,
     unique: true,
     sparse: true,
   })
@@ -193,6 +192,12 @@ export class Order {
     default: null,
   })
   paidAt?: Date;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  stockDeducted: boolean;
 
   @Prop({
     type: String,
