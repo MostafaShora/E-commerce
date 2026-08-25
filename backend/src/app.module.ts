@@ -12,6 +12,7 @@ import { OrderModule } from './order/order.module';
 import { ENV } from './config/env.config';
 import { StripeModule } from './webhooks/stripe-webhook.module';
 import { ReviewModule } from './review/review.module';
+import { AIModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ReviewModule } from './review/review.module';
     OrderModule,
     StripeModule,
     ReviewModule,
+    AIModule,
   ],
 
   providers: [AppService],
