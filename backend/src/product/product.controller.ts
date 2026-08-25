@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 
 import type { Request } from 'express';
-import { fileTypeFromBuffer } from 'file-type';
+// import { fileTypeFromBuffer } from 'file-type';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -59,6 +59,8 @@ export class ProductController {
       throw new BadRequestException('Image size must not exceed 5MB');
     }
 
+    // Dynamically import file-type to avoid issues with ESM and CommonJS
+    const { fileTypeFromBuffer } = await import('file-type');
     const detectedType = await fileTypeFromBuffer(file.buffer);
 
     if (

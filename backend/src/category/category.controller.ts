@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { fileTypeFromBuffer } from 'file-type';
+// import { fileTypeFromBuffer } from 'file-type';
 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
@@ -55,7 +55,8 @@ export class CategoryController {
       throw new BadRequestException('Image size must not exceed 5MB');
     }
 
-    // Detect the real file type from its buffer
+    // Dynamically import file-type to check the actual file type
+    const { fileTypeFromBuffer } = await import('file-type');
     const detectedType = await fileTypeFromBuffer(file.buffer);
 
     // Validate the actual file type
