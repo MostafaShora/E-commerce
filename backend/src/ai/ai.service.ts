@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { generateText } from 'ai';
 
 import { AIAdminAction, GenerateAIAdminDto } from './dto/generate-ai-admin.dto';
 
@@ -10,7 +9,15 @@ import {
 
 @Injectable()
 export class AIService {
+  private async getAiSdk() {
+    return new Function('return import("ai")')() as Promise<
+      typeof import('ai')
+    >;
+  }
+
   async generateAdminContent(data: GenerateAIAdminDto) {
+    const { generateText } = await this.getAiSdk();
+
     if (data.action === AIAdminAction.REPHRASE_TITLE) {
       const { text } = await generateText({
         model: 'google/gemini-2.5-flash-lite',
