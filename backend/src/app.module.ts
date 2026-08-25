@@ -38,6 +38,8 @@ import { AIModule } from './ai/ai.module';
     AIModule,
   ],
 
+  controllers: [AppController],
+
   providers: [AppService],
 })
 export class AppModule {}
