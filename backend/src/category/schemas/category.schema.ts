@@ -4,6 +4,17 @@ import slugify from 'slugify';
 
 export type CategoryDocument = HydratedDocument<Category>;
 
+@Schema({ _id: false })
+export class CategoryImage {
+  @Prop({ required: true })
+  url: string;
+
+  @Prop({ required: true })
+  publicId: string;
+}
+
+export const CategoryImageSchema = SchemaFactory.createForClass(CategoryImage);
+
 @Schema({
   timestamps: true,
 })
@@ -22,10 +33,10 @@ export class Category {
   slug: string;
 
   @Prop({
-    type: String,
+    type: CategoryImageSchema,
     default: null,
   })
-  imageUrl: string | null;
+  image: CategoryImage | null;
 
   @Prop({
     type: String,
@@ -42,7 +53,7 @@ export class Category {
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
 
-CategorySchema.pre('validate', async function () {
+CategorySchema.pre('validate', function () {
   if (this.isModified('name')) {
     this.slug = slugify(this.name, {
       lower: true,

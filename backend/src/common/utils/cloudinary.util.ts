@@ -32,3 +32,13 @@ export const uploadImageToCloudinary = async (
     streamifier.createReadStream(file.buffer).pipe(uploadStream);
   });
 };
+
+export const deleteImageFromCloudinary = async (
+  publicId: string,
+): Promise<void> => {
+  if (!publicId) {
+    return;
+  }
+
+  await cloudinary.uploader.destroy(publicId);
+};

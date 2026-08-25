@@ -36,7 +36,6 @@ import { ReviewModule } from './review/review.module';
     ReviewModule,
   ],
 
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -19,6 +19,10 @@ import {
 
 import { uploadImageToCloudinary } from '../common/utils/cloudinary.util';
 
+import { UpdateProductDto } from './dto/update-product.dto';
+import { GetProductsAdminDto } from './dto/get-products-admin.dto';
+import { deleteImageFromCloudinary } from '../common/utils/cloudinary.util';
+
 @Injectable()
 export class ProductService {
   constructor(
@@ -59,7 +63,7 @@ export class ProductService {
 
     // Stock filter
     if (inStock !== undefined) {
-      filter.stockCount = { $gt: 0 };
+      filter.stockCount = inStock ? { $gt: 0 } : { $eq: 0 };
     }
 
     // Price filter
@@ -202,6 +206,7 @@ export class ProductService {
     };
   }
 
+  // Create product
   async createProduct(
     userId: string,
     data: CreateProductDto,
@@ -254,6 +259,179 @@ export class ProductService {
 
       images,
     });
+
+    return product;
+  }
+
+  async updateProduct(productId: string, data: UpdateProductDto) {
+    if (!Types.ObjectId.isValid(productId)) {
+      throw new BadRequestException('Invalid product ID');
+    }
+
+    const product = await this.productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    if (data.categoryId) {
+      if (!Types.ObjectId.isValid(data.categoryId)) {
+        throw new BadRequestException('Invalid category ID');
+      }
+
+      const category = await this.categoryModel
+        .findById(data.categoryId)
+        .lean();
+
+      if (!category) {
+        throw new BadRequestException('Category not found');
+      }
+
+      product.categoryId = new Types.ObjectId(data.categoryId);
+    }
+
+    if (data.name !== undefined) {
+      product.name = data.name;
+    }
+
+    if (data.description !== undefined) {
+      product.description = data.description;
+    }
+
+    if (data.originalPrice !== undefined) {
+      product.originalPrice = data.originalPrice;
+    }
+
+    if (data.discountPercent !== undefined) {
+      product.discountPercent = data.discountPercent;
+    }
+
+    if (data.discountLabel !== undefined) {
+      product.discountLabel = data.discountLabel;
+    }
+
+    if (data.unit !== undefined) {
+      product.unit = data.unit;
+    }
+
+    if (data.stockCount !== undefined) {
+      product.stockCount = data.stockCount;
+    }
+
+    if (data.isActive !== undefined) {
+      product.isActive = data.isActive;
+    }
+
+    await product.save();
+
+    return product;
+  }
+
+  // Deactivate product
+  async deactivateProduct(productId: string) {
+    if (!Types.ObjectId.isValid(productId)) {
+      throw new BadRequestException('Invalid product ID');
+    }
+
+    const product = await this.productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    if (!product.isActive) {
+      throw new BadRequestException('Product is already deactivated');
+    }
+
+    product.isActive = false;
+
+    await product.save();
+
+    return product;
+  }
+
+  // Activate product
+  async activateProduct(productId: string) {
+    if (!Types.ObjectId.isValid(productId)) {
+      throw new BadRequestException('Invalid product ID');
+    }
+
+    const product = await this.productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    if (product.isActive) {
+      throw new BadRequestException('Product is already active');
+    }
+
+    product.isActive = true;
+
+    await product.save();
+
+    return product;
+  }
+
+  // Get products for admin with pagination
+  async getProductsAdmin(query: GetProductsAdminDto) {
+    const { page, limit } = query;
+
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      this.productModel
+        .find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('categoryId', 'name slug')
+        .select(
+          'name slug images description originalPrice salePrice discountPercent discountLabel unit stockCount ratingAverage reviewCount categoryId isActive createdAt updatedAt',
+        )
+        .lean(),
+
+      this.productModel.countDocuments({}),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    };
+  }
+
+  // Permanent delete product
+  async deleteProduct(productId: string) {
+    if (!Types.ObjectId.isValid(productId)) {
+      throw new BadRequestException('Invalid product ID');
+    }
+
+    const product = await this.productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    // Delete product images from Cloudinary
+    if (product.images?.length) {
+      for (const image of product.images) {
+        if (image.publicId) {
+          await deleteImageFromCloudinary(image.publicId);
+        }
+      }
+    }
+
+    // Delete product from MongoDB
+    await this.productModel.findByIdAndDelete(productId);
 
     return product;
   }
