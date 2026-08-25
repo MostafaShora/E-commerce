@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export enum AIAdminAction {
   REPHRASE_TITLE = 'rephrase-title',
@@ -11,13 +11,16 @@ export class GenerateAIAdminDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(160)
   title?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   unit?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(300)
   description?: string;
 }

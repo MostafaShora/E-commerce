@@ -14,60 +14,66 @@ dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 const server = express();
 
-let appInitialized = false;
+let appPromise: Promise<NestExpressApplication> | null = null;
 
-async function bootstrap() {
-  if (appInitialized) {
-    return;
+async function bootstrap(): Promise<NestExpressApplication> {
+  if (appPromise) {
+    return appPromise;
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
-    new ExpressAdapter(server),
-    {
-      rawBody: true,
-    },
-  );
+  appPromise = (async () => {
+    const app = await NestFactory.create<NestExpressApplication>(
+      AppModule,
+      new ExpressAdapter(server),
+      {
+        rawBody: true,
+      },
+    );
 
-  // Let Nest manage JSON/urlencoded parsing.
-  // This also preserves req.rawBody because rawBody: true is enabled.
-  app.useBodyParser('json', {
-    limit: '10mb',
-  });
+    app.useBodyParser('json', {
+      limit: '10mb',
+    });
 
-  app.useBodyParser('urlencoded', {
-    limit: '10mb',
-    extended: true,
-  });
+    app.useBodyParser('urlencoded', {
+      limit: '10mb',
+      extended: true,
+    });
 
-  app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api');
 
-  app.enableCors({
-    origin: ENV.FRONTEND_ORIGIN,
-    credentials: true,
-  });
+    app.enableCors({
+      origin: ENV.FRONTEND_ORIGIN,
+      credentials: true,
+    });
 
-  app.use(cookieParser());
+    app.use(cookieParser());
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
 
-  await app.init();
+    await app.init();
 
-  appInitialized = true;
+    console.log('Nest application initialized successfully');
 
-  console.log('Nest application initialized successfully');
+    return app;
+  })();
+
+  try {
+    return await appPromise;
+  } catch (error) {
+    appPromise = null;
+    throw error;
+  }
 }
 
 const handler = async (req: express.Request, res: express.Response) => {
   await bootstrap();
-
-  server(req, res);
+  return server(req, res);
 };
 
 if (process.env.NODE_ENV !== 'production') {

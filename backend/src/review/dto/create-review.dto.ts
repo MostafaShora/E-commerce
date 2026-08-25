@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   Max,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -21,5 +22,6 @@ export class CreateReviewDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(1000)
   comment?: string;
 }

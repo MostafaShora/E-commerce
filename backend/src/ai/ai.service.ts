@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 import { AIAdminAction, GenerateAIAdminDto } from './dto/generate-ai-admin.dto';
 
@@ -14,31 +18,71 @@ export class AIService {
   }
 
   async generateAdminContent(data: GenerateAIAdminDto) {
-    const { generateText } = await this.getAiSdk();
+    try {
+      const { generateText } = await this.getAiSdk();
 
-    if (data.action === AIAdminAction.REPHRASE_TITLE) {
-      const { text } = await generateText({
-        model: 'google/gemini-2.5-flash-lite',
-        system: REPHRASE_TITLE_SYSTEM_PROMPT,
-        prompt: `Title: ${data.title ?? ''}\nUnit: ${data.unit ?? ''}`,
-      });
+      if (data.action === AIAdminAction.REPHRASE_TITLE) {
+        if (!data.title?.trim()) {
+          throw new BadRequestException(
+            'Title is required for rephrase-title action',
+          );
+        }
 
-      return { result: text.trim() };
+        const { text } = await generateText({
+          model: 'google/gemini-2.5-flash-lite',
+          system: REPHRASE_TITLE_SYSTEM_PROMPT,
+          prompt:
+            `Title: ${data.title.trim()}\n` +
+            `Unit: ${data.unit?.trim() ?? ''}`,
+        });
+
+        const result = text.trim();
+
+        if (!result) {
+          throw new InternalServerErrorException('AI returned an empty result');
+        }
+
+        return {
+          result,
+        };
+      }
+
+      if (data.action === AIAdminAction.GENERATE_DESC) {
+        if (!data.title?.trim()) {
+          throw new BadRequestException(
+            'Title is required for generate-desc action',
+          );
+        }
+
+        const { text } = await generateText({
+          model: 'google/gemini-2.5-flash-lite',
+          system: GENERATE_DESCRIPTION_SYSTEM_PROMPT,
+          prompt:
+            `Title: ${data.title.trim()}\n` +
+            `Unit: ${data.unit?.trim() ?? ''}\n` +
+            `Existing description: ${data.description?.trim() ?? ''}`,
+        });
+
+        const result = text.trim();
+
+        if (!result) {
+          throw new InternalServerErrorException('AI returned an empty result');
+        }
+
+        return {
+          result,
+        };
+      }
+
+      throw new BadRequestException('Unsupported AI admin action');
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      console.error('AI generation error:', error);
+
+      throw new InternalServerErrorException('Failed to generate AI content');
     }
-
-    if (data.action === AIAdminAction.GENERATE_DESC) {
-      const { text } = await generateText({
-        model: 'google/gemini-2.5-flash-lite',
-        system: GENERATE_DESCRIPTION_SYSTEM_PROMPT,
-        prompt:
-          `Title: ${data.title ?? ''}\n` +
-          `Unit: ${data.unit ?? ''}\n` +
-          `Existing description: ${data.description ?? ''}`,
-      });
-
-      return { result: text.trim() };
-    }
-
-    throw new Error('Unsupported AI admin action');
   }
 }

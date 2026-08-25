@@ -14,6 +14,7 @@ import { Product, ProductDocument } from '../product/schemas/product.schema';
 import { CreateReviewDto } from './dto/create-review.dto';
 
 import { ORDER_STATUS, PAYMENT_STATUS } from '../common/constants/enums';
+import { GetProductReviewsDto } from './dto/get-product-reviews.dto';
 
 @Injectable()
 export class ReviewService {
@@ -76,75 +77,104 @@ export class ReviewService {
 
     try {
       const review = await session.withTransaction(async () => {
-        const [createdReview] = await this.reviewModel.create(
-          [
-            {
-              userId,
-              orderId,
-              orderItemId,
-              productId: orderItem.productId,
-              rating,
-              comment,
-            },
-          ],
-          { session },
-        );
-
-        await this.orderModel.updateOne(
-          {
-            _id: orderId,
-            'items._id': orderItemId,
-          },
-          {
-            $set: {
-              'items.$.isReviewed': true,
-            },
-          },
-          { session },
-        );
-
-        const [aggResult] = await this.reviewModel
-          .aggregate([
-            {
-              $match: {
+        try {
+          const [createdReview] = await this.reviewModel.create(
+            [
+              {
+                userId,
+                orderId,
+                orderItemId,
                 productId: orderItem.productId,
+                rating,
+                comment,
               },
+            ],
+            { session },
+          );
+
+          if (!createdReview) {
+            throw new BadRequestException('Failed to create review');
+          }
+
+          const updateOrderResult = await this.orderModel.updateOne(
+            {
+              _id: orderId,
+              'items._id': orderItemId,
+              'items.isReviewed': false,
             },
             {
-              $group: {
-                _id: null,
-                averageRating: {
-                  $avg: '$rating',
-                },
-                totalReviews: {
-                  $sum: 1,
-                },
+              $set: {
+                'items.$.isReviewed': true,
               },
             },
-          ])
-          .session(session);
+            { session },
+          );
 
-        const newAverage =
-          aggResult?.averageRating != null
-            ? Math.round(aggResult.averageRating * 10) / 10
-            : 0;
+          if (updateOrderResult.modifiedCount === 0) {
+            throw new BadRequestException(
+              'Review status could not be updated for this order item',
+            );
+          }
 
-        const newCount = aggResult?.totalReviews ?? 0;
+          const [aggResult] = await this.reviewModel
+            .aggregate([
+              {
+                $match: {
+                  productId: orderItem.productId,
+                },
+              },
+              {
+                $group: {
+                  _id: null,
+                  averageRating: {
+                    $avg: '$rating',
+                  },
+                  totalReviews: {
+                    $sum: 1,
+                  },
+                },
+              },
+            ])
+            .session(session);
 
-        await this.productModel.updateOne(
-          {
-            _id: orderItem.productId,
-          },
-          {
-            $set: {
-              ratingAverage: newAverage,
-              reviewCount: newCount,
+          const newAverage =
+            aggResult?.averageRating != null
+              ? Math.round(aggResult.averageRating * 10) / 10
+              : 0;
+
+          const newCount = aggResult?.totalReviews ?? 0;
+
+          const productUpdateResult = await this.productModel.updateOne(
+            {
+              _id: orderItem.productId,
             },
-          },
-          { session },
-        );
+            {
+              $set: {
+                ratingAverage: newAverage,
+                reviewCount: newCount,
+              },
+            },
+            { session },
+          );
 
-        return createdReview;
+          if (productUpdateResult.matchedCount === 0) {
+            throw new NotFoundException('Product not found');
+          }
+
+          return createdReview;
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            'code' in error &&
+            (error as { code?: number }).code === 11000
+          ) {
+            throw new BadRequestException(
+              'You have already reviewed this item',
+            );
+          }
+
+          throw error;
+        }
       });
 
       if (!review) {
@@ -154,6 +184,12 @@ export class ReviewService {
       return {
         review,
       };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw error;
     } finally {
       await session.endSession();
     }
@@ -196,6 +232,56 @@ export class ReviewService {
 
     return {
       orders: filteredOrders,
+    };
+  }
+
+  async getProductReviews(query: GetProductReviewsDto) {
+    const { slug, page, limit } = query;
+
+    const product = await this.productModel
+      .findOne({
+        slug,
+        isActive: true,
+      })
+      .select('_id')
+      .lean();
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [reviews, total] = await Promise.all([
+      this.reviewModel
+        .find({
+          productId: product._id,
+        })
+        .populate('userId', 'name avatar')
+        .sort({
+          createdAt: -1,
+        })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      this.reviewModel.countDocuments({
+        productId: product._id,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      reviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
     };
   }
 }
