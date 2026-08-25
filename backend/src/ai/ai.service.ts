@@ -10,9 +10,7 @@ import {
 @Injectable()
 export class AIService {
   private async getAiSdk() {
-    return new Function('return import("ai")')() as Promise<
-      typeof import('ai')
-    >;
+    return import('ai');
   }
 
   async generateAdminContent(data: GenerateAIAdminDto) {
@@ -25,9 +23,7 @@ export class AIService {
         prompt: `Title: ${data.title ?? ''}\nUnit: ${data.unit ?? ''}`,
       });
 
-      return {
-        result: text.trim(),
-      };
+      return { result: text.trim() };
     }
 
     if (data.action === AIAdminAction.GENERATE_DESC) {
@@ -40,9 +36,7 @@ export class AIService {
           `Existing description: ${data.description ?? ''}`,
       });
 
-      return {
-        result: text.trim(),
-      };
+      return { result: text.trim() };
     }
 
     throw new Error('Unsupported AI admin action');
