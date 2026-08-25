@@ -7,10 +7,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+
+import { fileTypeFromBuffer } from 'file-type';
 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
@@ -23,6 +26,9 @@ import { USER_ROLES } from '../common/constants/enums';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { GetAdminCategoriesDto } from './dto/get-admin-categories.dto';
+
+const MAX_CATEGORY_IMAGE_SIZE = 5 * 1024 * 1024;
 
 @Controller('category')
 export class CategoryController {
@@ -42,6 +48,24 @@ export class CategoryController {
   ) {
     if (!file) {
       throw new BadRequestException('Image file is missing');
+    }
+
+    // Check file size
+    if (file.size > MAX_CATEGORY_IMAGE_SIZE) {
+      throw new BadRequestException('Image size must not exceed 5MB');
+    }
+
+    // Detect the real file type from its buffer
+    const detectedType = await fileTypeFromBuffer(file.buffer);
+
+    // Validate the actual file type
+    if (
+      !detectedType ||
+      !['image/jpeg', 'image/png', 'image/webp'].includes(detectedType.mime)
+    ) {
+      throw new BadRequestException(
+        'Only JPEG, PNG, JPG, and WebP images are allowed',
+      );
     }
 
     const category = await this.categoryService.createCategory(data, file);
@@ -110,6 +134,19 @@ export class CategoryController {
     return {
       message: 'Category permanently deleted successfully',
       category,
+    };
+  }
+
+  // Get categories for admin with pagination and search
+  @Get('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER_ROLES.ADMIN)
+  async getAdminCategories(@Query() query: GetAdminCategoriesDto) {
+    const result = await this.categoryService.getAdminCategories(query);
+
+    return {
+      message: 'Admin categories retrieved successfully',
+      ...result,
     };
   }
 

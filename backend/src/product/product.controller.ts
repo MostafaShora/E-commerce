@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 
 import type { Request } from 'express';
+import { fileTypeFromBuffer } from 'file-type';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -30,6 +31,8 @@ import { GetProductBySlugDto } from './dto/get-product-by-slug.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetProductsAdminDto } from './dto/get-products-admin.dto';
+
+const MAX_PRODUCT_IMAGE_SIZE = 5 * 1024 * 1024;
 
 @Controller('product')
 export class ProductController {
@@ -50,6 +53,25 @@ export class ProductController {
   ) {
     if (!file) {
       throw new BadRequestException('Image file is missing');
+    }
+
+    if (file.size > MAX_PRODUCT_IMAGE_SIZE) {
+      throw new BadRequestException('Image size must not exceed 5MB');
+    }
+
+    const detectedType = await fileTypeFromBuffer(file.buffer);
+
+    if (
+      !detectedType ||
+      !['image/jpeg', 'image/png', 'image/webp'].includes(detectedType.mime)
+    ) {
+      throw new BadRequestException(
+        'Only JPEG, PNG, JPG, and WebP images are allowed',
+      );
+    }
+
+    if (file.size > MAX_PRODUCT_IMAGE_SIZE) {
+      throw new BadRequestException('Image size must not exceed 5MB');
     }
 
     const user = req.user as { _id: string };

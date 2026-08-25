@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -22,6 +23,10 @@ import { uploadImageToCloudinary } from '../common/utils/cloudinary.util';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetProductsAdminDto } from './dto/get-products-admin.dto';
 import { deleteImageFromCloudinary } from '../common/utils/cloudinary.util';
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 @Injectable()
 export class ProductService {
@@ -52,7 +57,11 @@ export class ProductService {
     };
 
     // Category filter
-    if (categoryId && Types.ObjectId.isValid(categoryId)) {
+    if (categoryId) {
+      if (!Types.ObjectId.isValid(categoryId)) {
+        throw new BadRequestException('Invalid category ID');
+      }
+
       filter.categoryId = new Types.ObjectId(categoryId);
     }
 
@@ -82,17 +91,19 @@ export class ProductService {
     }
 
     // Keyword search
-    if (keyword) {
+    if (keyword?.trim()) {
+      const escapedKeyword = escapeRegex(keyword.trim());
+
       filter.$or = [
         {
           name: {
-            $regex: keyword,
+            $regex: escapedKeyword,
             $options: 'i',
           },
         },
         {
           description: {
-            $regex: keyword,
+            $regex: escapedKeyword,
             $options: 'i',
           },
         },
@@ -153,6 +164,12 @@ export class ProductService {
   }
 
   async getDeals(limit: number) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new BadRequestException(
+        'Limit must be an integer between 1 and 100',
+      );
+    }
+
     const products = await this.productModel
       .find({
         isActive: true,
@@ -207,60 +224,80 @@ export class ProductService {
   }
 
   // Create product
+  // Create product
   async createProduct(
     userId: string,
     data: CreateProductDto,
     file?: Express.Multer.File,
   ) {
-    // Validate userId
     if (!Types.ObjectId.isValid(userId)) {
       throw new BadRequestException('Invalid user ID');
     }
 
-    // Validate categoryId
     if (!Types.ObjectId.isValid(data.categoryId)) {
       throw new BadRequestException('Invalid category ID');
     }
 
-    // Check category exists
     const category = await this.categoryModel.findById(data.categoryId).lean();
 
     if (!category) {
       throw new BadRequestException('Category not found');
     }
 
-    // Upload image to Cloudinary
-    let images: {
+    let uploadedImage: {
       url: string;
       publicId: string;
-    }[] = [];
+    } | null = null;
 
-    if (file) {
-      const uploadedImage = await uploadImageToCloudinary(
-        file,
-        'ecommerce/products',
-      );
+    try {
+      // Upload image to Cloudinary
+      if (file) {
+        uploadedImage = await uploadImageToCloudinary(
+          file,
+          'ecommerce/products',
+        );
+      }
 
-      images = [
-        {
-          url: uploadedImage.url,
-          publicId: uploadedImage.publicId,
-        },
-      ];
+      // Create product
+      const product = await this.productModel.create({
+        ...data,
+        userId: new Types.ObjectId(userId),
+        categoryId: new Types.ObjectId(data.categoryId),
+        images: uploadedImage
+          ? [
+              {
+                url: uploadedImage.url,
+                publicId: uploadedImage.publicId,
+              },
+            ]
+          : [],
+      });
+
+      return product;
+    } catch (error) {
+      // Cleanup Cloudinary image if MongoDB creation failed
+      if (uploadedImage?.publicId) {
+        try {
+          await deleteImageFromCloudinary(uploadedImage.publicId);
+        } catch (cleanupError) {
+          console.error(
+            'Failed to cleanup Cloudinary image after product creation failed:',
+            cleanupError,
+          );
+        }
+      }
+
+      // Duplicate slug
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        (error as { code?: number }).code === 11000
+      ) {
+        throw new ConflictException('A product with this name already exists');
+      }
+
+      throw error;
     }
-
-    // Create product
-    const product = await this.productModel.create({
-      ...data,
-
-      userId: new Types.ObjectId(userId),
-
-      categoryId: new Types.ObjectId(data.categoryId),
-
-      images,
-    });
-
-    return product;
   }
 
   async updateProduct(productId: string, data: UpdateProductDto) {

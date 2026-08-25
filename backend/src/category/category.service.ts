@@ -22,6 +22,8 @@ import {
   deleteImageFromCloudinary,
 } from '../common/utils/cloudinary.util';
 
+import { GetAdminCategoriesDto } from './dto/get-admin-categories.dto';
+
 @Injectable()
 export class CategoryService {
   constructor(
@@ -31,6 +33,15 @@ export class CategoryService {
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,
   ) {}
+
+  private isDuplicateKeyError(error: unknown): boolean {
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: number }).code === 11000
+    );
+  }
 
   async getCategories() {
     const categories = await this.categoryModel
@@ -47,15 +58,73 @@ export class CategoryService {
     };
   }
 
+  async getAdminCategories(query: GetAdminCategoriesDto) {
+    const { search, page = 1, limit = 20 } = query;
+
+    const filter: Record<string, unknown> = {};
+
+    if (search) {
+      filter.name = {
+        $regex: search,
+        $options: 'i',
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [categories, total] = await Promise.all([
+      this.categoryModel
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      this.categoryModel.countDocuments(filter),
+    ]);
+
+    const categoriesWithProductsCount = await Promise.all(
+      categories.map(async (category) => {
+        const productsCount = await this.productModel.countDocuments({
+          categoryId: category._id,
+        });
+
+        return {
+          ...category,
+          productsCount,
+        };
+      }),
+    );
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      categories: categoriesWithProductsCount,
+
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: skip + limit < total,
+        hasPrevPage: page > 1,
+      },
+    };
+  }
+
   async createCategory(data: CreateCategoryDto, file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('Image file is required');
     }
 
-    const slug = slugify(data.name, {
+    const slug = slugify(data.name.trim(), {
       lower: true,
       strict: true,
     });
+
+    if (!slug) {
+      throw new BadRequestException('Category name must produce a valid slug');
+    }
 
     const existingCategory = await this.categoryModel.findOne({
       slug,
@@ -174,6 +243,10 @@ export class CategoryService {
         await deleteImageFromCloudinary(newImage.publicId);
       }
 
+      if (this.isDuplicateKeyError(error)) {
+        throw new ConflictException('Category already exists');
+      }
+
       throw error;
     }
 
@@ -260,13 +333,22 @@ export class CategoryService {
 
     const imagePublicId = category.image?.publicId;
 
-    if (imagePublicId) {
-      await deleteImageFromCloudinary(imagePublicId);
-    }
-
+    // Delete from MongoDB first
     await this.categoryModel.deleteOne({
       _id: category._id,
     });
+
+    // Cloudinary cleanup should not prevent MongoDB deletion
+    if (imagePublicId) {
+      try {
+        await deleteImageFromCloudinary(imagePublicId);
+      } catch (error) {
+        console.error(
+          `Failed to delete category image from Cloudinary: ${imagePublicId}`,
+          error,
+        );
+      }
+    }
 
     return category;
   }

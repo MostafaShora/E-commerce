@@ -10,6 +10,8 @@ import {
   IsInt,
 } from 'class-validator';
 
+import { Type } from 'class-transformer';
+
 export class CreateProductDto {
   @IsMongoId()
   categoryId: string;
@@ -26,11 +28,13 @@ export class CreateProductDto {
   @IsString({ each: true })
   images?: string[];
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   originalPrice: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @Max(100)
@@ -45,6 +49,7 @@ export class CreateProductDto {
   unit?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(0)
   stockCount?: number;
