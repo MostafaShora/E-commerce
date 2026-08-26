@@ -1,1 +1,45 @@
-<p>admin-layout works!</p>
+<div class="min-h-screen bg-slate-100 text-slate-900">
+  <header class="border-b border-slate-200 bg-white">
+    <div
+      class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8"
+    >
+      <div>
+        <a routerLink="/admin" class="text-xl font-bold">Nexora Admin</a>
+        <p class="text-xs text-slate-500">Store management</p>
+      </div>
+      <div class="flex items-center gap-4 text-sm">
+        <a routerLink="/" class="text-slate-600 hover:text-slate-900">Storefront</a
+        ><button type="button" (click)="logout()" class="font-medium text-slate-700 underline">
+          Log out
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[210px_1fr] lg:px-8">
+    <nav class="flex gap-2 overflow-x-auto lg:flex-col">
+      <a
+        routerLink="/admin"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="bg-slate-900 text-white"
+        class="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200"
+        >Dashboard</a
+      ><a
+        routerLink="/admin/products"
+        routerLinkActive="bg-slate-900 text-white"
+        class="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200"
+        >Products</a
+      ><a
+        routerLink="/admin/categories"
+        routerLinkActive="bg-slate-900 text-white"
+        class="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200"
+        >Categories</a
+      ><a
+        routerLink="/admin/orders"
+        routerLinkActive="bg-slate-900 text-white"
+        class="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200"
+        >Orders</a
+      >
+    </nav>
+    <main class="min-w-0"><router-outlet /></main>
+  </div>
+</div>

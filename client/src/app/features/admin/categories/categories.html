@@ -1,0 +1,81 @@
+<div class="flex flex-col gap-6">
+  <header>
+    <h1 class="text-2xl font-semibold">Categories</h1>
+    <p class="mt-1 text-sm text-slate-600">Manage active category records.</p>
+  </header>
+  @if (error()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <span>{{ error() }}</span
+      ><button type="button" (click)="load()" class="ml-3 underline">Retry</button>
+    </div>
+  }
+  @if (editing(); as id) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="save()"
+      class="grid gap-3 rounded-xl border border-slate-200 bg-white p-5 sm:grid-cols-2"
+    >
+      <h2 class="text-lg font-semibold sm:col-span-2">Edit category</h2>
+      <label class="flex flex-col gap-1 text-sm"
+        >Name<input class="rounded-lg border px-3 py-2" formControlName="name" /></label
+      ><label class="flex flex-col gap-1 text-sm"
+        >Description<input
+          class="rounded-lg border px-3 py-2"
+          formControlName="description" /></label
+      ><label class="flex items-center gap-2 text-sm"
+        ><input type="checkbox" formControlName="isActive" /> Active</label
+      >
+      <div class="flex gap-3 sm:col-span-2">
+        <button type="submit" class="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white">
+          Save</button
+        ><button type="button" (click)="cancel()" class="rounded-lg border px-4 py-2 text-sm">
+          Cancel
+        </button>
+      </div>
+    </form>
+  }
+  @if (loading()) {
+    <div class="h-64 animate-pulse rounded-xl bg-slate-200"></div>
+  } @else if (categories().length === 0) {
+    <div
+      class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-600"
+    >
+      No categories found.
+    </div>
+  } @else {
+    <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="w-full min-w-[620px] text-left text-sm">
+        <thead class="border-b text-xs uppercase text-slate-500">
+          <tr>
+            <th class="px-4 py-3">Category</th>
+            <th class="px-4 py-3">Products</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y">
+          @for (category of categories(); track category._id) {
+            <tr>
+              <td class="px-4 py-3">
+                <p class="font-medium">{{ category.name }}</p>
+                <p class="text-xs text-slate-500">{{ category.slug }}</p>
+              </td>
+              <td class="px-4 py-3">{{ category.productsCount }}</td>
+              <td class="px-4 py-3">{{ category.isActive ? 'Active' : 'Inactive' }}</td>
+              <td class="px-4 py-3">
+                <div class="flex gap-3">
+                  <button type="button" (click)="edit(category)" class="underline">Edit</button
+                  ><button type="button" (click)="toggle(category)" class="underline">
+                    {{ category.isActive ? 'Deactivate' : 'Activate' }}</button
+                  ><button type="button" (click)="remove(category)" class="text-red-600 underline">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+</div>

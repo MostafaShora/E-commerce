@@ -6,7 +6,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card';
-import type { CatalogProduct, CatalogProductsPagination, ProductSort } from '../../../shared/models/catalog';
+import type {
+  CatalogProduct,
+  CatalogProductsPagination,
+  ProductSort,
+} from '../../../shared/models/catalog';
 import { CatalogService } from '../../products/services/catalog';
 
 @Component({
@@ -33,16 +37,18 @@ export class SearchPage {
   readonly sort = new FormControl<ProductSort>('best-match', { nonNullable: true });
 
   constructor() {
-    this.route.queryParamMap.pipe(
-      map((params) => (params.get('q') ?? '').trim()),
-      distinctUntilChanged(),
-      switchMap((query) => {
-        this.query.set(query);
-        this.searchForm.controls.query.setValue(query, { emitEvent: false });
-        return this.loadResults(query, 1);
-      }),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe();
+    this.route.queryParamMap
+      .pipe(
+        map((params) => (params.get('q') ?? '').trim()),
+        distinctUntilChanged(),
+        switchMap((query) => {
+          this.query.set(query);
+          this.searchForm.controls.query.setValue(query, { emitEvent: false });
+          return this.loadResults(query, 1);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
 
     this.sort.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (this.query()) this.loadResults(this.query(), 1).subscribe();
@@ -75,21 +81,23 @@ export class SearchPage {
 
     this.loading.set(true);
     this.errorMessage.set(null);
-    return this.catalogService.getProducts({ keyword: query, sort: this.sort.value, page, limit: 20 }).pipe(
-      catchError(() => {
-        this.products.set([]);
-        this.pagination.set(null);
-        this.errorMessage.set('Unable to search products right now.');
-        return of(null);
-      }),
-      map((response) => {
-        if (response) {
-          this.products.set(response.products ?? []);
-          this.pagination.set(response.pagination);
-        }
-        this.loading.set(false);
-        return response;
-      }),
-    );
+    return this.catalogService
+      .getProducts({ keyword: query, sort: this.sort.value, page, limit: 20 })
+      .pipe(
+        catchError(() => {
+          this.products.set([]);
+          this.pagination.set(null);
+          this.errorMessage.set('Unable to search products right now.');
+          return of(null);
+        }),
+        map((response) => {
+          if (response) {
+            this.products.set(response.products ?? []);
+            this.pagination.set(response.pagination);
+          }
+          this.loading.set(false);
+          return response;
+        }),
+      );
   }
 }

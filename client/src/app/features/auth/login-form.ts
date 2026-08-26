@@ -24,7 +24,9 @@ import type { LoginRequest } from '../../core/auth/auth';
           formControlName="email"
           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           placeholder="you@example.com"
-          [class.border-red-500]="emailControl.invalid && (emailControl.touched || emailControl.dirty)"
+          [class.border-red-500]="
+            emailControl.invalid && (emailControl.touched || emailControl.dirty)
+          "
         />
         @if (emailControl.invalid && (emailControl.touched || emailControl.dirty)) {
           <div class="mt-1 text-xs text-red-600">Please enter a valid email.</div>
@@ -32,14 +34,18 @@ import type { LoginRequest } from '../../core/auth/auth';
       </div>
 
       <div>
-        <label for="login-password" class="mb-1 block text-sm font-medium text-slate-700">Password</label>
+        <label for="login-password" class="mb-1 block text-sm font-medium text-slate-700"
+          >Password</label
+        >
         <input
           id="login-password"
           type="password"
           formControlName="password"
           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           placeholder="••••••••"
-          [class.border-red-500]="passwordControl.invalid && (passwordControl.touched || passwordControl.dirty)"
+          [class.border-red-500]="
+            passwordControl.invalid && (passwordControl.touched || passwordControl.dirty)
+          "
         />
         @if (passwordControl.invalid && (passwordControl.touched || passwordControl.dirty)) {
           <div class="mt-1 text-xs text-red-600">Password is required.</div>

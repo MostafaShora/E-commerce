@@ -31,7 +31,7 @@ describe('AuthService', () => {
     const req = httpMock.expectOne('/api/auth/login');
     expect(req.request.method).toBe('POST');
     req.flush({ message: 'User logged in successfully', user: { _id: '1', name: 'User', email: 'user@example.com', role: 'user' } });
-    
+
     const cartRequest = httpMock.expectOne('/api/cart');
     expect(cartRequest.request.method).toBe('GET');
     cartRequest.flush({ message: 'Cart retrieved successfully', cart: { items: [] }, subtotal: 0, deliveryFee: 0, tax: 0, orderTotal: 0, freeDeliveryThreshold: 20 });
@@ -43,7 +43,7 @@ describe('AuthService', () => {
     const req = httpMock.expectOne('/api/auth/register');
     expect(req.request.method).toBe('POST');
     req.flush({ message: 'User registered successfully', user: { _id: '2', name: 'User', email: 'user@example.com', role: 'user' } });
-    
+
     const cartRequest = httpMock.expectOne('/api/cart');
     expect(cartRequest.request.method).toBe('GET');
     cartRequest.flush({ message: 'Cart retrieved successfully', cart: { items: [] }, subtotal: 0, deliveryFee: 0, tax: 0, orderTotal: 0, freeDeliveryThreshold: 20 });

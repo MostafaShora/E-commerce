@@ -22,12 +22,11 @@ export class CatalogService {
   constructor(private readonly http: HttpClient) {}
 
   getProducts(query: CatalogQuery): Observable<CatalogProductsResponse> {
-    let params = new HttpParams()
-      .set('page', String(query.page))
-      .set('limit', String(query.limit));
+    let params = new HttpParams().set('page', String(query.page)).set('limit', String(query.limit));
 
     if (query.categoryId) params = params.set('categoryId', query.categoryId);
-    if (query.hasDiscount !== undefined) params = params.set('hasDiscount', String(query.hasDiscount));
+    if (query.hasDiscount !== undefined)
+      params = params.set('hasDiscount', String(query.hasDiscount));
     if (query.inStock !== undefined) params = params.set('inStock', String(query.inStock));
     if (query.minPrice !== undefined) params = params.set('minPrice', String(query.minPrice));
     if (query.maxPrice !== undefined) params = params.set('maxPrice', String(query.maxPrice));

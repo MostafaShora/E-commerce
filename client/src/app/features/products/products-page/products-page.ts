@@ -53,23 +53,28 @@ export class ProductsPage {
 
   constructor() {
     this.loadCategories();
-    this.route.queryParamMap.pipe(
-      map((params) => params.get('category') ?? 'all'),
-      distinctUntilChanged(),
-      switchMap((category) => {
-        this.selectedCategory.set(category);
-        this.currentCategoryName.set(
-          this.categories().find((item) => item._id === category)?.name ??
-            (category === 'all' ? 'All' : 'Category'),
-        );
-        return this.loadProducts({ categoryId: category === 'all' ? undefined : category, page: 1 });
-      }),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe();
+    this.route.queryParamMap
+      .pipe(
+        map((params) => params.get('category') ?? 'all'),
+        distinctUntilChanged(),
+        switchMap((category) => {
+          this.selectedCategory.set(category);
+          this.currentCategoryName.set(
+            this.categories().find((item) => item._id === category)?.name ??
+              (category === 'all' ? 'All' : 'Category'),
+          );
+          return this.loadProducts({
+            categoryId: category === 'all' ? undefined : category,
+            page: 1,
+          });
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
 
-    this.filters.valueChanges.pipe(
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(() => this.loadProducts({ page: 1 }));
+    this.filters.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadProducts({ page: 1 }));
   }
 
   applyPriceFilter(): void {
@@ -113,18 +118,21 @@ export class ProductsPage {
 
   private loadCategories(): void {
     this.categoriesLoading.set(true);
-    this.homeService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        this.categories.set(response.categories ?? []);
-        const category = this.selectedCategory();
-        this.currentCategoryName.set(
-          this.categories().find((item) => item._id === category)?.name ??
-            (category === 'all' ? 'All' : 'Category'),
-        );
-      },
-      error: () => this.categoriesError.set('Unable to load categories right now.'),
-      complete: () => this.categoriesLoading.set(false),
-    });
+    this.homeService
+      .getCategories()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.categories.set(response.categories ?? []);
+          const category = this.selectedCategory();
+          this.currentCategoryName.set(
+            this.categories().find((item) => item._id === category)?.name ??
+              (category === 'all' ? 'All' : 'Category'),
+          );
+        },
+        error: () => this.categoriesError.set('Unable to load categories right now.'),
+        complete: () => this.categoriesLoading.set(false),
+      });
   }
 
   private loadProducts(overrides: Partial<CatalogQuery> = {}) {

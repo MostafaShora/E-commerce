@@ -19,10 +19,9 @@ export class HomeService {
   getDeals(limit = 6): Observable<{ message: string; products: CatalogProduct[] }> {
     const params = new HttpParams().set('limit', String(limit));
 
-    return this.http.get<{ message: string; products: CatalogProduct[] }>(
-      '/api/product/deals',
-      { params },
-    );
+    return this.http.get<{ message: string; products: CatalogProduct[] }>('/api/product/deals', {
+      params,
+    });
   }
 
   getProducts(limit = 12): Observable<CatalogProductsResponse> {

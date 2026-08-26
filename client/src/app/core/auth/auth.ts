@@ -50,7 +50,7 @@ export class AuthService {
   constructor(
     private readonly http: HttpClient,
     private readonly cartService: CartService,
-  ) {}
+  ) { }
 
   private readonly httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -153,9 +153,9 @@ export class AuthService {
   private setAuthenticatedUser(user: AuthUser | null): void {
     const nextUser = user
       ? {
-          ...user,
-          isAdmin: user.role === 'admin' || user.isAdmin === true,
-        }
+        ...user,
+        isAdmin: user.role === 'admin' || user.isAdmin === true,
+      }
       : null;
 
     this.currentUser.set(nextUser);
