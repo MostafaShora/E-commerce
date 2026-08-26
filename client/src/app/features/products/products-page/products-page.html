@@ -1,4 +1,82 @@
-<section class="rounded-xl border border-slate-200 bg-white px-6 py-10 text-center shadow-sm">
-	<h1 class="text-2xl font-semibold text-slate-900">Products</h1>
-	<p class="mt-3 text-slate-600">This is a placeholder storefront catalog route for the Phase 2A migration.</p>
-</section>
+<div class="flex flex-col gap-6 px-4 py-6">
+	<header>
+		<h1 class="text-2xl font-semibold text-slate-900">All products</h1>
+		<p class="mt-1 text-sm text-slate-600">Browse groceries by category, price, and availability.</p>
+	</header>
+
+	<div class="grid gap-8 lg:grid-cols-[240px_1fr]">
+		<aside class="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
+			<section class="flex flex-col gap-3">
+				<h2 class="text-sm font-semibold text-slate-900">Categories</h2>
+				@if (categoriesLoading()) {
+					@for (item of [1, 2, 3, 4, 5, 6]; track item) {
+						<div class="h-9 animate-pulse rounded-lg bg-slate-200"></div>
+					}
+				} @else {
+					<button type="button" (click)="selectCategory('all')" [class]="selectedCategory() === 'all' ? 'rounded-lg bg-slate-100 px-3 py-2 text-left text-sm font-medium text-slate-900' : 'rounded-lg px-3 py-2 text-left text-sm text-slate-600 hover:bg-slate-100'">All</button>
+					@for (category of categories(); track category._id) {
+						<button type="button" (click)="selectCategory(category._id)" [class]="selectedCategory() === category._id ? 'rounded-lg bg-slate-100 px-3 py-2 text-left text-sm font-medium text-slate-900' : 'rounded-lg px-3 py-2 text-left text-sm text-slate-600 hover:bg-slate-100'">{{ category.name }}</button>
+					}
+				}
+			</section>
+
+			<form [formGroup]="filters" class="flex flex-col gap-3">
+				<h2 class="text-sm font-semibold text-slate-900">Filters</h2>
+				<label class="flex items-center gap-3 text-sm text-slate-700"><input type="checkbox" formControlName="dealsOnly" /> Deals only</label>
+				<label class="flex items-center gap-3 text-sm text-slate-700"><input type="checkbox" formControlName="inStockOnly" /> In stock</label>
+			</form>
+
+			<form [formGroup]="priceInputs" (ngSubmit)="applyPriceFilter()" class="flex flex-col gap-3">
+				<h2 class="text-sm font-semibold text-slate-900">Price range</h2>
+				<div class="grid grid-cols-[1fr_1fr_auto] gap-2">
+					<input class="min-w-0 rounded-lg border border-slate-300 px-3 py-2 text-sm" type="number" min="0" placeholder="Min" formControlName="min" />
+					<input class="min-w-0 rounded-lg border border-slate-300 px-3 py-2 text-sm" type="number" min="0" placeholder="Max" formControlName="max" />
+					<button class="rounded-lg bg-slate-900 px-3 text-sm font-medium text-white" type="submit">Apply</button>
+				</div>
+			</form>
+
+			@if (categoriesError()) { <p class="text-sm text-red-600">{{ categoriesError() }}</p> }
+		</aside>
+
+		<section class="flex min-w-0 flex-col gap-5">
+			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<div>
+					<h2 class="text-xl font-semibold text-slate-900">{{ currentCategoryName() }}</h2>
+					<p class="text-sm text-slate-600">{{ loading() ? 'Loading...' : (pagination()?.total ?? 0) + ' products' }}</p>
+				</div>
+				<div class="flex items-center gap-3 text-sm">
+					<button type="button" (click)="resetFilters()" class="text-slate-600 underline-offset-4 hover:underline">Reset</button>
+					<label class="flex items-center gap-2 font-medium text-slate-900">Sort by
+						<select class="rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal" formControlName="sort" [formGroup]="filters">
+							<option value="best-match">Best Match</option>
+							<option value="price-low">Price: low to high</option>
+							<option value="price-high">Price: high to low</option>
+							<option value="highest-rating">Highest rated</option>
+						</select>
+					</label>
+				</div>
+			</div>
+
+			@if (errorMessage()) {
+				<div class="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"><span>{{ errorMessage() }}</span><button type="button" (click)="retryProducts()" class="font-medium underline">Retry</button></div>
+			} @else if (loading()) {
+				<div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 xl:grid-cols-4">
+					@for (item of [1, 2, 3, 4, 5, 6, 7, 8]; track item) { <div class="flex flex-col gap-2"><div class="aspect-square animate-pulse rounded-xl bg-slate-200"></div><div class="h-5 w-16 animate-pulse rounded bg-slate-200"></div><div class="h-4 w-full animate-pulse rounded bg-slate-200"></div></div> }
+				</div>
+			} @else if (products().length === 0) {
+				<div class="flex flex-col items-center justify-center py-12 text-center text-slate-600"><p class="text-lg font-medium text-slate-900">No products found</p><p class="text-sm">Try modifying your category or filter selection.</p><button type="button" (click)="resetFilters()" class="mt-4 font-medium underline">Clear filters</button></div>
+			} @else {
+				<div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 xl:grid-cols-4">
+					@for (product of products(); track product._id) { <app-product-card [product]="product" /> }
+				</div>
+				@if (pagination(); as page) {
+					<nav class="flex items-center justify-between border-t border-slate-200 pt-5" aria-label="Product pagination">
+						<button type="button" (click)="goToPage(page.page - 1)" [disabled]="!page.hasPrevPage" class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
+						<span class="text-sm text-slate-600">Page {{ page.page }} of {{ page.totalPages }}</span>
+						<button type="button" (click)="goToPage(page.page + 1)" [disabled]="!page.hasNextPage" class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40">Next</button>
+					</nav>
+				}
+			}
+		</section>
+	</div>
+</div>

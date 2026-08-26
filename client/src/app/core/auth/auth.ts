@@ -1,8 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 
 import { normalizeApiError, type ApiError } from '../api/api-error';
+import { CartService } from '../cart/cart';
 
 export type AuthRole = 'user' | 'admin';
 
@@ -46,7 +47,10 @@ export class AuthService {
   readonly isLoading = signal<boolean>(false);
   readonly authError = signal<ApiError | null>(null);
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly cartService: CartService,
+  ) {}
 
   private readonly httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -61,10 +65,14 @@ export class AuthService {
       .post<AuthResponse>('/api/auth/login', data, this.httpOptions)
       .pipe(
         tap((response) => this.setAuthenticatedUser(response.user)),
-        map((response) => {
-          this.isLoading.set(false);
-          return response;
+        switchMap((response) => {
+          this.cartService.resetSessionState();
+          return this.cartService.loadCart().pipe(
+            map(() => response),
+            catchError(() => of(response)),
+          );
         }),
+        tap(() => this.isLoading.set(false)),
         catchError((error: HttpErrorResponse) => {
           this.authError.set(normalizeApiError(error));
           this.clearAuthenticatedUser();
@@ -82,10 +90,14 @@ export class AuthService {
       .post<AuthResponse>('/api/auth/register', data, this.httpOptions)
       .pipe(
         tap((response) => this.setAuthenticatedUser(response.user)),
-        map((response) => {
-          this.isLoading.set(false);
-          return response;
+        switchMap((response) => {
+          this.cartService.resetSessionState();
+          return this.cartService.loadCart().pipe(
+            map(() => response),
+            catchError(() => of(response)),
+          );
         }),
+        tap(() => this.isLoading.set(false)),
         catchError((error: HttpErrorResponse) => {
           this.authError.set(normalizeApiError(error));
           this.clearAuthenticatedUser();
@@ -102,7 +114,10 @@ export class AuthService {
     return this.http
       .post<{ message: string }>('/api/auth/logout', {}, this.httpOptions)
       .pipe(
-        tap(() => this.clearAuthenticatedUser()),
+        tap(() => {
+          this.clearAuthenticatedUser();
+          this.cartService.resetSessionState();
+        }),
         map((response) => {
           this.isLoading.set(false);
           return response;

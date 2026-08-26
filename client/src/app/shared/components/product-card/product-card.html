@@ -43,5 +43,14 @@
       <span>{{ product().unit }}</span>
       <span [class]="stockStatus().tone">{{ stockStatus().text }}</span>
     </div>
+
+    <button
+      type="button"
+      (click)="addToCart()"
+      [disabled]="product().stockCount <= 0 || cart.saving()"
+      class="mt-1 w-full rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      {{ cart.saving() ? 'Saving...' : 'Add to cart' }}
+    </button>
   </div>
 </article>

@@ -29,17 +29,36 @@ export type CatalogProduct = {
   ratingAverage: number;
   reviewCount: number;
   description?: string;
+  categoryId?: string | {
+    _id: string;
+    name: string;
+    slug: string;
+  };
 };
 
 export type CatalogProductsResponse = {
   message: string;
   products: CatalogProduct[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
+  pagination: CatalogProductsPagination;
 };
+
+export type ProductDetailResponse = {
+  message: string;
+  product: CatalogProduct;
+  relatedProducts: CatalogProduct[];
+};
+
+export type CatalogProductsPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+
+export type ProductSort =
+  | 'best-match'
+  | 'price-low'
+  | 'price-high'
+  | 'highest-rating';

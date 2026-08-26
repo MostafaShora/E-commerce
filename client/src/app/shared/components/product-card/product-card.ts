@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { CartService } from '../../../core/cart/cart';
 import type { CatalogProduct } from '../../../shared/models/catalog';
 
 @Component({
@@ -11,6 +12,7 @@ import type { CatalogProduct } from '../../../shared/models/catalog';
   templateUrl: './product-card.html',
 })
 export class ProductCardComponent {
+  readonly cart = inject(CartService);
   readonly product = input.required<CatalogProduct>();
 
   readonly productPath = computed(() => `/products/${this.product().slug}`);
@@ -68,5 +70,9 @@ export class ProductCardComponent {
       dollars: whole.toString(),
       cents,
     };
+  }
+
+  addToCart(): void {
+    this.cart.addProduct(this.product()._id).subscribe();
   }
 }

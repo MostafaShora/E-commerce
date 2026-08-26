@@ -1,1 +1,39 @@
-<p>search-page works!</p>
+<div class="flex flex-col gap-8 px-4 py-6">
+	<section class="flex flex-col gap-4">
+		<p class="text-sm font-medium text-slate-500">Search Instant</p>
+		<form [formGroup]="searchForm" (ngSubmit)="submitSearch()" class="flex max-w-2xl gap-2">
+			<input class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900" type="search" formControlName="query" placeholder="Search groceries" aria-label="Search groceries" />
+			<button type="submit" class="rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white">Search</button>
+		</form>
+		<div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+			<div>
+				<h1 class="text-2xl font-semibold text-slate-900">{{ query() ? 'Search results for "' + query() + '"' : 'Search groceries' }}</h1>
+				<p class="mt-1 text-sm text-slate-600">{{ query() ? (loading() ? 'Searching...' : (pagination()?.total ?? 0) + ' products found') : 'Type a product or category to begin.' }}</p>
+			</div>
+			@if (query() && !loading() && products().length > 0) {
+				<label class="flex items-center gap-2 text-sm font-medium text-slate-900">Sort by
+					<select class="rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal" [formControl]="sort">
+						<option value="best-match">Best Match</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="highest-rating">Highest rated</option>
+					</select>
+				</label>
+			}
+		</div>
+	</section>
+
+	@if (!query()) {
+		<section class="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center"><p class="text-lg font-medium text-slate-900">Start with a product or category</p><p class="mt-2 text-sm text-slate-600">Try snacks, produce, pantry staples, or a favorite grocery item.</p><a routerLink="/products" class="mt-5 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white">Browse all products</a></section>
+	} @else if (errorMessage()) {
+		<section class="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-red-700"><p class="font-medium">{{ errorMessage() }}</p><button type="button" (click)="retry()" class="mt-3 underline">Retry</button></section>
+	} @else if (loading()) {
+		<div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+			@for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; track item) { <div class="flex flex-col gap-2"><div class="aspect-square animate-pulse rounded-xl bg-slate-200"></div><div class="h-5 w-16 animate-pulse rounded bg-slate-200"></div><div class="h-4 w-full animate-pulse rounded bg-slate-200"></div></div> }
+		</div>
+	} @else if (products().length === 0) {
+		<section class="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center"><p class="text-lg font-medium text-slate-900">No results for "{{ query() }}"</p><p class="mt-2 text-sm text-slate-600">Check the spelling or browse all products instead.</p><a routerLink="/products" class="mt-5 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white">Browse all products</a></section>
+	} @else {
+		<div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">@for (product of products(); track product._id) { <app-product-card [product]="product" /> }</div>
+		@if (pagination(); as page) {
+			<nav class="flex items-center justify-between border-t border-slate-200 pt-5" aria-label="Search pagination"><button type="button" (click)="goToPage(page.page - 1)" [disabled]="!page.hasPrevPage" class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40">Previous</button><span class="text-sm text-slate-600">Page {{ page.page }} of {{ page.totalPages }}</span><button type="button" (click)="goToPage(page.page + 1)" [disabled]="!page.hasNextPage" class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40">Next</button></nav>
+		}
+	}
+</div>

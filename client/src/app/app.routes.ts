@@ -15,6 +15,26 @@ const productDetailPlaceholder = () =>
     (m) => m.ProductDetailPage,
   );
 
+const searchPage = () =>
+  import('./features/search/search-page/search-page').then(
+    (m) => m.SearchPage,
+  );
+
+const cartPage = () =>
+  import('./features/cart/cart-page/cart-page').then(
+    (m) => m.CartPageComponent,
+  );
+
+const addressesPage = () =>
+  import('./features/addresses/addresses-page/addresses-page').then(
+    (m) => m.AddressesPageComponent,
+  );
+
+const checkoutPage = () =>
+  import('./features/checkout/checkout-page/checkout-page').then(
+    (m) => m.CheckoutPageComponent,
+  );
+
 export const routes: Routes = [
   {
     path: '',
@@ -32,11 +52,29 @@ export const routes: Routes = [
         path: 'products/:slug',
         loadComponent: productDetailPlaceholder,
       },
+      {
+        path: 'search-results',
+        loadComponent: searchPage,
+      },
+      {
+        path: 'cart',
+        loadComponent: cartPage,
+      },
+      {
+        path: 'checkout',
+        canActivate: [authGuard],
+        loadComponent: checkoutPage,
+      },
     ],
   },
   {
     path: 'auth',
     component: AuthPageComponent,
+  },
+  {
+    path: 'account/addresses',
+    canActivate: [authGuard],
+    loadComponent: addressesPage,
   },
   {
     path: 'account',

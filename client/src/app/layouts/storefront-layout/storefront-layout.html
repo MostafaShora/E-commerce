@@ -2,9 +2,15 @@
   <header class="border-b border-slate-200 bg-white">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
       <a routerLink="/" class="text-xl font-bold tracking-tight text-slate-900">Nexora</a>
+      <form [formGroup]="searchForm" (ngSubmit)="submitSearch()" class="mx-4 hidden max-w-sm flex-1 sm:flex">
+        <input class="min-w-0 flex-1 rounded-l-lg border border-slate-300 bg-white px-3 py-2 text-sm" type="search" formControlName="query" placeholder="Search groceries" aria-label="Search groceries" />
+        <button type="submit" class="rounded-r-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">Search</button>
+      </form>
       <nav class="flex items-center gap-5 text-sm font-medium text-slate-600">
         <a routerLink="/" class="hover:text-slate-900">Home</a>
         <a routerLink="/products" class="hover:text-slate-900">Products</a>
+        <a routerLink="/search-results" class="hover:text-slate-900">Search</a>
+        <a routerLink="/cart" class="hover:text-slate-900">Cart</a>
       </nav>
     </div>
   </header>
