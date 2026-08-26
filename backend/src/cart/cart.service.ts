@@ -240,8 +240,97 @@ export class CartService {
       userId: userObjectId,
     });
 
-    // User has no cart
-    if (!userCart) {
+    const mergedQuantities = new Map<string, number>();
+
+    // Add existing user cart items
+    if (userCart) {
+      for (const item of userCart.items) {
+        const productId = item.productId.toString();
+
+        mergedQuantities.set(
+          productId,
+          (mergedQuantities.get(productId) ?? 0) + item.quantity,
+        );
+      }
+    }
+
+    // Add guest cart items
+    for (const item of guestCart.items) {
+      const productId = item.productId.toString();
+
+      mergedQuantities.set(
+        productId,
+        (mergedQuantities.get(productId) ?? 0) + item.quantity,
+      );
+    }
+
+    // Nothing to merge
+    if (mergedQuantities.size === 0) {
+      await this.cartModel.deleteOne({
+        guestCartId,
+      });
+
+      return;
+    }
+
+    const productIds = Array.from(mergedQuantities.keys())
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+
+    // Get current active products and their stock
+    const products = await this.productModel
+      .find({
+        _id: {
+          $in: productIds,
+        },
+        isActive: true,
+      })
+      .select('_id stockCount')
+      .lean();
+
+    const stockMap = new Map(
+      products.map((product) => [product._id.toString(), product.stockCount]),
+    );
+
+    const mergedItems: {
+      productId: Types.ObjectId;
+      quantity: number;
+    }[] = [];
+
+    // Validate every product against current stock
+    for (const [productId, requestedQuantity] of mergedQuantities.entries()) {
+      const stockCount = stockMap.get(productId);
+
+      // Product does not exist, is inactive, or is out of stock
+      if (stockCount === undefined || stockCount <= 0) {
+        continue;
+      }
+
+      // Never allow cart quantity to exceed available stock
+      const quantity = Math.min(requestedQuantity, stockCount);
+
+      if (quantity > 0) {
+        mergedItems.push({
+          productId: new Types.ObjectId(productId),
+          quantity,
+        });
+      }
+    }
+
+    if (userCart) {
+      // Update existing user cart
+      await this.cartModel.updateOne(
+        {
+          userId: userObjectId,
+        },
+        {
+          $set: {
+            items: mergedItems,
+          },
+        },
+      );
+    } else {
+      // Transfer guest cart to user
       await this.cartModel.updateOne(
         {
           guestCartId,
@@ -249,6 +338,7 @@ export class CartService {
         {
           $set: {
             userId: userObjectId,
+            items: mergedItems,
           },
           $unset: {
             guestCartId: '',
@@ -259,44 +349,7 @@ export class CartService {
       return;
     }
 
-    const mergedItems = new Map<string, number>();
-
-    // Existing user cart
-    for (const item of userCart.items) {
-      mergedItems.set(item.productId.toString(), item.quantity);
-    }
-
-    // Guest cart
-    for (const item of guestCart.items) {
-      const productId = item.productId.toString();
-
-      const existing = mergedItems.get(productId);
-
-      if (existing) {
-        mergedItems.set(productId, existing + item.quantity);
-      } else {
-        mergedItems.set(productId, item.quantity);
-      }
-    }
-
-    const items = Array.from(mergedItems.entries()).map(
-      ([productId, quantity]) => ({
-        productId: new Types.ObjectId(productId),
-        quantity,
-      }),
-    );
-
-    await this.cartModel.updateOne(
-      {
-        userId: userObjectId,
-      },
-      {
-        $set: {
-          items,
-        },
-      },
-    );
-
+    // Guest cart is no longer needed after merge
     await this.cartModel.deleteOne({
       guestCartId,
     });

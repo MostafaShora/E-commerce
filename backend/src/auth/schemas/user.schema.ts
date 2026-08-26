@@ -13,6 +13,7 @@ export type UserDocument = HydratedDocument<User> & {
 
 @Schema({
   timestamps: true,
+  versionKey: false,
   toJSON: {
     transform(_doc, ret) {
       delete (ret as { password?: string }).password;
@@ -57,9 +58,9 @@ export class User {
 
   @Prop({
     type: String,
-    default: undefined,
+    default: null,
   })
-  avatar?: string;
+  avatar?: string | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

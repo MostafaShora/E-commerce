@@ -11,14 +11,18 @@ import { User, UserDocument } from './schemas/user.schema';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
+import { CartService } from '../cart/cart.service';
+
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+
+    private readonly cartService: CartService,
   ) {}
 
-  async register(data: RegisterDto) {
+  async register(data: RegisterDto, guestCartId: string | null) {
     const existingUser = await this.userModel.findOne({
       email: data.email,
     });
@@ -29,10 +33,12 @@ export class AuthService {
 
     const user = await this.userModel.create(data);
 
+    await this.cartService.mergeGuestCart(user._id.toString(), guestCartId);
+
     return user.toJSON();
   }
 
-  async login(data: LoginDto) {
+  async login(data: LoginDto, guestCartId: string | null) {
     const user = await this.userModel
       .findOne({
         email: data.email,
@@ -48,6 +54,8 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid email or password');
     }
+
+    await this.cartService.mergeGuestCart(user._id.toString(), guestCartId);
 
     return user.toJSON();
   }

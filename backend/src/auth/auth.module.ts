@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 
 import { User, UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { CartModule } from '../cart/cart.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     ]),
 
     PassportModule,
+    CartModule,
   ],
 
   controllers: [AuthController],

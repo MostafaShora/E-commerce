@@ -14,23 +14,27 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
-import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ENV } from '../config/env.config';
+
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   async register(
+    @Req() req: Request,
     @Body() data: RegisterDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = await this.authService.register(data);
+    const guestCartId = req.cookies?.instant_guest_cart_id ?? null;
+
+    const user = await this.authService.register(data, guestCartId);
+
+    if (guestCartId) {
+      res.clearCookie('instant_guest_cart_id');
+    }
 
     const token = jwt.sign(
       {
@@ -58,10 +62,17 @@ export class AuthController {
 
   @Post('login')
   async login(
+    @Req() req: Request,
     @Body() data: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = await this.authService.login(data);
+    const guestCartId = req.cookies?.instant_guest_cart_id ?? null;
+
+    const user = await this.authService.login(data, guestCartId);
+
+    if (guestCartId) {
+      res.clearCookie('instant_guest_cart_id');
+    }
 
     const token = jwt.sign(
       {
