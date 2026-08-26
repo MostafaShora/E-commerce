@@ -1,0 +1,36 @@
+@if (loading) {
+  <section class="rounded-xl bg-slate-100 px-4 py-4">
+    <div class="flex flex-col gap-6">
+      <div>
+        <div class="mb-2 h-7 w-48 animate-pulse rounded bg-slate-200"></div>
+        <div class="h-4 w-64 animate-pulse rounded bg-slate-200"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-6">
+        @for (item of [1,2,3,4]; track item) {
+          <div class="flex flex-col gap-2">
+            <div class="aspect-square w-full animate-pulse rounded-md bg-slate-200"></div>
+            <div class="h-5 w-16 animate-pulse rounded bg-slate-200"></div>
+            <div class="h-4 w-full animate-pulse rounded bg-slate-200"></div>
+            <div class="h-3 w-12 animate-pulse rounded bg-slate-200"></div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+} @else if (products.length > 0) {
+  <section class="rounded-xl bg-slate-100 px-4 py-4">
+    <div class="flex flex-col gap-6">
+      <div>
+        <h2 class="text-xl font-semibold text-slate-900 md:text-2xl">Today's deals</h2>
+        <p class="text-sm text-slate-600">Fresh savings picked for your grocery run.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-6">
+        @for (product of products; track product._id) {
+          <app-product-card [product]="product" />
+        }
+      </div>
+    </div>
+  </section>
+}
