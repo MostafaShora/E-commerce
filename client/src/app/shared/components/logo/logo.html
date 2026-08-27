@@ -1,0 +1,19 @@
+<a
+  [routerLink]="to"
+  class="flex items-center gap-2 font-medium"
+  [class]="className"
+>
+  <div class="size-7">
+    <img
+      src="/assets/logo.png"
+      alt="instant"
+      class="size-full object-contain"
+    />
+  </div>
+
+  @if (showText) {
+    <span class="text-[22px] font-semibold dark:text-white">
+      instantly
+    </span>
+  }
+</a>

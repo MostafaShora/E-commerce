@@ -8,13 +8,13 @@ import {
   Validators,
 } from '@angular/forms';
 
-import type { LoginRequest } from '../../../core/auth/auth';
+import type { LoginRequest } from '../../../core/auth/auth.models';
 
 @Component({
   selector: 'app-login-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `./login-form.html`,
+  templateUrl: './login-form.html',
 })
 export class LoginFormComponent {
   @Input() isSubmitting = false;

@@ -7,6 +7,7 @@ import { StorefrontLayout } from './layouts/storefront-layout/storefront-layout'
 import { adminGuard } from './core/guards/admin-guard';
 import { AdminLayout } from './layouts/admin-layout/admin-layout';
 import { AccountLayout } from './layouts/account-layout/account-layout';
+import { NotFoundComponent } from './features/not-found/not-found';
 
 const productsPlaceholder = () =>
   import('./features/products/products-page/products-page').then((m) => m.ProductsPage);
@@ -132,7 +133,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '',
-    pathMatch: 'full',
+    component: NotFoundComponent,
   },
 ];

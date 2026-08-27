@@ -73,6 +73,6 @@ export class ProductCardComponent {
   }
 
   addToCart(): void {
-    this.cart.addProduct(this.product()._id).subscribe();
+    this.cart.addProduct(this.product()).subscribe();
   }
 }

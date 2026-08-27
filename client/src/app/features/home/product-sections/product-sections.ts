@@ -1,35 +1,40 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 
 import type { CatalogProduct } from '../../../shared/models/catalog';
-import { HomeService } from '../services/home';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card';
+import { HomeService } from '../services/home';
 
 @Component({
-  selector: 'app-deals-section',
+  selector: 'app-product-sections',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent],
-  templateUrl: './deals-section.html',
+  imports: [CommonModule, RouterLink, ProductCardComponent],
+  templateUrl: './product-sections.html',
 })
-export class DealsSectionComponent {
+export class ProductSectionsComponent {
   private readonly homeService = inject(HomeService);
   private readonly destroyRef = inject(DestroyRef);
+
   readonly products = signal<CatalogProduct[]>([]);
   readonly loading = signal(true);
   readonly errorMessage = signal<string | null>(null);
 
   constructor() {
-    this.loadDeals();
+    this.loadProducts();
   }
 
-  loadDeals(): void {
+  loadProducts(): void {
     this.loading.set(true);
     this.errorMessage.set(null);
-    this.homeService.getDeals(6).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => this.products.set(response.products ?? []),
-      error: () => this.errorMessage.set('Unable to load deals right now.'),
-      complete: () => this.loading.set(false),
-    });
+    this.homeService
+      .getProducts(12)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => this.products.set(response.products ?? []),
+        error: () => this.errorMessage.set('Unable to load featured products right now.'),
+        complete: () => this.loading.set(false),
+      });
   }
 }

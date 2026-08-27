@@ -1,0 +1,43 @@
+<footer class="mt-8 border-t border-border bg-background">
+  <!-- CTA Section -->
+  <section class="rounded-t-4xl bg-muted px-4 py-14 text-center">
+    <div class="mx-auto flex max-w-2xl flex-col items-center gap-4">
+      <!-- Logo -->
+      <app-logo [showText]="false"></app-logo>
+
+      <!-- Heading -->
+      <div class="flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold text-foreground">There's more to explore</h2>
+
+        <p class="text-base text-muted-foreground">
+          Shop fresh groceries, pantry staples, and everyday essentials.
+        </p>
+      </div>
+
+      <!-- Products Button -->
+      <a
+        routerLink="/products"
+        class="mt-3 inline-flex h-11 items-center justify-center rounded-full px-8 text-base font-medium"
+      >
+        View all products
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer Bottom -->
+  <div
+    class="mx-auto flex w-full max-w-350 flex-col gap-4 px-4 py-6 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between"
+  >
+    <!-- Logo -->
+    <app-logo></app-logo>
+
+    <!-- Links -->
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+      <a routerLink="/products" class="hover:text-foreground"> Products </a>
+
+      <a href="#" class="hover:text-foreground"> Privacy Policy </a>
+
+      <a href="#" class="hover:text-foreground"> Terms of Service </a>
+    </div>
+  </div>
+</footer>

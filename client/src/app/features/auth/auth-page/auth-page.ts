@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthService, type LoginRequest, type RegisterRequest } from '../../../core/auth/auth';
+import { AuthService } from '../../../core/auth/auth.service';
+import type { LoginRequest, RegisterRequest } from '../../../core/auth/auth.models';
 import { LoginFormComponent } from '../login-form/login-form';
 import { RegisterFormComponent } from '../register-form/register-form';
 

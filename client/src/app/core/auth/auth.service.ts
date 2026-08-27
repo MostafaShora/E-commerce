@@ -19,7 +19,7 @@ import {
 
 import { CartService } from '../cart/cart';
 
-import { AuthStore } from './auth.state';
+import { AuthState } from './auth.state';
 
 import type {
   AuthResponse,
@@ -37,7 +37,7 @@ export class AuthService {
   constructor(
     private readonly http: HttpClient,
     private readonly cartService: CartService,
-    private readonly authStore: AuthStore,
+    private readonly authStore: AuthState,
   ) {}
 
   get currentUser() {

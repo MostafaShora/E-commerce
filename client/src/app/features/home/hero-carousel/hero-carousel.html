@@ -1,0 +1,27 @@
+<section class="w-full py-5" aria-label="Featured offers">
+	<div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+		@for (slide of heroSlides; track slide.id; let index = $index) {
+			@if (activeSlide() === index) {
+				<article class="relative h-62.5 md:h-65">
+					<img [src]="slide.image" alt="" class="absolute inset-0 size-full object-cover" />
+					<div class="relative z-10 flex h-full max-w-[55%] flex-col justify-center gap-4 p-6 sm:p-9">
+						<p class="text-sm font-bold uppercase tracking-wide text-slate-700">{{ slide.subtitle }}</p>
+						<h1 class="text-2xl font-bold leading-tight text-slate-950">{{ slide.title }}</h1>
+						<a routerLink="/products" class="w-fit rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-sm hover:bg-slate-100">
+							{{ slide.action }}
+						</a>
+						<p class="text-xs text-slate-700">{{ slide.note }}</p>
+					</div>
+				</article>
+			}
+		}
+
+		<button type="button" class="absolute left-3 top-1/2 size-9 -translate-y-1/2 rounded-full bg-white/90 text-lg shadow hover:bg-white" (click)="previous()" aria-label="Previous offer">&#8249;</button>
+		<button type="button" class="absolute right-3 top-1/2 size-9 -translate-y-1/2 rounded-full bg-white/90 text-lg shadow hover:bg-white" (click)="next()" aria-label="Next offer">&#8250;</button>
+		<div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2" role="tablist" aria-label="Offers">
+			@for (slide of heroSlides; track slide.id; let index = $index) {
+				<button type="button" class="size-2.5 rounded-full bg-white/70" [class.bg-slate-900]="activeSlide() === index" (click)="select(index)" [attr.aria-label]="'Show ' + slide.subtitle" [attr.aria-selected]="activeSlide() === index"></button>
+			}
+		</div>
+	</div>
+</section>

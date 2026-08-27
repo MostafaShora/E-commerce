@@ -8,13 +8,13 @@ import {
   Validators,
 } from '@angular/forms';
 
-import type { RegisterRequest } from '../../../core/auth/auth';
+import type { RegisterRequest } from '../../../core/auth/auth.models';
 
 @Component({
   selector: 'app-register-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `./register-form.html`,
+  templateUrl: './register-form.html',
 })
 export class RegisterFormComponent {
   @Input() isSubmitting = false;

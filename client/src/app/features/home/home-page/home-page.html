@@ -1,48 +1,6 @@
-<div class="flex flex-col gap-8 pb-10">
-  <section
-    class="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 px-6 py-10 text-white shadow-sm sm:px-8"
-  >
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="max-w-xl">
-        <p class="text-sm uppercase tracking-[0.18em] text-slate-300">Fresh picks</p>
-        <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-          Your grocery essentials, made simple.
-        </h1>
-      </div>
-      <a
-        routerLink="/products"
-        class="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-        >Browse products</a
-      >
-    </div>
-  </section>
-
-  <app-categories-section [categories]="categories()" [loading]="isLoading()" />
-
-  @if (errorMessage()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-      {{ errorMessage() }}
-    </div>
-  }
-
-  <app-deals-section [products]="deals()" [loading]="isLoading()" />
-
-  @if (visibleProducts().length > 0) {
-    <section class="flex flex-col gap-5 py-2">
-      <div class="flex items-center justify-between gap-4">
-        <h2 class="text-2xl font-semibold text-slate-900">More products</h2>
-        <a
-          routerLink="/products"
-          class="text-sm font-medium text-slate-700 underline-offset-4 hover:underline"
-          >See more</a
-        >
-      </div>
-
-      <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-6">
-        @for (product of visibleProducts(); track product._id) {
-          <app-product-card [product]="product" />
-        }
-      </div>
-    </section>
-  }
+<div class="flex w-full flex-col gap-8 pb-10">
+  <app-hero-carousel />
+  <app-categories-section />
+  <app-deals-section />
+  <app-product-sections />
 </div>
