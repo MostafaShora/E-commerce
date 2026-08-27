@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { AuthPageComponent } from './features/auth/auth-page';
+import { AuthPageComponent } from './features/auth/auth-page/auth-page';
 import { authGuard } from './core/guards/auth-guard';
 import { HomePageComponent } from './features/home/home-page/home-page';
 import { StorefrontLayout } from './layouts/storefront-layout/storefront-layout';

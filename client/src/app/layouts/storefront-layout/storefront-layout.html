@@ -1,37 +1,43 @@
-<div class="min-h-screen bg-slate-50 text-slate-900">
-  <header class="border-b border-slate-200 bg-white">
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-      <a routerLink="/" class="text-xl font-bold tracking-tight text-slate-900">Nexora</a>
-      <form
-        [formGroup]="searchForm"
-        (ngSubmit)="submitSearch()"
-        class="mx-4 hidden max-w-sm flex-1 sm:flex"
-      >
-        <input
-          class="min-w-0 flex-1 rounded-l-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-          type="search"
-          formControlName="query"
-          placeholder="Search groceries"
-          aria-label="Search groceries"
-        />
-        <button
-          type="submit"
-          class="rounded-r-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white"
-        >
-          Search
-        </button>
-      </form>
-      <nav class="flex items-center gap-5 text-sm font-medium text-slate-600">
-        <a routerLink="/" class="hover:text-slate-900">Home</a>
-        <a routerLink="/products" class="hover:text-slate-900">Products</a>
-        <a routerLink="/search-results" class="hover:text-slate-900">Search</a>
-        <a routerLink="/cart" class="hover:text-slate-900">Cart</a>
-        <a routerLink="/account/orders" class="hover:text-slate-900">My Orders</a>
-      </nav>
-    </div>
-  </header>
+<header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
+  <div class="flex h-16 w-full max-w-7xl mx-auto items-center gap-4 px-4">
+    <a routerLink="/" class="shrink-0 text-xl font-bold tracking-tight text-slate-900">Nexora</a>
 
-  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-    <router-outlet />
-  </main>
-</div>
+    <!-- Search -->
+    <form [formGroup]="searchForm" (ngSubmit)="submitSearch()" class="min-w-0 flex-1">
+      <div class="flex rounded-full border border-slate-300 bg-white px-3 py-1">
+        <input class="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm outline-none" formControlName="query" type="search" placeholder="Search products, and recipes" />
+        <button type="submit" class="px-2 text-sm font-medium text-slate-700">Search</button>
+      </div>
+    </form>
+
+    <!-- Mode Toggle -->
+    <button type="button" class="hidden text-sm text-slate-600 sm:block">Theme</button>
+
+    <!-- User Dropdown -->
+    @if (auth.currentUser(); as user) {
+      <details class="relative hidden sm:block">
+        <summary class="cursor-pointer list-none rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">{{ user.name }}</summary>
+        <div class="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-2 text-sm shadow-lg">
+          <p class="px-3 py-2 text-xs text-slate-500">{{ user.email }}</p>
+          <a routerLink="/account/orders" class="block rounded px-3 py-2 hover:bg-slate-100">Order history</a>
+          <a routerLink="/account/addresses" class="block rounded px-3 py-2 hover:bg-slate-100">Addresses</a>
+          <a routerLink="/account/reviews" class="block rounded px-3 py-2 hover:bg-slate-100">Ratings &amp; reviews</a>
+          @if (user.isAdmin) { <a routerLink="/admin" class="block rounded px-3 py-2 hover:bg-slate-100">Admin portal</a> }
+          <button type="button" (click)="logout()" class="w-full rounded px-3 py-2 text-left text-red-600 hover:bg-red-50">Logout</button>
+        </div>
+      </details>
+    } @else {
+      <a routerLink="/auth" class="hidden text-sm font-medium text-slate-700 sm:block">Sign in / Register</a>
+    }
+
+    <!-- Cart -->
+    <button type="button" (click)="openCart()" class="relative rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
+      Cart
+      @if (cart.itemCount() > 0) { <span class="ml-1 rounded-full bg-slate-900 px-1.5 py-0.5 text-xs text-white">{{ cart.itemCount() }}</span> }
+    </button>
+  </div>
+</header>
+
+<main class="mx-auto min-h-[calc(100vh-4rem)] w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+  <router-outlet></router-outlet>
+</main>
