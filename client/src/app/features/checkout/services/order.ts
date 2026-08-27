@@ -73,6 +73,17 @@ export type OrderResponse = {
   order: CreatedOrder;
 };
 
+export type CancelOrderRequest = {
+  reason?: string;
+};
+
+export type CancelOrderResponse = {
+  message: string;
+  order: CreatedOrder;
+  refunded: boolean;
+  refundId?: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   constructor(private readonly http: HttpClient) {}
@@ -87,5 +98,12 @@ export class OrderService {
 
   getOrderById(id: string): Observable<OrderResponse> {
     return this.http.get<OrderResponse>(`/api/order/${encodeURIComponent(id)}`);
+  }
+
+  cancelOrder(id: string, request: CancelOrderRequest = {}): Observable<CancelOrderResponse> {
+    return this.http.patch<CancelOrderResponse>(
+      `/api/order/${encodeURIComponent(id)}/cancel`,
+      request,
+    );
   }
 }

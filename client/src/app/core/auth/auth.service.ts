@@ -19,7 +19,7 @@ import {
 
 import { CartService } from '../cart/cart';
 
-import { AuthStore } from './auth.store';
+import { AuthStore } from './auth.state';
 
 import type {
   AuthResponse,
@@ -39,6 +39,18 @@ export class AuthService {
     private readonly cartService: CartService,
     private readonly authStore: AuthStore,
   ) {}
+
+  get currentUser() {
+    return this.authStore.currentUser;
+  }
+
+  get isLoading() {
+    return this.authStore.isLoading;
+  }
+
+  get authError() {
+    return this.authStore.authError;
+  }
 
   login(data: LoginRequest) {
     this.startLoading();

@@ -1,4 +1,14 @@
-// import { Injectable, signal } from '@angular/core';
+export { AuthService } from './auth.service';
+export type {
+	AuthRole,
+	AuthUser,
+	LoginRequest,
+	RegisterRequest,
+	AuthResponse,
+	AuthStatusResponse,
+} from './auth.models';
+
+/*
 // import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 // import { catchError, map, of, switchMap, tap } from 'rxjs';
 
@@ -167,3 +177,4 @@
 //     this.isAuthenticated.set(false);
 //   }
 // }
+*/

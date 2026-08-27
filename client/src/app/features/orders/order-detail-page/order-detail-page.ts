@@ -3,7 +3,7 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { map, of, switchMap } from 'rxjs';
+import { finalize, map, of, switchMap } from 'rxjs';
 
 import {
   OrderService,
@@ -34,6 +34,9 @@ export class OrderDetailPageComponent {
   readonly reviewSubmitting = signal(false);
   readonly reviewMessage = signal<string | null>(null);
   readonly reviewError = signal<string | null>(null);
+  readonly cancelling = signal(false);
+  readonly showCancelConfirmation = signal(false);
+  readonly cancelError = signal<string | null>(null);
   readonly reviewForm = this.formBuilder.nonNullable.group({
     rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     comment: ['', [Validators.maxLength(1000)]],
@@ -60,6 +63,66 @@ export class OrderDetailPageComponent {
         error: () => this.errorMessage.set('Unable to find this order.'),
         complete: () => this.loading.set(false),
       });
+  }
+
+  canCancel(): boolean {
+    return this.order()?.status === 'placed';
+  }
+
+  requestCancellation(): void {
+    this.cancelError.set(null);
+    this.showCancelConfirmation.set(true);
+  }
+
+  dismissCancellation(): void {
+    if (!this.cancelling()) this.showCancelConfirmation.set(false);
+  }
+
+  cancelOrder(): void {
+    const order = this.order();
+    if (!order || this.cancelling()) return;
+
+    this.cancelling.set(true);
+    this.cancelError.set(null);
+    this.orderService
+      .cancelOrder(order._id)
+      .pipe(finalize(() => this.cancelling.set(false)), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.showCancelConfirmation.set(false);
+          this.loadOrder();
+        },
+        error: (error: { error?: { message?: string | string[] } }) => {
+          const message = error.error?.message;
+          this.cancelError.set(
+            Array.isArray(message)
+              ? message.join(', ')
+              : message || 'Unable to cancel this order. Please try again.',
+          );
+        },
+      });
+  }
+
+  readonly trackingSteps: Array<{ status: OrderStatus; label: string }> = [
+    { status: 'placed', label: 'Placed' },
+    { status: 'confirmed', label: 'Confirmed' },
+    { status: 'assigned', label: 'Assigned' },
+    { status: 'packed', label: 'Packed' },
+    { status: 'out_for_delivery', label: 'Out for delivery' },
+    { status: 'delivered', label: 'Delivered' },
+  ];
+
+  displayTrackingSteps(): Array<{ status: OrderStatus; label: string }> {
+    return this.order()?.status === 'cancelled'
+      ? [
+          { status: 'placed', label: 'Placed' },
+          { status: 'cancelled', label: 'Cancelled' },
+        ]
+      : this.trackingSteps;
+  }
+
+  trackingIndex(status: OrderStatus): number {
+    return this.displayTrackingSteps().findIndex((step) => step.status === status);
   }
 
   private loadReviewableItems(orderId: string): void {
@@ -134,7 +197,9 @@ export class OrderDetailPageComponent {
   }
 
   statusLabel(status: OrderStatus): string {
-    return status.replaceAll('_', ' ');
+    return status
+      .replaceAll('_', ' ')
+      .replace(/\b\w/g, (character) => character.toUpperCase());
   }
 
   paymentLabel(value: PaymentStatus | string): string {
