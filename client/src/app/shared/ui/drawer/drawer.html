@@ -1,0 +1,6 @@
+@if (open) {
+  <div class="fixed inset-0 z-50 bg-slate-950/35" (click)="close()"></div>
+  <aside class="fixed inset-y-0 z-51 flex w-full max-w-md flex-col border-slate-200 bg-white shadow-2xl" [class.left-0]="side === 'left'" [class.right-0]="side === 'right'" role="dialog" aria-modal="true" [attr.aria-label]="label">
+    <ng-content />
+  </aside>
+}

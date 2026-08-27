@@ -1,0 +1,5 @@
+<label [for]="id" class="flex cursor-pointer items-center gap-3 text-sm text-slate-700" [class.cursor-not-allowed]="disabled">
+  <input [id]="id" type="checkbox" [checked]="value" [disabled]="disabled" (change)="toggle()" class="size-4 rounded border-slate-300 accent-slate-900" />
+  @if (label) { <span>{{ label }}</span> }
+  <ng-content />
+</label>

@@ -7,11 +7,12 @@ import { AuthState } from '../../../../core/auth/auth.state';
 import { CartButtonComponent } from '../../../../shared/components/cart-button/cart-button';
 import { LogoComponent } from '../../../../shared/components/logo/logo';
 import { ModeToggleComponent } from '../../../../shared/components/mode-toggle/mode-toggle';
+import { AvatarComponent } from '../../../../shared/ui/avatar/avatar';
 
 @Component({
   selector: 'app-storefront-nav',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LogoComponent, ModeToggleComponent, CartButtonComponent],
+  imports: [ReactiveFormsModule, RouterLink, LogoComponent, ModeToggleComponent, CartButtonComponent, AvatarComponent],
   templateUrl: './nav.html',
 })
 export class StorefrontNavComponent {

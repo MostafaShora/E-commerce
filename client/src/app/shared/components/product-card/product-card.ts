@@ -4,11 +4,14 @@ import { RouterLink } from '@angular/router';
 
 import { CartService } from '../../../core/cart/cart';
 import type { CatalogProduct } from '../../../shared/models/catalog';
+import { ButtonComponent } from '../../ui/button/button';
+import { CardComponent } from '../../ui/card/card';
+import { BadgeComponent } from '../../ui/badge/badge';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ButtonComponent, CardComponent, BadgeComponent],
   templateUrl: './product-card.html',
 })
 export class ProductCardComponent {

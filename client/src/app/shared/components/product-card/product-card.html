@@ -1,6 +1,5 @@
-<article
-  class="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
->
+<app-card [interactive]="true">
+<article class="group flex h-full flex-col overflow-hidden">
   <div class="relative aspect-square overflow-hidden bg-slate-100">
     <a [routerLink]="productPath()" class="flex h-full w-full items-center justify-center p-3">
       <img
@@ -49,16 +48,14 @@
 
     <div class="flex items-center justify-between gap-2 text-sm text-slate-600">
       <span>{{ product().unit }}</span>
-      <span [class]="stockStatus().tone">{{ stockStatus().text }}</span>
+      <app-badge [variant]="product().stockCount <= 0 ? 'destructive' : product().stockCount <= 5 ? 'warning' : 'success'">
+        {{ stockStatus().text }}
+      </app-badge>
     </div>
 
-    <button
-      type="button"
-      (click)="addToCart()"
-      [disabled]="product().stockCount <= 0 || cart.saving()"
-      class="mt-1 w-full rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
-    >
-      {{ cart.saving() ? 'Saving...' : 'Add to cart' }}
-    </button>
+    <app-button [disabled]="product().stockCount <= 0" [loading]="cart.saving()" class="mt-1 w-full" (pressed)="addToCart()">
+      Add to cart
+    </app-button>
   </div>
 </article>
+</app-card>

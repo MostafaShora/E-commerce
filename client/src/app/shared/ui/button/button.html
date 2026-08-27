@@ -1,0 +1,11 @@
+@if (routerLink !== null) {
+  <a [routerLink]="routerLink" [class]="classes" [attr.aria-disabled]="isDisabled" (click)="handleClick($event)">
+    @if (loading) { <span aria-hidden="true">...</span> }
+    <ng-content />
+  </a>
+} @else {
+  <button [type]="type" [disabled]="isDisabled" [class]="classes" (click)="handleClick($event)">
+    @if (loading) { <span aria-hidden="true">...</span> }
+    <ng-content />
+  </button>
+}

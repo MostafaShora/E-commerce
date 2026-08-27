@@ -10,7 +10,10 @@
     <app-mode-toggle />
     @if (auth.currentUser(); as user) {
       <details class="relative hidden sm:block">
-        <summary class="cursor-pointer list-none rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">{{ user.name }}</summary>
+        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
+          <app-avatar [src]="user.avatar" [alt]="user.name" [fallback]="user.name.charAt(0).toUpperCase()" />
+          {{ user.name }}
+        </summary>
         <div class="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-2 text-sm shadow-lg">
           <p class="px-3 py-2 text-xs text-slate-500">{{ user.email }}</p>
           <a routerLink="/account/orders" class="block rounded px-3 py-2 hover:bg-slate-100">Order history</a>
