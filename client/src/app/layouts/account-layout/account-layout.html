@@ -7,6 +7,13 @@
       <div class="my-2 h-px bg-slate-200"></div>
       <nav class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
         <a
+          routerLink="/account"
+          routerLinkActive="bg-slate-900 text-white"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex min-w-fit items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 lg:min-w-0"
+          >Account</a
+        >
+        <a
           routerLink="/account/orders"
           routerLinkActive="bg-slate-900 text-white"
           [routerLinkActiveOptions]="{ exact: true }"

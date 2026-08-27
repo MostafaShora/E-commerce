@@ -27,6 +27,11 @@ const addressesPage = () =>
     (m) => m.AddressesPageComponent,
   );
 
+const accountPage = () =>
+  import('./features/account/account-page/account-page').then(
+    (m) => m.AccountPageComponent,
+  );
+
 const checkoutPage = () =>
   import('./features/checkout/checkout-page/checkout-page').then((m) => m.CheckoutPageComponent);
 
@@ -112,7 +117,7 @@ export const routes: Routes = [
         component: AccountLayout,
         canActivate: [authGuard],
         children: [
-          { path: '', pathMatch: 'full', redirectTo: 'orders' },
+          { path: '', pathMatch: 'full', loadComponent: accountPage },
           { path: 'orders', loadComponent: ordersPage },
           { path: 'orders/:id', loadComponent: orderDetailPage },
           { path: 'reviews', loadComponent: reviewsPage },

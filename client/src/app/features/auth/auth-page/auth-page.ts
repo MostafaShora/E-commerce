@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService, type LoginRequest, type RegisterRequest } from '../../../core/auth/auth';
@@ -10,20 +10,14 @@ import { RegisterFormComponent } from '../register-form/register-form';
   selector: 'app-auth-page',
   standalone: true,
   imports: [CommonModule, LoginFormComponent, RegisterFormComponent],
-  template: `./auth-page.html`,
+  templateUrl: './auth-page.html',
 })
 export class AuthPageComponent {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   readonly mode = signal<'login' | 'register'>('login');
-  readonly isSubmitting: boolean;
-  readonly authErrorMessage: string | null;
-
-  constructor(
-    private readonly authService: AuthService,
-    private readonly router: Router,
-  ) {
-    this.isSubmitting = this.authService.isLoading();
-    this.authErrorMessage = this.authService.authError()?.message ?? null;
-  }
+  readonly isSubmitting = this.authService.isLoading;
+  readonly authErrorMessage = computed(() => this.authService.authError()?.message ?? null);
 
   toggleMode(): void {
     this.mode.set(this.mode() === 'login' ? 'register' : 'login');

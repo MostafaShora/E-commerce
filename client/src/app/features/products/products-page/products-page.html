@@ -96,12 +96,13 @@
           >
             Reset
           </button>
-          <label class="flex items-center gap-2 font-medium text-slate-900"
+          <label
+            class="flex items-center gap-2 font-medium text-slate-900"
+            [formGroup]="filters"
             >Sort by
             <select
               class="rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal"
               formControlName="sort"
-              [formGroup]="filters"
             >
               <option value="best-match">Best Match</option>
               <option value="price-low">Price: low to high</option>

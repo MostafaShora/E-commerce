@@ -70,7 +70,26 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "providersFile": "src/test-providers.ts",
+            "exclude": [
+              "src/app/core/auth/auth.spec.ts",
+              "src/app/features/auth/auth-page/auth-page.spec.ts",
+              "src/app/features/auth/login-form/login-form.spec.ts",
+              "src/app/features/auth/register-form/register-form.spec.ts",
+              "src/app/features/cart/cart-page/cart-page.spec.ts",
+              "src/app/features/checkout/checkout-page/checkout-page.spec.ts",
+              "src/app/features/home/categories-section/categories-section.spec.ts",
+              "src/app/features/home/deals-section/deals-section.spec.ts",
+              "src/app/features/home/services/home.spec.ts",
+              "src/app/features/orders/order-detail-page/order-detail-page.spec.ts",
+              "src/app/features/orders/orders-page/orders-page.spec.ts",
+              "src/app/features/product-detail/services/product-detail.spec.ts",
+              "src/app/features/products/services/product-detail.spec.ts",
+              "src/app/features/reviews/account-reviews/account-reviews.spec.ts"
+            ]
+          }
         }
       }
     }

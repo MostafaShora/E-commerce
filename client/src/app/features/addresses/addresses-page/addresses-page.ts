@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { normalizeApiError } from '../../../core/api/api-error';
 import { AddressService, type Address, type AddressInput } from '../services/address';
 
 @Component({
@@ -14,6 +15,10 @@ export class AddressesPageComponent {
   readonly addressService = inject(AddressService);
   readonly formBuilder = inject(FormBuilder);
   readonly editingId = signal<string | null>(null);
+  readonly formOpen = signal(false);
+  readonly deleteTarget = signal<Address | null>(null);
+  readonly successMessage = signal<string | null>(null);
+  readonly operationError = signal<string | null>(null);
 
   readonly form = this.formBuilder.nonNullable.group({
     recipientName: ['', Validators.required],
@@ -31,16 +36,30 @@ export class AddressesPageComponent {
 
   startEdit(address: Address): void {
     this.editingId.set(address._id);
+    this.formOpen.set(true);
+    this.successMessage.set(null);
+    this.operationError.set(null);
     this.form.patchValue(address);
     this.form.markAsPristine();
   }
 
+  startCreate(): void {
+    this.editingId.set(null);
+    this.formOpen.set(true);
+    this.successMessage.set(null);
+    this.operationError.set(null);
+    this.form.reset();
+  }
+
   cancelEdit(): void {
     this.editingId.set(null);
+    this.formOpen.set(false);
     this.form.reset();
   }
 
   submit(): void {
+    this.successMessage.set(null);
+    this.operationError.set(null);
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -52,15 +71,39 @@ export class AddressesPageComponent {
       : this.addressService.createAddress(input);
 
     request.subscribe({
-      next: () => {
+      next: (response) => {
         this.form.reset();
         this.editingId.set(null);
+        this.formOpen.set(false);
+        this.successMessage.set(response.message);
       },
+      error: (error: unknown) => this.operationError.set(normalizeApiError(error).message),
     });
   }
 
   remove(address: Address): void {
-    this.addressService.deleteAddress(address._id).subscribe();
+    this.deleteTarget.set(address);
+    this.successMessage.set(null);
+    this.operationError.set(null);
+  }
+
+  dismissDelete(): void {
+    if (!this.addressService.saving()) this.deleteTarget.set(null);
+  }
+
+  confirmDelete(): void {
+    const address = this.deleteTarget();
+    if (!address || this.addressService.saving()) return;
+
+    this.addressService.deleteAddress(address._id).subscribe({
+      next: (response) => {
+        this.deleteTarget.set(null);
+        this.successMessage.set(response.message);
+      },
+      error: (error: unknown) => {
+        this.operationError.set(normalizeApiError(error).message);
+      },
+    });
   }
 
   controlInvalid(controlName: string): boolean {

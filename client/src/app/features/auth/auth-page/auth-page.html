@@ -14,16 +14,16 @@
       </div>
     </div>
 
-    @if (authErrorMessage) {
+    @if (authErrorMessage(); as message) {
       <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-        {{ authErrorMessage }}
+        {{ message }}
       </div>
     }
 
     @if (mode() === 'login') {
-      <app-login-form [isSubmitting]="isSubmitting" (submitted)="handleLogin($event)" />
+      <app-login-form [isSubmitting]="isSubmitting()" (submitted)="handleLogin($event)" />
     } @else {
-      <app-register-form [isSubmitting]="isSubmitting" (submitted)="handleRegister($event)" />
+      <app-register-form [isSubmitting]="isSubmitting()" (submitted)="handleRegister($event)" />
     }
 
     <div class="mt-6 text-center text-sm text-slate-600">

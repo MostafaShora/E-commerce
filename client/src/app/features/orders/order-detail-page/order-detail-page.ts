@@ -37,6 +37,7 @@ export class OrderDetailPageComponent {
   readonly cancelling = signal(false);
   readonly showCancelConfirmation = signal(false);
   readonly cancelError = signal<string | null>(null);
+  readonly cancellationMessage = signal<string | null>(null);
   readonly reviewForm = this.formBuilder.nonNullable.group({
     rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     comment: ['', [Validators.maxLength(1000)]],
@@ -71,6 +72,7 @@ export class OrderDetailPageComponent {
 
   requestCancellation(): void {
     this.cancelError.set(null);
+    this.cancellationMessage.set(null);
     this.showCancelConfirmation.set(true);
   }
 
@@ -88,8 +90,13 @@ export class OrderDetailPageComponent {
       .cancelOrder(order._id)
       .pipe(finalize(() => this.cancelling.set(false)), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.showCancelConfirmation.set(false);
+          this.cancellationMessage.set(
+            response.refunded && response.refundId
+              ? `${response.message} Refund confirmation: ${response.refundId}.`
+              : response.message,
+          );
           this.loadOrder();
         },
         error: (error: { error?: { message?: string | string[] } }) => {

@@ -1,7 +1,18 @@
 <div class="flex w-full max-w-5xl flex-col gap-6 py-2">
-  <header>
-    <h1 class="text-2xl font-semibold text-slate-900">Addresses</h1>
-    <p class="mt-1 text-sm text-slate-600">Manage delivery addresses for faster checkout.</p>
+  <header class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-slate-900">Addresses</h1>
+      <p class="mt-1 text-sm text-slate-600">Manage delivery addresses for faster checkout.</p>
+    </div>
+    @if (!formOpen()) {
+      <button
+        type="button"
+        (click)="startCreate()"
+        class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white"
+      >
+        Add new address
+      </button>
+    }
   </header>
 
   @if (addressService.errorMessage()) {
@@ -15,7 +26,20 @@
     </div>
   }
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  @if (successMessage()) {
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (operationError()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      {{ operationError() }}
+    </div>
+  }
+
+  @if (formOpen()) {
+    <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
     <h2 class="text-lg font-semibold text-slate-900">
       {{ editingId() ? 'Edit address' : 'Add new address' }}
     </h2>
@@ -72,7 +96,8 @@
         }
       </div>
     </form>
-  </section>
+    </section>
+  }
 
   @if (addressService.loading()) {
     <div class="grid gap-4 md:grid-cols-2">
@@ -127,5 +152,37 @@
         </article>
       }
     </div>
+  }
+
+  @if (deleteTarget(); as address) {
+    <section
+      class="rounded-xl border border-red-200 bg-red-50 p-5"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="delete-address-title"
+    >
+      <h2 id="delete-address-title" class="font-semibold text-red-900">Delete this address?</h2>
+      <p class="mt-1 text-sm text-red-800">
+        {{ address.street }}, {{ address.city }} will be removed from your saved addresses.
+      </p>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <button
+          type="button"
+          (click)="confirmDelete()"
+          [disabled]="addressService.saving()"
+          class="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        >
+          {{ addressService.saving() ? 'Deleting...' : 'Delete address' }}
+        </button>
+        <button
+          type="button"
+          (click)="dismissDelete()"
+          [disabled]="addressService.saving()"
+          class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-800 disabled:opacity-50"
+        >
+          Keep address
+        </button>
+      </div>
+    </section>
   }
 </div>
