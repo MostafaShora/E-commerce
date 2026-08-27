@@ -13,10 +13,17 @@ export type ProductReview = {
   userId: ReviewUser | string;
   orderId: string;
   orderItemId: string;
-  productId: string;
+  productId: string | ReviewProduct;
   rating: number;
   comment?: string;
   createdAt: string;
+};
+
+export type ReviewProduct = {
+  _id?: string;
+  name: string;
+  slug: string;
+  images: Array<string | { url: string }>;
 };
 
 export type ReviewPagination = {
@@ -83,6 +90,10 @@ export class ReviewService {
 
   getReviewableOrders(): Observable<ReviewableOrdersResponse> {
     return this.http.get<ReviewableOrdersResponse>('/api/review/reviewable');
+  }
+
+  getUserReviews(): Observable<{ message: string; reviews: ProductReview[] }> {
+    return this.http.get<{ message: string; reviews: ProductReview[] }>('/api/review');
   }
 
   createReview(request: CreateReviewRequest): Observable<CreateReviewResponse> {

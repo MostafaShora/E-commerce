@@ -30,5 +30,36 @@
         <p class="mt-2 text-sm text-slate-600">Manage fulfillment status</p></a
       >
     </div>
+    <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <header class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <div>
+          <h2 class="font-semibold">Recent Orders</h2>
+          <p class="text-sm text-slate-500">Showing up to the last 7 orders.</p>
+        </div>
+        <a routerLink="/admin/orders" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-900">View all orders</a>
+      </header>
+      @if (recentOrders().length === 0) {
+        <p class="p-8 text-center text-sm text-slate-500">No orders found.</p>
+      } @else {
+        <table class="w-full min-w-190 text-left text-sm">
+          <thead class="border-b border-slate-200 text-xs uppercase text-slate-500">
+            <tr><th class="px-5 py-3">Order ID</th><th class="px-3 py-3">Customer</th><th class="px-3 py-3">Shipping to</th><th class="px-3 py-3">Date</th><th class="px-3 py-3">Total</th><th class="px-3 py-3">Payment</th><th class="px-3 py-3">Status</th></tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (order of recentOrders(); track order._id) {
+              <tr class="text-[13px] hover:bg-slate-50">
+                <td class="px-5 py-3 font-medium">#{{ order.orderNo }}</td>
+                <td class="px-3 py-3"><span class="font-medium">{{ order.shippingAddress.recipientName }}</span><span class="block text-xs text-slate-500">{{ order.shippingAddress.phone }}</span></td>
+                <td class="px-3 py-3 text-xs text-slate-500">{{ order.shippingAddress.street }}, {{ order.shippingAddress.city }}</td>
+                <td class="px-3 py-3 text-xs text-slate-500">{{ order.createdAt | date: 'mediumDate' }}</td>
+                <td class="px-3 py-3 font-semibold">${{ order.total.toFixed(2) }}</td>
+                <td class="px-3 py-3 capitalize">{{ order.paymentStatus }}</td>
+                <td class="px-3 py-3 capitalize">{{ order.status.replaceAll('_', ' ') }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
   }
 </div>

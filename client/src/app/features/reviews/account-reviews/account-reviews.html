@@ -1,0 +1,194 @@
+<div class="flex w-full max-w-5xl flex-col gap-6 py-2">
+  <header class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold text-slate-900">Ratings &amp; reviews</h1>
+    <p class="text-sm text-slate-600">Rate recent groceries and manage reviews from past orders.</p>
+  </header>
+
+  @if (errorMessage()) {
+    <section
+      class="flex items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+    >
+      <span>{{ errorMessage() }}</span>
+      <button type="button" (click)="loadReviews()" class="font-medium underline">Retry</button>
+    </section>
+  }
+
+  @if (loading()) {
+    <div class="flex flex-col gap-4">
+      @for (item of [1, 2]; track item) {
+        <div
+          class="grid animate-pulse gap-4 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[72px_1fr]"
+        >
+          <div class="size-18 rounded-xl bg-slate-200"></div>
+          <div class="flex flex-col gap-3">
+            <div class="h-5 w-2/3 rounded bg-slate-200"></div>
+            <div class="h-4 w-1/2 rounded bg-slate-200"></div>
+            <div class="h-20 w-full rounded bg-slate-200"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="flex gap-2 border-b border-slate-200" role="tablist" aria-label="Reviews">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'to-review'"
+        (click)="activeTab.set('to-review')"
+        [class.bg-slate-900]="activeTab() === 'to-review'"
+        [class.text-white]="activeTab() === 'to-review'"
+        class="rounded-t-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+      >
+        To review ({{ reviewableEntries().length }})
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'reviewed'"
+        (click)="activeTab.set('reviewed')"
+        [class.bg-slate-900]="activeTab() === 'reviewed'"
+        [class.text-white]="activeTab() === 'reviewed'"
+        class="rounded-t-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+      >
+        Reviewed ({{ submittedReviews().length }})
+      </button>
+    </div>
+
+    @if (activeTab() === 'to-review') {
+      @if (reviewableEntries().length === 0) {
+        <section
+          class="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 p-8 text-center"
+        >
+          <p class="text-lg font-semibold text-slate-900">All caught up</p>
+          <p class="mt-2 text-sm text-slate-600">Products ready for review will appear here.</p>
+        </section>
+      } @else {
+        <div class="flex flex-col gap-4">
+          @for (entry of reviewableEntries(); track reviewKey(entry)) {
+            <article
+              class="grid gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[72px_1fr]"
+            >
+              <div
+                class="grid size-18 place-items-center rounded-xl border border-slate-200 bg-white"
+              >
+                <img
+                  [src]="entry.item.image"
+                  [alt]="entry.item.name"
+                  class="size-14 object-contain"
+                />
+              </div>
+              <form
+                [formGroup]="formFor(entry)"
+                (ngSubmit)="submit(entry)"
+                class="flex min-w-0 flex-col gap-3"
+              >
+                <div>
+                  <h2 class="line-clamp-2 text-base font-semibold text-slate-900">
+                    {{ entry.item.name }}
+                  </h2>
+                  <p class="mt-1 text-sm text-slate-500">
+                    Ordered on {{ formatDate(entry.orderDate) }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-1" aria-label="Choose a rating from 1 to 5 stars">
+                  @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <button
+                      type="button"
+                      (click)="setRating(entry, star)"
+                      [class.text-amber-500]="star <= formFor(entry).controls.rating.value"
+                      [class.text-slate-300]="star > formFor(entry).controls.rating.value"
+                      class="text-xl leading-none"
+                      [attr.aria-label]="star + ' star' + (star === 1 ? '' : 's')"
+                    >
+                      ★
+                    </button>
+                  }
+                </div>
+                @if (
+                  formFor(entry).controls.rating.invalid && formFor(entry).controls.rating.touched
+                ) {
+                  <p class="text-xs text-red-600">Choose a rating from 1 to 5.</p>
+                }
+                <textarea
+                  formControlName="comment"
+                  maxlength="1000"
+                  rows="3"
+                  class="min-h-20 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  placeholder="Share what other shoppers should know."
+                ></textarea>
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-xs text-slate-500">Order #{{ entry.orderNo }}</p>
+                  <button
+                    type="submit"
+                    [disabled]="isSubmitting(entry)"
+                    class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+                  >
+                    {{ isSubmitting(entry) ? 'Submitting...' : 'Submit review' }}
+                  </button>
+                </div>
+              </form>
+            </article>
+          }
+        </div>
+      }
+    } @else {
+      @if (submittedReviews().length === 0) {
+        <section
+          class="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 p-8 text-center"
+        >
+          <p class="text-lg font-semibold text-slate-900">No reviews yet</p>
+          <p class="mt-2 text-sm text-slate-600">Reviews you submit will appear here.</p>
+        </section>
+      } @else {
+        <div class="flex flex-col gap-4">
+          @for (review of submittedReviews(); track review._id) {
+            @if (submittedProduct(review); as product) {
+              <article
+                class="grid gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[72px_1fr]"
+              >
+                <a
+                  [routerLink]="['/products', product.slug]"
+                  class="grid size-18 place-items-center rounded-xl border border-slate-200 bg-white hover:border-slate-400"
+                >
+                  <img
+                    [src]="productImage(product)"
+                    [alt]="product.name"
+                    class="size-14 object-contain"
+                  />
+                </a>
+                <div class="flex min-w-0 flex-col gap-3">
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h2 class="text-base font-semibold text-slate-900">
+                        <a [routerLink]="['/products', product.slug]">{{ product.name }}</a>
+                      </h2>
+                      <p class="mt-1 text-sm text-slate-500">
+                        Reviewed on {{ formatDate(review.createdAt) }}
+                      </p>
+                    </div>
+                    <span
+                      class="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700"
+                      >Verified purchase</span
+                    >
+                  </div>
+                  <div class="flex items-center gap-1 text-amber-500" aria-label="Submitted rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span
+                        [class.text-amber-500]="star <= review.rating"
+                        [class.text-slate-300]="star > review.rating"
+                        >★</span
+                      >
+                    }
+                  </div>
+                  @if (review.comment) {
+                    <p class="text-sm leading-6 text-slate-600">{{ review.comment }}</p>
+                  }
+                </div>
+              </article>
+            }
+          }
+        </div>
+      }
+    }
+  }
+</div>

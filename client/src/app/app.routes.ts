@@ -6,6 +6,7 @@ import { HomePageComponent } from './features/home/home-page/home-page';
 import { StorefrontLayout } from './layouts/storefront-layout/storefront-layout';
 import { adminGuard } from './core/guards/admin-guard';
 import { AdminLayout } from './layouts/admin-layout/admin-layout';
+import { AccountLayout } from './layouts/account-layout/account-layout';
 
 const productsPlaceholder = () =>
   import('./features/products/products-page/products-page').then((m) => m.ProductsPage);
@@ -37,6 +38,11 @@ const orderDetailPage = () =>
     (m) => m.OrderDetailPageComponent,
   );
 
+const reviewsPage = () =>
+  import('./features/reviews/account-reviews/account-reviews').then(
+    (m) => m.AccountReviewsPageComponent,
+  );
+
 export const routes: Routes = [
   {
     path: 'admin',
@@ -52,6 +58,13 @@ export const routes: Routes = [
         path: 'products',
         loadComponent: () =>
           import('./features/admin/products/products').then((m) => m.AdminProductsComponent),
+      },
+      {
+        path: 'products/new',
+        loadComponent: () =>
+          import('./features/admin/new-product/new-product').then(
+            (m) => m.AdminNewProductComponent,
+          ),
       },
       {
         path: 'categories',
@@ -94,32 +107,23 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: checkoutPage,
       },
+      {
+        path: 'account',
+        component: AccountLayout,
+        canActivate: [authGuard],
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'orders' },
+          { path: 'orders', loadComponent: ordersPage },
+          { path: 'orders/:id', loadComponent: orderDetailPage },
+          { path: 'reviews', loadComponent: reviewsPage },
+          { path: 'addresses', loadComponent: addressesPage },
+        ],
+      },
     ],
   },
   {
     path: 'auth',
     component: AuthPageComponent,
-  },
-  {
-    path: 'account/addresses',
-    canActivate: [authGuard],
-    loadComponent: addressesPage,
-  },
-  {
-    path: 'account/orders',
-    canActivate: [authGuard],
-    loadComponent: ordersPage,
-  },
-  {
-    path: 'account/orders/:id',
-    canActivate: [authGuard],
-    loadComponent: orderDetailPage,
-  },
-  {
-    path: 'account',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/auth/account-placeholder').then((m) => m.AccountPlaceholderComponent),
   },
   {
     path: '**',

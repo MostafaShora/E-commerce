@@ -19,7 +19,7 @@
     </div>
   } @else {
     <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table class="w-full min-w-[760px] text-left text-sm">
+      <table class="w-full min-w-190 text-left text-sm">
         <thead class="border-b text-xs uppercase text-slate-500">
           <tr>
             <th class="px-4 py-3">Order</th>
@@ -47,7 +47,11 @@
                 <select
                   [value]="order.status"
                   (change)="update(order, $event)"
-                  [disabled]="order.status === 'delivered' || order.status === 'cancelled'"
+                  [disabled]="
+                    order.status === 'delivered' ||
+                    order.status === 'cancelled' ||
+                    updatingOrderId() === order._id
+                  "
                   class="rounded-lg border border-slate-300 px-2 py-1 capitalize"
                 >
                   @for (status of statuses; track status) {

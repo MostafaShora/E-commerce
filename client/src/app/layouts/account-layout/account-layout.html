@@ -1,1 +1,40 @@
-<p>account-layout works!</p>
+<div class="grid min-h-[calc(100vh-8rem)] gap-8 py-6 lg:grid-cols-[260px_1fr]">
+  <aside class="border-slate-200 lg:border-r lg:pr-5">
+    <div class="flex flex-col gap-2 lg:sticky lg:top-24">
+      <button type="button" class="w-fit px-0 text-sm font-medium text-slate-700" (click)="back()">
+        &larr; Back
+      </button>
+      <div class="my-2 h-px bg-slate-200"></div>
+      <nav class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+        <a
+          routerLink="/account/orders"
+          routerLinkActive="bg-slate-900 text-white"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex min-w-fit items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 lg:min-w-0"
+          >Order history</a
+        >
+        <a
+          routerLink="/account/reviews"
+          routerLinkActive="bg-slate-900 text-white"
+          class="flex min-w-fit items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 lg:min-w-0"
+          >Ratings &amp; reviews</a
+        >
+        <a
+          routerLink="/account/addresses"
+          routerLinkActive="bg-slate-900 text-white"
+          class="flex min-w-fit items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 lg:min-w-0"
+          >Addresses</a
+        >
+      </nav>
+      <div class="my-2 hidden h-px bg-slate-200 lg:block"></div>
+      <button
+        type="button"
+        (click)="logout()"
+        class="hidden justify-start px-3 text-sm font-medium text-slate-500 lg:flex"
+      >
+        Log out
+      </button>
+    </div>
+  </aside>
+  <section class="min-w-0"><router-outlet /></section>
+</div>

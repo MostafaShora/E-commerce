@@ -32,6 +32,7 @@ export class AdminOrdersComponent {
     hasNextPage?: boolean;
     hasPrevPage?: boolean;
   } | null>(null);
+  readonly updatingOrderId = signal<string | null>(null);
   constructor() {
     this.load();
   }
@@ -50,11 +51,13 @@ export class AdminOrdersComponent {
   update(order: CreatedOrder, event: Event): void {
     const status = (event.target as HTMLSelectElement).value as OrderStatus;
     if (status === order.status) return;
+    this.updatingOrderId.set(order._id);
     this.service
       .updateOrderStatus(order._id, status)
       .subscribe({
         next: () => this.load(),
         error: () => this.error.set('Unable to update order status.'),
+        complete: () => this.updatingOrderId.set(null),
       });
   }
   nextPage(): void {

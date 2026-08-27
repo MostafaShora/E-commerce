@@ -28,7 +28,7 @@ export class AdminProductsComponent {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.service.getProducts(this.page()).subscribe({
+    this.service.getProducts(this.page(), 10).subscribe({
       next: (r) => {
         this.products.set(r.products);
         this.pagination.set(r.pagination);
@@ -56,6 +56,11 @@ export class AdminProductsComponent {
   }
   isActive(product: CatalogProduct): boolean {
     return (product as CatalogProduct & { isActive?: boolean }).isActive !== false;
+  }
+
+  imageUrl(product: CatalogProduct): string {
+    const image = product.images?.[0] as unknown as string | { url?: string } | undefined;
+    return typeof image === 'string' ? image : image?.url ?? '/placeholder.png';
   }
   nextPage(): void {
     if (this.pagination()?.hasNextPage) {

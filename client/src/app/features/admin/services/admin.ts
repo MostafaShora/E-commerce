@@ -44,6 +44,30 @@ export type AdminMutationResponse = {
   order?: CreatedOrder;
 };
 
+export type CreateAdminProduct = {
+  categoryId: string;
+  name: string;
+  description?: string;
+  originalPrice: number;
+  discountPercent?: number;
+  discountLabel?: string;
+  unit?: string;
+  stockCount?: number;
+  isActive?: boolean;
+};
+
+export type AdminAiRequest = {
+  action: 'rephrase-title' | 'generate-desc';
+  title: string;
+  unit?: string;
+  description?: string;
+};
+
+export type AdminAiResponse = {
+  message: string;
+  result: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   constructor(private readonly http: HttpClient) {}
@@ -52,6 +76,25 @@ export class AdminService {
     return this.http.get<AdminProductsResponse>('/api/product/admin', {
       params: new HttpParams().set('page', page).set('limit', limit),
     });
+  }
+
+  createProduct(value: CreateAdminProduct, image: File): Observable<AdminMutationResponse> {
+    const body = new FormData();
+    body.append('image', image);
+    body.append('categoryId', value.categoryId);
+    body.append('name', value.name);
+    body.append('description', value.description ?? '');
+    body.append('originalPrice', String(value.originalPrice));
+    body.append('discountPercent', String(value.discountPercent ?? 0));
+    body.append('discountLabel', value.discountLabel ?? '');
+    body.append('unit', value.unit ?? 'pc');
+    body.append('stockCount', String(value.stockCount ?? 0));
+    body.append('isActive', String(value.isActive ?? true));
+    return this.http.post<AdminMutationResponse>('/api/product', body);
+  }
+
+  generateAi(value: AdminAiRequest): Observable<AdminAiResponse> {
+    return this.http.post<AdminAiResponse>('/api/admin/ai/generate', value);
   }
 
   updateProduct(id: string, value: Record<string, unknown>): Observable<AdminMutationResponse> {
