@@ -1,8 +1,10 @@
 import { Component, signal } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-storefront-banner',
   standalone: true,
+  imports: [MatIconModule],
   templateUrl: './banner.html',
 })
 export class BannerComponent {

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 
 import { CartService } from '../../../core/cart/cart';
@@ -8,7 +9,7 @@ import { AuthState } from '../../../core/auth/auth.state';
 @Component({
   selector: 'app-cart-drawer',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MatIconModule],
   templateUrl: './cart-drawer.html',
 })
 export class CartDrawerComponent {

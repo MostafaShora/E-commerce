@@ -2,9 +2,10 @@
   <button
     type="button"
     (click)="goBack()"
-    class="w-fit text-sm font-medium text-slate-700 underline-offset-4 hover:underline"
+    class="inline-flex w-fit items-center gap-1 text-sm font-medium text-slate-700 underline-offset-4 hover:underline"
   >
-    &larr; Back to products
+    <mat-icon>arrow_back</mat-icon>
+    <span>Back to products</span>
   </button>
 
   @if (loading()) {

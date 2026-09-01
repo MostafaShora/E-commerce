@@ -7,6 +7,7 @@ import type { CatalogProduct } from '../../../shared/models/catalog';
 import { ButtonComponent } from '../../ui/button/button';
 import { CardComponent } from '../../ui/card/card';
 import { BadgeComponent } from '../../ui/badge/badge';
+import { getProductImageUrl, onImageError } from '../../utils/image.util';
 
 @Component({
   selector: 'app-product-card',
@@ -19,7 +20,8 @@ export class ProductCardComponent {
   readonly product = input.required<CatalogProduct>();
 
   readonly productPath = computed(() => `/products/${this.product().slug}`);
-  readonly imageUrl = computed(() => this.product().images?.[0] ?? '');
+  readonly imageUrl = computed(() => getProductImageUrl(this.product().images));
+  readonly onImageError = onImageError;
   readonly hasDiscount = computed(
     () => this.product().originalPrice > this.product().salePrice,
   );

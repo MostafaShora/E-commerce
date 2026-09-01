@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize, map, of, switchMap } from 'rxjs';
@@ -16,7 +17,7 @@ import { ReviewService, type ReviewableOrderItem } from '../../reviews/services/
 @Component({
   selector: 'app-order-detail-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule],
   templateUrl: './order-detail-page.html',
 })
 export class OrderDetailPageComponent {
@@ -41,6 +42,9 @@ export class OrderDetailPageComponent {
   readonly reviewForm = this.formBuilder.nonNullable.group({
     rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     comment: ['', [Validators.maxLength(1000)]],
+  });
+  readonly cancelForm = this.formBuilder.nonNullable.group({
+    reason: ['', [Validators.maxLength(500)]],
   });
 
   constructor() {
@@ -73,11 +77,15 @@ export class OrderDetailPageComponent {
   requestCancellation(): void {
     this.cancelError.set(null);
     this.cancellationMessage.set(null);
+    this.cancelForm.reset({ reason: '' });
     this.showCancelConfirmation.set(true);
   }
 
   dismissCancellation(): void {
-    if (!this.cancelling()) this.showCancelConfirmation.set(false);
+    if (!this.cancelling()) {
+      this.cancelForm.reset({ reason: '' });
+      this.showCancelConfirmation.set(false);
+    }
   }
 
   cancelOrder(): void {
@@ -86,12 +94,18 @@ export class OrderDetailPageComponent {
 
     this.cancelling.set(true);
     this.cancelError.set(null);
+    const reason = this.cancelForm.controls.reason.value?.trim();
+
     this.orderService
-      .cancelOrder(order._id)
-      .pipe(finalize(() => this.cancelling.set(false)), takeUntilDestroyed(this.destroyRef))
+      .cancelOrder(order._id, reason ? { reason } : {})
+      .pipe(
+        finalize(() => this.cancelling.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response) => {
           this.showCancelConfirmation.set(false);
+          this.cancelForm.reset({ reason: '' });
           this.cancellationMessage.set(
             response.refunded && response.refundId
               ? `${response.message} Refund confirmation: ${response.refundId}.`
@@ -204,9 +218,7 @@ export class OrderDetailPageComponent {
   }
 
   statusLabel(status: OrderStatus): string {
-    return status
-      .replaceAll('_', ' ')
-      .replace(/\b\w/g, (character) => character.toUpperCase());
+    return status.replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
   }
 
   paymentLabel(value: PaymentStatus | string): string {

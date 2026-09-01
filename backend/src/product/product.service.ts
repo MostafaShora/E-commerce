@@ -28,6 +28,28 @@ function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/**
+ * Transform product document to API response format
+ * Converts ProductImage[] to string[] (image URLs only)
+ */
+function transformProductForResponse(product: any): any {
+  if (!product) return product;
+
+  const transformed = { ...product };
+
+  // Convert images from ProductImage[] to string[]
+  if (transformed.images && Array.isArray(transformed.images)) {
+    transformed.images = transformed.images.map((img: any) => {
+      // If it's already a string (shouldn't happen), keep it
+      if (typeof img === 'string') return img;
+      // If it's an object with url property, extract the URL
+      return img?.url || '';
+    });
+  }
+
+  return transformed;
+}
+
 @Injectable()
 export class ProductService {
   constructor(
@@ -148,7 +170,7 @@ export class ProductService {
     const totalPages = Math.ceil(total / limit);
 
     return {
-      products,
+      products: products.map(transformProductForResponse),
 
       pagination: {
         page,
@@ -184,7 +206,7 @@ export class ProductService {
       .lean();
 
     return {
-      products,
+      products: products.map(transformProductForResponse),
     };
   }
 
@@ -218,8 +240,8 @@ export class ProductService {
       .lean();
 
     return {
-      product,
-      relatedProducts,
+      product: transformProductForResponse(product),
+      relatedProducts: relatedProducts.map(transformProductForResponse),
     };
   }
 
@@ -273,7 +295,7 @@ export class ProductService {
           : [],
       });
 
-      return product;
+      return transformProductForResponse(product.toObject ? product.toObject() : product);
     } catch (error) {
       // Cleanup Cloudinary image if MongoDB creation failed
       if (uploadedImage?.publicId) {
@@ -361,7 +383,7 @@ export class ProductService {
 
     await product.save();
 
-    return product;
+    return transformProductForResponse(product.toObject ? product.toObject() : product);
   }
 
   // Deactivate product
@@ -384,7 +406,7 @@ export class ProductService {
 
     await product.save();
 
-    return product;
+    return transformProductForResponse(product.toObject ? product.toObject() : product);
   }
 
   // Activate product
@@ -407,7 +429,7 @@ export class ProductService {
 
     await product.save();
 
-    return product;
+    return transformProductForResponse(product.toObject ? product.toObject() : product);
   }
 
   // Get products for admin with pagination
@@ -434,7 +456,7 @@ export class ProductService {
     const totalPages = Math.ceil(total / limit);
 
     return {
-      products,
+      products: products.map(transformProductForResponse),
       pagination: {
         page,
         limit,

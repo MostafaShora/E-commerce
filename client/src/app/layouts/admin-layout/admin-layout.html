@@ -30,8 +30,14 @@
       >
     </nav>
     <div class="border-t border-slate-200 p-3">
-      <a routerLink="/" class="mb-2 flex rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white">&larr; Storefront</a>
-      <button type="button" (click)="logout()" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50">Log out</button>
+      <a routerLink="/" class="mb-2 flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Storefront</span>
+      </a>
+      <button type="button" (click)="logout()" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50" aria-label="Log out">
+        <mat-icon>logout</mat-icon>
+        <span>Log out</span>
+      </button>
     </div>
   </aside>
   <div class="flex min-w-0 flex-1 flex-col">

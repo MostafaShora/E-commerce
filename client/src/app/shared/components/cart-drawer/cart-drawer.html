@@ -6,7 +6,9 @@
         <h2 class="text-xl font-semibold text-slate-900">Your cart</h2>
         <p class="mt-1 text-xs text-slate-500">Delivery in 30-45 min</p>
       </div>
-      <button type="button" class="size-9 rounded-lg text-xl hover:bg-slate-100" (click)="cart.close()" aria-label="Close cart">x</button>
+      <button type="button" class="grid size-9 place-items-center rounded-lg hover:bg-slate-100" (click)="cart.close()" aria-label="Close cart">
+        <mat-icon>close</mat-icon>
+      </button>
     </header>
 
     <div class="min-h-0 flex-1 overflow-y-auto">
@@ -28,9 +30,13 @@
               </div>
               <p class="mt-1 text-sm font-semibold text-slate-900">${{ item.productId.salePrice.toFixed(2) }}</p>
               <div class="mt-2 flex w-fit items-center rounded-lg border border-slate-300">
-                <button type="button" class="size-8" (click)="decrease(item.productId._id, item.quantity)">-</button>
+                <button type="button" class="grid size-8 place-items-center" (click)="decrease(item.productId._id, item.quantity)" aria-label="Decrease quantity">
+                  <mat-icon>remove</mat-icon>
+                </button>
                 <span class="min-w-8 text-center text-sm">{{ item.quantity }}</span>
-                <button type="button" class="size-8" (click)="increase(item.productId._id, item.quantity)">+</button>
+                <button type="button" class="grid size-8 place-items-center" (click)="increase(item.productId._id, item.quantity)" aria-label="Increase quantity">
+                  <mat-icon>add</mat-icon>
+                </button>
               </div>
             </div>
           </article>

@@ -1,5 +1,5 @@
 <button type="button" (click)="open()" class="relative flex shrink-0 items-center gap-2 rounded-lg px-2 py-1.5 text-slate-900 transition hover:bg-slate-100" aria-label="Open cart">
-  <span class="relative text-xl" aria-hidden="true">🛒</span>
+  <mat-icon aria-hidden="true">shopping_cart</mat-icon>
   <span class="hidden text-sm font-bold sm:block">Cart</span>
   <span class="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full bg-slate-900 px-1 text-xs font-bold text-white">{{ cart.itemCount() }}</span>
 </button>

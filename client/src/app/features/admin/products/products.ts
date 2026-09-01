@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AdminService } from '../services/admin';
 import type { CatalogProduct } from '../../../shared/models/catalog';
 
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './products.html',
 })
 export class AdminProductsComponent {

@@ -34,6 +34,7 @@ export type CatalogProduct = {
     name: string;
     slug: string;
   };
+  isActive?: boolean;
 };
 
 export type CatalogProductsResponse = {

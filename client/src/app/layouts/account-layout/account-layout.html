@@ -1,8 +1,9 @@
 <div class="grid min-h-[calc(100vh-8rem)] gap-8 py-6 lg:grid-cols-[260px_1fr]">
   <aside class="border-slate-200 lg:border-r lg:pr-5">
     <div class="flex flex-col gap-2 lg:sticky lg:top-24">
-      <button type="button" class="w-fit px-0 text-sm font-medium text-slate-700" (click)="back()">
-        &larr; Back
+      <button type="button" class="flex w-fit items-center gap-1 px-0 text-sm font-medium text-slate-700" (click)="back()" aria-label="Go back">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back</span>
       </button>
       <div class="my-2 h-px bg-slate-200"></div>
       <nav class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
@@ -37,9 +38,11 @@
       <button
         type="button"
         (click)="logout()"
-        class="hidden justify-start px-3 text-sm font-medium text-slate-500 lg:flex"
+        class="hidden items-center justify-start gap-2 px-3 text-sm font-medium text-slate-500 lg:flex"
+        aria-label="Log out"
       >
-        Log out
+        <mat-icon>logout</mat-icon>
+        <span>Log out</span>
       </button>
     </div>
   </aside>

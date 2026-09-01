@@ -1,8 +1,10 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dialog',
   standalone: true,
+  imports: [MatIconModule],
   templateUrl: './dialog.html',
 })
 export class DialogComponent {
