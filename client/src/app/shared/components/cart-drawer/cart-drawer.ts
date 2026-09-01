@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../../core/cart/cart';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthState } from '../../../core/auth/auth.state';
+import { getProductImageUrl, onImageError } from '../../utils/image.util';
 
 @Component({
   selector: 'app-cart-drawer',
@@ -17,6 +18,9 @@ export class CartDrawerComponent {
   readonly auth = inject(AuthService);
   readonly authState = inject(AuthState);
   private readonly router = inject(Router);
+  
+  readonly getProductImageUrl = getProductImageUrl;
+  readonly onImageError = onImageError;
 
   decrease(productId: string, quantity: number): void {
     this.cart.updateQuantity(productId, quantity - 1).subscribe();

@@ -13,6 +13,7 @@ import {
   type ProductReview,
   type ReviewPagination,
 } from '../../reviews/services/review';
+import { getProductImageUrl, onImageError } from '../../../shared/utils/image.util';
 
 @Component({
   selector: 'app-product-detail-page',
@@ -36,6 +37,7 @@ export class ProductDetailPage {
   readonly reviewsPagination = signal<ReviewPagination | null>(null);
   readonly reviewsLoading = signal(false);
   readonly reviewsError = signal<string | null>(null);
+  readonly onImageError = onImageError;
 
   constructor() {
     this.route.paramMap
@@ -64,7 +66,7 @@ export class ProductDetailPage {
         if (response) {
           this.product.set(response.product);
           this.relatedProducts.set(response.relatedProducts ?? []);
-          this.selectedImage.set(response.product.images[0] ?? '');
+          this.selectedImage.set(getProductImageUrl(response.product.images));
           this.loadReviews(response.product.slug, 1);
         }
         this.loading.set(false);

@@ -40,8 +40,9 @@
         @for (item of cart.items(); track item.productId._id) {
           <article class="grid grid-cols-[80px_1fr] gap-4 p-4 sm:grid-cols-[96px_1fr]">
             <img
-              [src]="item.productId.images[0] || ''"
+              [src]="getProductImageUrl(item.productId.images)"
               [alt]="item.productId.name"
+              (error)="onImageError($event)"
               class="size-20 object-contain sm:size-24"
             />
             <div class="flex min-w-0 flex-col gap-3">

@@ -13,6 +13,7 @@ import {
   type PaymentStatus,
 } from '../../checkout/services/order';
 import { ReviewService, type ReviewableOrderItem } from '../../reviews/services/review';
+import { getProductImageUrl, onImageError } from '../../../shared/utils/image.util';
 
 @Component({
   selector: 'app-order-detail-page',
@@ -39,6 +40,8 @@ export class OrderDetailPageComponent {
   readonly showCancelConfirmation = signal(false);
   readonly cancelError = signal<string | null>(null);
   readonly cancellationMessage = signal<string | null>(null);
+  readonly getProductImageUrl = getProductImageUrl;
+  readonly onImageError = onImageError;
   readonly reviewForm = this.formBuilder.nonNullable.group({
     rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     comment: ['', [Validators.maxLength(1000)]],
@@ -144,6 +147,19 @@ export class OrderDetailPageComponent {
 
   trackingIndex(status: OrderStatus): number {
     return this.displayTrackingSteps().findIndex((step) => step.status === status);
+  }
+
+  getTrackingIcon(status: OrderStatus): string {
+    const iconMap: Record<OrderStatus, string> = {
+      'placed': 'shopping_cart',
+      'confirmed': 'check_circle',
+      'assigned': 'local_shipping',
+      'packed': 'done_all',
+      'out_for_delivery': 'delivery_dining',
+      'delivered': 'home',
+      'cancelled': 'cancel',
+    };
+    return iconMap[status] || 'circle';
   }
 
   private loadReviewableItems(orderId: string): void {

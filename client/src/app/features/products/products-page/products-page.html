@@ -44,12 +44,8 @@
 
       <form [formGroup]="filters" class="flex flex-col gap-3">
         <h2 class="text-sm font-semibold text-slate-900">Filters</h2>
-        <label class="flex items-center gap-3 text-sm text-slate-700"
-          ><input type="checkbox" formControlName="dealsOnly" /> Deals only</label
-        >
-        <label class="flex items-center gap-3 text-sm text-slate-700"
-          ><input type="checkbox" formControlName="inStockOnly" /> In stock</label
-        >
+        <mat-checkbox formControlName="dealsOnly" class="text-sm">Deals only</mat-checkbox>
+        <mat-checkbox formControlName="inStockOnly" class="text-sm">In stock</mat-checkbox>
       </form>
 
       <form [formGroup]="priceInputs" (ngSubmit)="applyPriceFilter()" class="flex flex-col gap-3">

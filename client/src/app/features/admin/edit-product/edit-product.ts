@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AdminService, type CreateAdminProduct } from '../services/admin';
 import { HomeService } from '../../home/services/home';
@@ -10,7 +11,7 @@ import type { CatalogCategory, CatalogProduct } from '../../../shared/models/cat
 @Component({
   selector: 'app-admin-edit-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule, MatCheckboxModule],
   templateUrl: './edit-product.html',
 })
 export class AdminEditProductComponent {

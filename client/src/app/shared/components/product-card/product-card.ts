@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 import { CartService } from '../../../core/cart/cart';
 import type { CatalogProduct } from '../../../shared/models/catalog';
@@ -12,7 +13,7 @@ import { getProductImageUrl, onImageError } from '../../utils/image.util';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, ButtonComponent, CardComponent, BadgeComponent],
+  imports: [CommonModule, RouterLink, ButtonComponent, CardComponent, BadgeComponent, MatIconModule],
   templateUrl: './product-card.html',
 })
 export class ProductCardComponent {

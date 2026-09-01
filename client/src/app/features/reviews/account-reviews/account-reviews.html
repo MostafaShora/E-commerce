@@ -97,10 +97,10 @@
                       (click)="setRating(entry, star)"
                       [class.text-amber-500]="star <= formFor(entry).controls.rating.value"
                       [class.text-slate-300]="star > formFor(entry).controls.rating.value"
-                      class="text-xl leading-none"
+                      class="p-0"
                       [attr.aria-label]="star + ' star' + (star === 1 ? '' : 's')"
                     >
-                      ★
+                      <mat-icon class="text-xl">star</mat-icon>
                     </button>
                   }
                 </div>
@@ -171,12 +171,13 @@
                       >Verified purchase</span
                     >
                   </div>
-                  <div class="flex items-center gap-1 text-amber-500" aria-label="Submitted rating">
+                  <div class="flex items-center gap-0 text-amber-500" aria-label="Submitted rating">
                     @for (star of [1, 2, 3, 4, 5]; track star) {
-                      <span
+                      <mat-icon
+                        class="text-lg"
                         [class.text-amber-500]="star <= review.rating"
                         [class.text-slate-300]="star > review.rating"
-                        >★</span
+                        >star</mat-icon
                       >
                     }
                   </div>

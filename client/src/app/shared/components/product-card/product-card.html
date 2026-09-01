@@ -40,9 +40,9 @@
       {{ product().name }}
     </a>
 
-    <div class="mt-auto flex items-center gap-1 text-base text-amber-500">
+    <div class="mt-auto flex items-center gap-1 text-amber-500">
       @for (star of [0, 1, 2, 3, 4]; track star) {
-        <span class="text-lg" [class.text-slate-300]="star >= roundedRating()">★</span>
+        <mat-icon class="text-lg" [class.text-slate-300]="star >= roundedRating()">star</mat-icon>
       }
       <span class="ml-1 text-sm text-slate-500">({{ product().reviewCount }})</span>
     </div>

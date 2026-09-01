@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { CartService } from '../../../core/cart/cart';
+import { getProductImageUrl, onImageError } from '../../../shared/utils/image.util';
 
 @Component({
   selector: 'app-cart-page',
@@ -12,6 +13,8 @@ import { CartService } from '../../../core/cart/cart';
 })
 export class CartPageComponent {
   readonly cart = inject(CartService);
+  readonly getProductImageUrl = getProductImageUrl;
+  readonly onImageError = onImageError;
 
   constructor() {
     this.cart.loadCart().subscribe();

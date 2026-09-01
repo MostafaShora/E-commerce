@@ -21,22 +21,31 @@
         </div>
       } @else {
         @for (item of cart.items(); track item.productId._id) {
-          <article class="grid grid-cols-[72px_1fr] gap-3 border-b border-slate-100 px-5 py-4">
-            <img [src]="item.productId.images[0] || ''" [alt]="item.productId.name" class="size-16 object-contain" />
-            <div class="min-w-0">
-              <div class="flex items-start justify-between gap-2">
-                <p class="line-clamp-2 text-sm text-slate-800">{{ item.productId.name }}</p>
-                <button type="button" class="text-xs text-slate-500 underline" (click)="cart.removeProduct(item.productId._id).subscribe()">Remove</button>
-              </div>
-              <p class="mt-1 text-sm font-semibold text-slate-900">${{ item.productId.salePrice.toFixed(2) }}</p>
-              <div class="mt-2 flex w-fit items-center rounded-lg border border-slate-300">
-                <button type="button" class="grid size-8 place-items-center" (click)="decrease(item.productId._id, item.quantity)" aria-label="Decrease quantity">
-                  <mat-icon>remove</mat-icon>
-                </button>
-                <span class="min-w-8 text-center text-sm">{{ item.quantity }}</span>
-                <button type="button" class="grid size-8 place-items-center" (click)="increase(item.productId._id, item.quantity)" aria-label="Increase quantity">
-                  <mat-icon>add</mat-icon>
-                </button>
+          <article class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4">
+            <div class="flex gap-3">
+              <img 
+                [src]="getProductImageUrl(item.productId.images)" 
+                [alt]="item.productId.name" 
+                (error)="onImageError($event)" 
+                class="size-20 flex-shrink-0 rounded-lg object-contain bg-slate-50" 
+              />
+              <div class="flex min-w-0 flex-1 flex-col gap-2">
+                <div class="flex flex-col gap-1">
+                  <p class="line-clamp-2 text-sm font-medium text-slate-900">{{ item.productId.name }}</p>
+                  <p class="text-xs text-slate-600">${{ item.productId.salePrice.toFixed(2) }}{{ item.productId.unit ? ' · ' + item.productId.unit : '' }}</p>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center rounded-lg border border-slate-300">
+                    <button type="button" class="grid size-8 place-items-center hover:bg-slate-100" (click)="decrease(item.productId._id, item.quantity)" aria-label="Decrease quantity">
+                      <mat-icon class="text-sm">remove</mat-icon>
+                    </button>
+                    <span class="min-w-6 text-center text-xs font-medium">{{ item.quantity }}</span>
+                    <button type="button" class="grid size-8 place-items-center hover:bg-slate-100" (click)="increase(item.productId._id, item.quantity)" aria-label="Increase quantity">
+                      <mat-icon class="text-sm">add</mat-icon>
+                    </button>
+                  </div>
+                  <button type="button" class="text-xs text-slate-500 underline hover:text-slate-700" (click)="cart.removeProduct(item.productId._id).subscribe()">Remove</button>
+                </div>
               </div>
             </div>
           </article>

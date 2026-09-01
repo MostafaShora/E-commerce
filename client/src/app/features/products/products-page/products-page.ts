@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import type {
   CatalogCategory,
@@ -18,7 +19,7 @@ import { CatalogService, type CatalogQuery } from '../services/catalog';
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ProductCardComponent],
+  imports: [CommonModule, ReactiveFormsModule, ProductCardComponent, MatCheckboxModule],
   templateUrl: './products-page.html',
 })
 export class ProductsPage {
