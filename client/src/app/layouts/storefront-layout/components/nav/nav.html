@@ -1,40 +1,168 @@
 <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
   <div class="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4">
-    <app-logo className="shrink-0 lg:mr-6" />
-    <form [formGroup]="searchForm" (ngSubmit)="submitSearch()" class="min-w-0 flex-1">
+
+    <!-- Logo -->
+    <app-logo class="shrink-0 lg:mr-6" />
+
+    <!-- Search -->
+    <form
+      [formGroup]="searchForm"
+      (ngSubmit)="submitSearch()"
+      class="hidden min-w-0 flex-1 sm:block"
+    >
       <div class="flex rounded-full border border-slate-300 bg-white px-3 py-1">
-        <input class="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm outline-none" formControlName="query" type="search" placeholder="Search products, and recipes" aria-label="Search products" />
-        <button type="submit" class="flex items-center gap-1 px-2 text-sm font-medium text-slate-700" aria-label="Search products">
+
+        <input
+          class="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm outline-none"
+          formControlName="query"
+          type="search"
+          placeholder="Search products, and recipes"
+          aria-label="Search products"
+        />
+
+        <button
+          type="submit"
+          class="flex items-center gap-1 px-2 text-sm font-medium text-slate-700"
+          aria-label="Search products"
+        >
           <mat-icon>search</mat-icon>
           <span class="hidden sm:inline">Search</span>
         </button>
+
       </div>
     </form>
-    <app-mode-toggle />
-    @if (auth.currentUser(); as user) {
-      <details class="relative hidden sm:block">
-        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
-          <app-avatar [src]="user.avatar" [alt]="user.name" [fallback]="user.name.charAt(0).toUpperCase()" />
-          {{ user.name }}
-        </summary>
-        <div class="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-2 text-sm shadow-lg">
-          <p class="px-3 py-2 text-xs text-slate-500">{{ user.email }}</p>
-          <a routerLink="/account/orders" class="block rounded px-3 py-2 hover:bg-slate-100">Order history</a>
-          <a routerLink="/account/addresses" class="block rounded px-3 py-2 hover:bg-slate-100">Addresses</a>
-          <a routerLink="/account/reviews" class="block rounded px-3 py-2 hover:bg-slate-100">Ratings &amp; reviews</a>
-          @if (user.isAdmin) { <a routerLink="/admin" class="block rounded px-3 py-2 hover:bg-slate-100">Admin portal</a> }
-          <button type="button" (click)="logout()" class="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-red-600 hover:bg-red-50">
-            <mat-icon>logout</mat-icon>
-            <span>Logout</span>
-          </button>
-        </div>
-      </details>
-    } @else {
-      <button type="button" class="hidden items-center gap-2 text-sm font-medium text-slate-700 sm:flex" (click)="openAuth()" aria-label="Sign in or register">
-        <mat-icon>login</mat-icon>
-        <span>Sign in / Register</span>
-      </button>
-    }
-    <app-cart-button />
+
+    <!-- Right side -->
+    <div class="ml-auto flex shrink-0 items-center gap-3">
+
+      <!-- Dark / Light Mode -->
+      <app-mode-toggle />
+
+      <!-- Account -->
+      @if (auth.currentUser(); as user) {
+
+        <details class="relative">
+
+          <!-- Account Button -->
+          <summary
+            class="flex cursor-pointer list-none items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+          >
+
+            <app-avatar
+              [src]="user.avatar"
+              [alt]="user.name"
+              [fallback]="user.name.charAt(0).toUpperCase()"
+            />
+
+            <span class="hidden sm:inline">
+              {{ user.name }}
+            </span>
+
+          </summary>
+
+          <!-- Dropdown Menu -->
+          <div
+            class="absolute right-0 top-full z-[9999] mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 text-sm shadow-xl"
+          >
+
+            <!-- User Info -->
+            <div class="border-b border-slate-100 px-3 py-3">
+
+              <p class="font-medium text-slate-900">
+                {{ user.name }}
+              </p>
+
+              <p class="mt-1 truncate text-xs text-slate-500">
+                {{ user.email }}
+              </p>
+
+            </div>
+
+            <!-- Menu Links -->
+            <div class="py-1">
+
+              <a
+                routerLink="/account/orders"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
+              >
+                <span>Order history</span>
+              </a>
+
+              <a
+                routerLink="/account/addresses"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
+              >
+                <span>Addresses</span>
+              </a>
+
+              <a
+                routerLink="/account/reviews"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
+              >
+                <span>Ratings &amp; reviews</span>
+              </a>
+
+              <!-- Admin -->
+              @if (user.isAdmin) {
+
+                <a
+                  routerLink="/admin"
+                  class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
+                >
+                  <span>Admin portal</span>
+                </a>
+
+              }
+
+            </div>
+
+            <!-- Logout -->
+            <div class="border-t border-slate-100 pt-1">
+
+              <button
+                type="button"
+                (click)="logout()"
+                class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-red-600 transition hover:bg-red-50"
+              >
+                <mat-icon class="text-[20px]">
+                  logout
+                </mat-icon>
+
+                <span>Logout</span>
+              </button>
+
+            </div>
+
+          </div>
+
+        </details>
+
+      } @else {
+
+        <!-- Sign In / Register -->
+        <button
+          type="button"
+          class="flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+          (click)="openAuth()"
+          aria-label="Sign in or register"
+        >
+
+          <mat-icon>
+            person
+          </mat-icon>
+
+          <span class="hidden sm:inline">
+            Sign in / Register
+          </span>
+
+        </button>
+
+      }
+
+      <!-- Cart -->
+      <app-cart-button />
+
+    </div>
+
   </div>
 </header>

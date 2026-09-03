@@ -1,43 +1,183 @@
-<footer class="mt-8 border-t border-border bg-background">
-  <!-- CTA Section -->
-  <section class="rounded-t-4xl bg-muted px-4 py-14 text-center">
-    <div class="mx-auto flex max-w-2xl flex-col items-center gap-4">
-      <!-- Logo -->
-      <app-logo [showText]="false"></app-logo>
+<footer class="mt-8 border-t border-slate-200 bg-slate-950 text-white">
+  <!-- Main Footer -->
+  <div class="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:py-16">
+    <div class="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Brand -->
+      <div class="flex flex-col gap-5 lg:pr-8">
+        <div class="w-fit transition-transform duration-300 hover:-translate-y-1">
+          <app-logo></app-logo>
+        </div>
 
-      <!-- Heading -->
-      <div class="flex flex-col gap-1">
-        <h2 class="text-2xl font-semibold text-foreground">There's more to explore</h2>
-
-        <p class="text-base text-muted-foreground">
-          Shop fresh groceries, pantry staples, and everyday essentials.
+        <p class="max-w-sm text-sm leading-7 text-slate-400">
+          Fresh groceries, pantry essentials, and everyday products delivered straight to your door.
         </p>
+
+        <!-- Social -->
+        <div class="flex items-center gap-3 pt-1">
+          <a
+            href="#"
+            aria-label="Facebook"
+            class="group flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-slate-400 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 hover:bg-blue-500 hover:text-white"
+          >
+            <mat-icon class="transition-transform duration-300 group-hover:scale-110">
+              facebook
+            </mat-icon>
+          </a>
+
+          <a
+            href="#"
+            aria-label="Instagram"
+            class="group flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-slate-400 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500 hover:bg-pink-500 hover:text-white"
+          >
+            <mat-icon class="transition-transform duration-300 group-hover:scale-110">
+              photo_camera
+            </mat-icon>
+          </a>
+
+          <a
+            href="#"
+            aria-label="Email"
+            class="group flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-slate-400 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:bg-emerald-500 hover:text-white"
+          >
+            <mat-icon class="transition-transform duration-300 group-hover:scale-110">
+              email
+            </mat-icon>
+          </a>
+        </div>
       </div>
 
-      <!-- Products Button -->
-      <a
-        routerLink="/products"
-        class="mt-3 inline-flex h-11 items-center justify-center rounded-full px-8 text-base font-medium"
-      >
-        View all products
-      </a>
+      <!-- Shop -->
+      <div>
+        <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">Shop</h3>
+
+        <nav class="flex flex-col gap-3 text-sm text-slate-400">
+          <a
+            routerLink="/products"
+            class="group flex items-center transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            <span>All Products</span>
+          </a>
+
+          <a
+            routerLink="/products"
+            class="group flex items-center transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            <span>Fresh Groceries</span>
+          </a>
+
+          <a
+            routerLink="/products"
+            class="group flex items-center transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            <span>Pantry Staples</span>
+          </a>
+
+          <a
+            routerLink="/products"
+            class="group flex items-center transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            <span>Deals & Offers</span>
+          </a>
+
+          <a
+            routerLink="/cart"
+            class="group flex items-center transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            <span>Your Cart</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Customer Service -->
+      <div>
+        <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
+          Customer Service
+        </h3>
+
+        <nav class="flex flex-col gap-3 text-sm text-slate-400">
+          <a
+            routerLink="/account/orders"
+            class="transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            Order History
+          </a>
+
+          <a
+            routerLink="/account/addresses"
+            class="transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            My Addresses
+          </a>
+
+          <a
+            routerLink="/account/reviews"
+            class="transition-all duration-200 hover:translate-x-1 hover:text-white"
+          >
+            Ratings & Reviews
+          </a>
+
+          <a href="#" class="transition-all duration-200 hover:translate-x-1 hover:text-white">
+            Help Center
+          </a>
+
+          <a href="#" class="transition-all duration-200 hover:translate-x-1 hover:text-white">
+            Contact Us
+          </a>
+        </nav>
+      </div>
+
+      <!-- Newsletter -->
+      <div>
+        <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
+          Stay in the loop
+        </h3>
+
+        <p class="mb-5 text-sm leading-6 text-slate-400">
+          Subscribe to get special offers, new products, and useful updates.
+        </p>
+
+        <form class="flex flex-col gap-3">
+          <div
+            class="group flex h-12 overflow-hidden rounded-xl border border-slate-700 bg-slate-900 transition-all duration-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20"
+          >
+            <input
+              type="email"
+              placeholder="Your email address"
+              aria-label="Email address"
+              class="min-w-0 flex-1 bg-transparent px-4 text-sm text-white outline-none placeholder:text-slate-500"
+            />
+
+            <button
+              type="submit"
+              class="flex w-12 shrink-0 items-center justify-center bg-emerald-500 text-white transition-all duration-300 hover:bg-emerald-400 active:scale-95"
+              aria-label="Subscribe"
+            >
+              <mat-icon class="transition-transform duration-300 hover:translate-x-0.5">
+                arrow_forward
+              </mat-icon>
+            </button>
+          </div>
+
+          <p class="text-xs text-slate-500">No spam. Unsubscribe anytime.</p>
+        </form>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Footer Bottom -->
-  <div
-    class="mx-auto flex w-full max-w-350 flex-col gap-4 px-4 py-6 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between"
-  >
-    <!-- Logo -->
-    <app-logo></app-logo>
+  <!-- Bottom Footer -->
+  <div class="border-t border-slate-800">
+    <div
+      class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-6 text-sm sm:px-6 md:flex-row md:items-center md:justify-between"
+    >
+      <p class="text-slate-500">© {{ currentYear }} Your Store. All rights reserved.</p>
 
-    <!-- Links -->
-    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-      <a routerLink="/products" class="hover:text-foreground"> Products </a>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-slate-500">
+        <a href="#" class="transition-colors duration-200 hover:text-white"> Privacy Policy </a>
 
-      <a href="#" class="hover:text-foreground"> Privacy Policy </a>
+        <a href="#" class="transition-colors duration-200 hover:text-white"> Terms of Service </a>
 
-      <a href="#" class="hover:text-foreground"> Terms of Service </a>
+        <a href="#" class="transition-colors duration-200 hover:text-white"> Shipping & Returns </a>
+      </div>
     </div>
   </div>
 </footer>
