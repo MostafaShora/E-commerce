@@ -2,10 +2,10 @@
   <header class="flex flex-wrap items-start justify-between gap-4">
     <div>
       <h1 class="text-2xl font-bold tracking-tight">Products</h1>
-      <p class="mt-1 text-sm text-slate-600">Manage your store catalog and product inventory.</p>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Manage your store catalog and product inventory.</p>
     </div>
     <a routerLink="/admin/products/new" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
-      <svg lucidePlus class="size-4"></svg>
+      <mat-icon class="!text-[18px]">add</mat-icon>
       New Product
     </a>
   </header>
@@ -21,16 +21,16 @@
     <div
       class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-600"
     >
-      <svg lucidePackage class="mx-auto size-8 text-slate-400"></svg>
+      <mat-icon class="mx-auto !text-[32px] text-slate-400">inventory_2</mat-icon>
       <p class="mt-3 font-medium text-slate-700">No products found.</p>
       <p class="mt-1">Create your first product to start building the catalog.</p>
       <a routerLink="/admin/products/new" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 font-semibold text-white hover:bg-slate-800">
-        <svg lucidePlus class="size-4"></svg>
+        <mat-icon class="!text-[18px]">add</mat-icon>
         New Product
       </a>
     </div>
   } @else {
-    <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+    <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <table class="w-full min-w-180 text-left text-sm">
         <caption class="border-b border-slate-200 px-4 py-3 text-left text-base font-semibold text-slate-900">Catalog ({{ pagination()?.total ?? 0 }})</caption>
         <thead class="border-b border-slate-200 text-xs uppercase text-slate-500">
@@ -45,9 +45,9 @@
             <th class="px-4 py-3">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
           @for (product of products(); track product._id) {
-            <tr class="hover:bg-slate-50">
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
                   <img
@@ -66,13 +66,13 @@
               <td class="px-4 py-3">
                 <div class="flex items-center gap-1">
                   <a [routerLink]="['/admin/products', product._id, 'edit']" class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100" aria-label="Edit product" title="Edit product">
-                    <svg lucidePencil class="size-4"></svg>
+                    <mat-icon class="!text-[18px]">edit</mat-icon>
                   </a>
                   <button type="button" (click)="toggle(product)" class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100" [attr.aria-label]="isActive(product) ? 'Deactivate product' : 'Activate product'" [title]="isActive(product) ? 'Deactivate product' : 'Activate product'">
-                    <svg lucideCirclePower class="size-4"></svg>
+                    <mat-icon class="!text-[18px]">power_settings_new</mat-icon>
                   </button>
                   <button type="button" (click)="remove(product)" class="grid size-8 place-items-center rounded text-red-600 hover:bg-red-50" aria-label="Delete product" title="Delete product">
-                    <svg lucideTrash2 class="size-4"></svg>
+                    <mat-icon class="!text-[18px]">delete</mat-icon>
                   </button>
                 </div>
               </td>

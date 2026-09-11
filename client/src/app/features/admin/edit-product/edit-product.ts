@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LucideArrowLeft } from '@lucide/angular';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
 import { NotificationService } from '../../../core/services/notification';
@@ -13,7 +13,7 @@ import type { CatalogCategory, CatalogProduct } from '../../../shared/models/cat
 @Component({
   selector: 'app-admin-edit-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideArrowLeft, MatCheckboxModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatCheckboxModule, MatIconModule],
   templateUrl: './edit-product.html',
 })
 export class AdminEditProductComponent {
@@ -26,7 +26,9 @@ export class AdminEditProductComponent {
 
   readonly categories = signal<CatalogCategory[]>([]);
   readonly product = signal<CatalogProduct | null>(null);
-  readonly selectedImage = signal<File | null>(null);
+  readonly selectedImages = signal<File[]>([]);
+  readonly imageUrls = signal<string[]>([]);
+  readonly imageUrlInput = signal('');
   readonly imagePreview = signal<string | null>(null);
   readonly loadingCategories = signal(true);
   readonly loadingProduct = signal(true);
@@ -73,9 +75,8 @@ export class AdminEditProductComponent {
         if (foundProduct) {
           this.product.set(foundProduct);
           this.populateForm(foundProduct);
-          if (foundProduct.images?.[0]) {
-            this.imagePreview.set(foundProduct.images[0]);
-          }
+          this.imageUrls.set(foundProduct.images ?? []);
+          if (foundProduct.images?.[0]) this.imagePreview.set(foundProduct.images[0]);
         } else {
           this.errorMessage.set('Product not found.');
         }
@@ -105,10 +106,31 @@ export class AdminEditProductComponent {
 
   chooseImage(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
-    this.selectedImage.set(file);
+    const files = Array.from(input.files ?? []);
+    if (!files.length) return;
+    this.selectedImages.update((current) => [...current, ...files]);
     this.imageError.set(null);
-    if (file) this.imagePreview.set(URL.createObjectURL(file));
+    input.value = '';
+  }
+
+  addImageUrl(): void {
+    const url = this.imageUrlInput().trim();
+    try {
+      if (!url) return;
+      new URL(url);
+      if (!this.imageUrls().includes(url)) this.imageUrls.update((images) => [...images, url]);
+      this.imageUrlInput.set('');
+    } catch {
+      this.imageError.set('Enter a valid image URL.');
+    }
+  }
+
+  removeImageUrl(url: string): void {
+    this.imageUrls.update((images) => images.filter((image) => image !== url));
+  }
+
+  removeSelectedImage(index: number): void {
+    this.selectedImages.update((images) => images.filter((_, imageIndex) => imageIndex !== index));
   }
 
   salePrice(): number {
@@ -176,7 +198,7 @@ export class AdminEditProductComponent {
       isActive: value.isActive,
     };
 
-    this.adminService.updateProduct(this.productId, updateData).subscribe({
+    const save = (uploadedImages: string[]) => this.adminService.updateProduct(this.productId!, { ...updateData, images: [...this.imageUrls(), ...uploadedImages] }).subscribe({
       next: (response) => {
         this.notifications.success(response.message);
         void this.router.navigate(['/admin/products']);
@@ -187,5 +209,14 @@ export class AdminEditProductComponent {
       },
       complete: () => this.saving.set(false),
     });
+    const files = this.selectedImages();
+    if (files.length) {
+      this.adminService.uploadProductImages(files).subscribe({
+        next: (response) => save(response.images),
+        error: (error: unknown) => { this.errorMessage.set(normalizeApiError(error).message); this.saving.set(false); },
+      });
+    } else {
+      save([]);
+    }
   }
 }

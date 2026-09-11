@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LucideArrowLeft } from '@lucide/angular';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
 import { NotificationService } from '../../../core/services/notification';
@@ -13,7 +13,7 @@ import type { CatalogCategory } from '../../../shared/models/catalog';
 @Component({
   selector: 'app-admin-new-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideArrowLeft, MatCheckboxModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatCheckboxModule, MatIconModule],
   templateUrl: './new-product.html',
 })
 export class AdminNewProductComponent {
@@ -24,8 +24,9 @@ export class AdminNewProductComponent {
   private readonly notifications = inject(NotificationService);
 
   readonly categories = signal<CatalogCategory[]>([]);
-  readonly selectedImage = signal<File | null>(null);
-  readonly imagePreview = signal<string | null>(null);
+  readonly selectedImages = signal<File[]>([]);
+  readonly imageUrls = signal<string[]>([]);
+  readonly imageUrlInput = signal('');
   readonly loadingCategories = signal(true);
   readonly saving = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -53,10 +54,32 @@ export class AdminNewProductComponent {
 
   chooseImage(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
-    this.selectedImage.set(file);
-    this.imageError.set(file ? null : 'A product image is required.');
-    if (file) this.imagePreview.set(URL.createObjectURL(file));
+    const files = Array.from(input.files ?? []);
+    if (!files.length) return;
+    this.selectedImages.update((current) => [...current, ...files]);
+    this.imageError.set(null);
+    input.value = '';
+  }
+
+  addImageUrl(): void {
+    const url = this.imageUrlInput().trim();
+    try {
+      if (!url) return;
+      new URL(url);
+      if (!this.imageUrls().includes(url)) this.imageUrls.update((images) => [...images, url]);
+      this.imageUrlInput.set('');
+      this.imageError.set(null);
+    } catch {
+      this.imageError.set('Enter a valid image URL.');
+    }
+  }
+
+  removeImageUrl(url: string): void {
+    this.imageUrls.update((images) => images.filter((image) => image !== url));
+  }
+
+  removeSelectedImage(index: number): void {
+    this.selectedImages.update((images) => images.filter((_, imageIndex) => imageIndex !== index));
   }
 
   salePrice(): number {
@@ -103,9 +126,8 @@ export class AdminNewProductComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const image = this.selectedImage();
-    if (!image) {
-      this.imageError.set('A product image is required.');
+    if (!this.selectedImages().length && !this.imageUrls().length) {
+      this.imageError.set('Add at least one product image or image URL.');
       return;
     }
 
@@ -116,7 +138,7 @@ export class AdminNewProductComponent {
       discountLabel: value.discountLabel || undefined,
       description: value.description || undefined,
     };
-    this.adminService.createProduct(request, image).subscribe({
+    const save = (uploadedImages: string[]) => this.adminService.createProduct({ ...request, images: [...this.imageUrls(), ...uploadedImages] }).subscribe({
       next: (response) => {
         this.notifications.success(response.message);
         void this.router.navigate(['/admin/products']);
@@ -127,5 +149,14 @@ export class AdminNewProductComponent {
       },
       complete: () => this.saving.set(false),
     });
+    const files = this.selectedImages();
+    if (files.length) {
+      this.adminService.uploadProductImages(files).subscribe({
+        next: (response) => save(response.images),
+        error: (error: unknown) => { this.errorMessage.set(normalizeApiError(error).message); this.saving.set(false); },
+      });
+    } else {
+      save([]);
+    }
   }
 }

@@ -11,8 +11,10 @@ export class ProductImage {
   @Prop({ required: true })
   url: string;
 
-  @Prop({ required: true })
-  publicId: string;
+  // External image URLs do not have a Cloudinary public id.  Cloudinary-backed
+  // uploads still store it so deletion can clean them up.
+  @Prop()
+  publicId?: string;
 }
 
 export const ProductImageSchema = SchemaFactory.createForClass(ProductImage);

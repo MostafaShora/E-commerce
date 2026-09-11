@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,7 +23,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { USER_ROLES } from '../common/constants/enums';
 
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 
 import { ProductService } from './product.service';
@@ -125,6 +126,25 @@ export class ProductController {
       message: 'Admin products retrieved successfully',
       ...result,
     };
+  }
+
+  /** Mirrors the MERN admin image flow: upload files first, then save their URLs. */
+  @Post('images')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER_ROLES.ADMIN)
+  @UseInterceptors(FilesInterceptor('images', 10, { storage: memoryStorage() }))
+  async uploadProductImages(@UploadedFiles() files: Express.Multer.File[]) {
+    // FilesInterceptor populates request.files; keeping this endpoint separate
+    // lets product creation also support externally hosted image URLs.
+    if (!files.length) throw new BadRequestException('At least one image file is required');
+    if (files.some((file) => file.size > MAX_PRODUCT_IMAGE_SIZE)) {
+      throw new BadRequestException('Each image must not exceed 5MB');
+    }
+    const invalid = files.find((file) => !['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype));
+    if (invalid) throw new BadRequestException('Only JPEG, PNG, JPG, and WebP images are allowed');
+
+    const images = await this.productService.uploadProductImages(files);
+    return { message: 'Images uploaded successfully', images };
   }
 
   @Get(':slug')

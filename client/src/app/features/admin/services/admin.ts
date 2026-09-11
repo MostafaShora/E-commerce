@@ -54,6 +54,7 @@ export type CreateAdminProduct = {
   unit?: string;
   stockCount?: number;
   isActive?: boolean;
+  images?: string[];
 };
 
 export type AdminAiRequest = {
@@ -78,19 +79,14 @@ export class AdminService {
     });
   }
 
-  createProduct(value: CreateAdminProduct, image: File): Observable<AdminMutationResponse> {
+  createProduct(value: CreateAdminProduct): Observable<AdminMutationResponse> {
+    return this.http.post<AdminMutationResponse>('/api/product', value);
+  }
+
+  uploadProductImages(files: File[]): Observable<{ message: string; images: string[] }> {
     const body = new FormData();
-    body.append('image', image);
-    body.append('categoryId', value.categoryId);
-    body.append('name', value.name);
-    body.append('description', value.description ?? '');
-    body.append('originalPrice', String(value.originalPrice));
-    body.append('discountPercent', String(value.discountPercent ?? 0));
-    body.append('discountLabel', value.discountLabel ?? '');
-    body.append('unit', value.unit ?? 'pc');
-    body.append('stockCount', String(value.stockCount ?? 0));
-    body.append('isActive', String(value.isActive ?? true));
-    return this.http.post<AdminMutationResponse>('/api/product', body);
+    files.forEach((file) => body.append('images', file));
+    return this.http.post<{ message: string; images: string[] }>('/api/product/images', body);
   }
 
   generateAi(value: AdminAiRequest): Observable<AdminAiResponse> {

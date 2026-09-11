@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { LucideCirclePower, LucidePackage, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../services/admin';
 import { normalizeApiError } from '../../../core/api/api-error';
@@ -10,7 +10,7 @@ import type { CatalogProduct } from '../../../shared/models/catalog';
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule, RouterLink, LucidePlus, LucidePackage, LucidePencil, LucideCirclePower, LucideTrash2],
+  imports: [CommonModule, RouterLink, MatIconModule],
   templateUrl: './products.html',
 })
 export class AdminProductsComponent {

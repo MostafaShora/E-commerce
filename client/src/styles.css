@@ -2,3 +2,51 @@
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'tailwindcss';
+
+/* The application already persists its `dark` class through ThemeService.  Keep
+   the legacy Tailwind utility-heavy templates coherent without a second theme
+   state or per-page overrides. */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: #020617;
+  color: #f8fafc;
+}
+
+html.dark .bg-white,
+html.dark .bg-slate-50 {
+  background-color: #0f172a;
+}
+
+html.dark .bg-slate-100,
+html.dark .bg-slate-200 {
+  background-color: #1e293b;
+}
+
+html.dark .border-slate-100,
+html.dark .border-slate-200,
+html.dark .border-slate-300 {
+  border-color: #334155;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-slate-700 {
+  color: #f8fafc;
+}
+
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-slate-400 {
+  color: #94a3b8;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  border-color: #475569;
+  background-color: #0f172a;
+  color: #f8fafc;
+}

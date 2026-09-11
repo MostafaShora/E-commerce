@@ -286,13 +286,8 @@ export class ProductService {
         userId: new Types.ObjectId(userId),
         categoryId: new Types.ObjectId(data.categoryId),
         images: uploadedImage
-          ? [
-              {
-                url: uploadedImage.url,
-                publicId: uploadedImage.publicId,
-              },
-            ]
-          : [],
+          ? [{ url: uploadedImage.url, publicId: uploadedImage.publicId }]
+          : (data.images ?? []).map((url) => ({ url })),
       });
 
       return transformProductForResponse(product.toObject ? product.toObject() : product);
@@ -357,6 +352,18 @@ export class ProductService {
       product.description = data.description;
     }
 
+    let removedImages: { publicId?: string }[] = [];
+    if (data.images !== undefined) {
+      const previousImages = product.images ?? [];
+      const retainedImages = data.images.map(
+        (url) => previousImages.find((image) => image.url === url) ?? { url },
+      );
+      removedImages = previousImages.filter(
+        (image) => !data.images!.includes(image.url),
+      );
+      product.images = retainedImages;
+    }
+
     if (data.originalPrice !== undefined) {
       product.originalPrice = data.originalPrice;
     }
@@ -383,7 +390,20 @@ export class ProductService {
 
     await product.save();
 
+    await Promise.all(
+      removedImages.flatMap((image) =>
+        image.publicId ? [deleteImageFromCloudinary(image.publicId)] : [],
+      ),
+    );
+
     return transformProductForResponse(product.toObject ? product.toObject() : product);
+  }
+
+  async uploadProductImages(files: Express.Multer.File[]) {
+    const uploaded = await Promise.all(
+      files.map((file) => uploadImageToCloudinary(file, 'ecommerce/products')),
+    );
+    return uploaded.map((image) => image.url);
   }
 
   // Deactivate product
