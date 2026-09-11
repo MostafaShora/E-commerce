@@ -52,28 +52,29 @@ export class ProductController {
     @Body() body: CreateProductDto,
     @Req() req: Request,
   ) {
-    if (!file) {
-      throw new BadRequestException('Image file is missing');
+    if (!file && !body.images?.length) {
+      throw new BadRequestException('At least one image file or image URL is required');
     }
 
-    if (file.size > MAX_PRODUCT_IMAGE_SIZE) {
+    if (file && file.size > MAX_PRODUCT_IMAGE_SIZE) {
       throw new BadRequestException('Image size must not exceed 5MB');
     }
 
     // Dynamically import file-type to avoid issues with ESM and CommonJS
     const { fileTypeFromBuffer } = await import('file-type');
-    const detectedType = await fileTypeFromBuffer(file.buffer);
+    const detectedType = file ? await fileTypeFromBuffer(file.buffer) : undefined;
 
     if (
-      !detectedType ||
+      file && (!detectedType ||
       !['image/jpeg', 'image/png', 'image/webp'].includes(detectedType.mime)
+      )
     ) {
       throw new BadRequestException(
         'Only JPEG, PNG, JPG, and WebP images are allowed',
       );
     }
 
-    if (file.size > MAX_PRODUCT_IMAGE_SIZE) {
+    if (file && file.size > MAX_PRODUCT_IMAGE_SIZE) {
       throw new BadRequestException('Image size must not exceed 5MB');
     }
 
@@ -136,12 +137,15 @@ export class ProductController {
   async uploadProductImages(@UploadedFiles() files: Express.Multer.File[]) {
     // FilesInterceptor populates request.files; keeping this endpoint separate
     // lets product creation also support externally hosted image URLs.
-    if (!files.length) throw new BadRequestException('At least one image file is required');
+    if (!files?.length) throw new BadRequestException('At least one image file is required');
     if (files.some((file) => file.size > MAX_PRODUCT_IMAGE_SIZE)) {
       throw new BadRequestException('Each image must not exceed 5MB');
     }
-    const invalid = files.find((file) => !['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype));
-    if (invalid) throw new BadRequestException('Only JPEG, PNG, JPG, and WebP images are allowed');
+    const { fileTypeFromBuffer } = await import('file-type');
+    const detectedTypes = await Promise.all(files.map((file) => fileTypeFromBuffer(file.buffer)));
+    if (detectedTypes.some((type) => !type || !['image/jpeg', 'image/png', 'image/webp'].includes(type.mime))) {
+      throw new BadRequestException('Only JPEG, PNG, JPG, and WebP images are allowed');
+    }
 
     const images = await this.productService.uploadProductImages(files);
     return { message: 'Images uploaded successfully', images };

@@ -3,6 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../services/admin';
 import type { CreatedOrder } from '../../checkout/services/order';
+import { orderStatusClass, paymentStatusClass } from '../models/admin.model';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -17,6 +18,8 @@ export class AdminDashboardComponent {
   readonly productTotal = signal(0);
   readonly orderTotal = signal(0);
   readonly recentOrders = signal<CreatedOrder[]>([]);
+  readonly orderStatusClass = orderStatusClass;
+  readonly paymentStatusClass = paymentStatusClass;
   constructor() {
     this.load();
   }

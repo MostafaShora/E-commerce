@@ -1,8 +1,11 @@
-<div class="flex min-h-screen w-full bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-  <aside class="hidden w-64 shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 md:flex md:flex-col">
-    <div class="flex h-16 items-center border-b border-slate-200 px-5 dark:border-slate-800">
+<div class="flex min-h-screen w-full bg-[var(--app-background)] text-[var(--app-foreground)]">
+  <aside
+    class="hidden w-64 shrink-0 border-r border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
+  >
+    <div class="flex h-16 items-center border-b border-[var(--app-border)] px-5">
       <a routerLink="/admin" class="flex items-center gap-2 text-base font-semibold">
-        <span>Nexora</span><span class="text-xs font-bold uppercase tracking-wider text-amber-600">Admin</span>
+        <span>Nexora</span
+        ><span class="text-xs font-bold uppercase tracking-wider text-amber-600">Admin</span>
       </a>
     </div>
     <nav class="flex flex-1 flex-col gap-1 p-3">
@@ -29,30 +32,71 @@
         ><mat-icon class="!text-[18px]">shopping_bag</mat-icon>Orders</a
       >
     </nav>
-    <div class="border-t border-slate-200 p-3 dark:border-slate-800">
-      <a routerLink="/" class="mb-2 flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white">
+    <div class="border-t border-[var(--app-border)] p-3">
+      <a
+        routerLink="/"
+        class="mb-2 flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white"
+      >
         <mat-icon class="!text-[18px]">storefront</mat-icon>
         <span>Storefront</span>
       </a>
-      <button type="button" (click)="logout()" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50" aria-label="Log out">
+      <button
+        type="button"
+        (click)="logout()"
+        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50"
+        aria-label="Log out"
+      >
         <mat-icon class="!text-[18px]">logout</mat-icon>
         <span>Log out</span>
       </button>
     </div>
   </aside>
   <div class="flex min-w-0 flex-1 flex-col">
-    <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-900 sm:px-6">
-      <div><h1 class="text-lg font-semibold">Admin Portal</h1><p class="hidden text-xs text-slate-500 sm:block">Store management</p></div>
+    <header
+      class="flex h-16 items-center justify-between border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 sm:px-6"
+    >
+      <div>
+        <h1 class="text-lg font-semibold">Admin Portal</h1>
+        <p class="hidden text-xs text-slate-500 sm:block">Store management</p>
+      </div>
       @if (auth.currentUser(); as user) {
-        <div class="text-right text-xs"><p class="font-semibold">{{ user.name }}</p><p class="text-slate-500">{{ user.email }}</p></div>
+        <div class="text-right text-xs">
+          <p class="font-semibold">{{ user.name }}</p>
+          <p class="text-slate-500">{{ user.email }}</p>
+        </div>
       }
     </header>
-    <nav class="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-800 dark:bg-slate-900 md:hidden">
-      <a routerLink="/admin" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="bg-slate-900 text-white" class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"><mat-icon class="!text-[18px]">dashboard</mat-icon>Dashboard</a>
-      <a routerLink="/admin/products" routerLinkActive="bg-slate-900 text-white" class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"><mat-icon class="!text-[18px]">inventory_2</mat-icon>Products</a>
-      <a routerLink="/admin/categories" routerLinkActive="bg-slate-900 text-white" class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"><mat-icon class="!text-[18px]">category</mat-icon>Categories</a>
-      <a routerLink="/admin/orders" routerLinkActive="bg-slate-900 text-white" class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"><mat-icon class="!text-[18px]">shopping_bag</mat-icon>Orders</a>
+    <nav
+      class="flex gap-2 overflow-x-auto border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
+    >
+      <a
+        routerLink="/admin"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="bg-slate-900 text-white"
+        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ><mat-icon class="!text-[18px]">dashboard</mat-icon>Dashboard</a
+      >
+      <a
+        routerLink="/admin/products"
+        routerLinkActive="bg-slate-900 text-white"
+        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ><mat-icon class="!text-[18px]">inventory_2</mat-icon>Products</a
+      >
+      <a
+        routerLink="/admin/categories"
+        routerLinkActive="bg-slate-900 text-white"
+        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ><mat-icon class="!text-[18px]">category</mat-icon>Categories</a
+      >
+      <a
+        routerLink="/admin/orders"
+        routerLinkActive="bg-slate-900 text-white"
+        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ><mat-icon class="!text-[18px]">shopping_bag</mat-icon>Orders</a
+      >
     </nav>
-    <main class="mx-auto w-full max-w-275 flex-1 overflow-y-auto p-4 sm:p-6"><router-outlet></router-outlet></main>
+    <main class="mx-auto w-full max-w-275 flex-1 overflow-y-auto p-4 sm:p-6">
+      <router-outlet></router-outlet>
+    </main>
   </div>
 </div>

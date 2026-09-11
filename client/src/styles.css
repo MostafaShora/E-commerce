@@ -3,50 +3,113 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'tailwindcss';
 
-/* The application already persists its `dark` class through ThemeService.  Keep
-   the legacy Tailwind utility-heavy templates coherent without a second theme
-   state or per-page overrides. */
+/* Tailwind v4 defaults `dark:` to the operating-system media query.  The app's
+   ThemeService controls html.dark/html.light, so its explicit choice must own
+   the variant instead. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --app-background: #f8fafc;
+  --app-foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --app-border: #e2e8f0;
+  --input-background: #ffffff;
+  --input-foreground: #0f172a;
+  --sidebar-background: #ffffff;
+  --sidebar-foreground: #475569;
+  --header-background: #ffffff;
+}
+
 html.dark {
+  --app-background: #020617;
+  --app-foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --app-border: #334155;
+  --input-background: #0f172a;
+  --input-foreground: #f8fafc;
+  --sidebar-background: #0f172a;
+  --sidebar-foreground: #cbd5e1;
+  --header-background: #0f172a;
   color-scheme: dark;
 }
 
-html.dark body {
-  background: #020617;
-  color: #f8fafc;
+html.light {
+  color-scheme: light;
 }
 
-html.dark .bg-white,
-html.dark .bg-slate-50 {
-  background-color: #0f172a;
+html,
+body {
+  background: var(--app-background);
+  color: var(--app-foreground);
 }
 
-html.dark .bg-slate-100,
-html.dark .bg-slate-200 {
-  background-color: #1e293b;
+/* Legacy templates use Tailwind slate utilities. Map their surface tokens to
+   the single active theme palette rather than letting OS media queries win. */
+html .bg-white {
+  background-color: var(--card);
 }
 
-html.dark .border-slate-100,
-html.dark .border-slate-200,
-html.dark .border-slate-300 {
-  border-color: #334155;
+html .bg-slate-50 {
+  background-color: var(--app-background);
 }
 
-html.dark .text-slate-900,
-html.dark .text-slate-800,
-html.dark .text-slate-700 {
-  color: #f8fafc;
+html .bg-slate-100,
+html .bg-slate-200 {
+  background-color: var(--muted);
 }
 
-html.dark .text-slate-600,
-html.dark .text-slate-500,
-html.dark .text-slate-400 {
-  color: #94a3b8;
+html .border-slate-100,
+html .border-slate-200,
+html .border-slate-300 {
+  border-color: var(--app-border);
 }
 
-html.dark input,
-html.dark textarea,
-html.dark select {
-  border-color: #475569;
-  background-color: #0f172a;
-  color: #f8fafc;
+html .text-slate-900,
+html .text-slate-800,
+html .text-slate-700 {
+  color: var(--card-foreground);
 }
+
+html .text-slate-600,
+html .text-slate-500,
+html .text-slate-400 {
+  color: var(--muted-foreground);
+}
+
+html input,
+html textarea,
+html select {
+  border-color: var(--app-border);
+  background-color: var(--input-background);
+  color: var(--input-foreground);
+}
+
+/* Shared admin status semantics, matching the reference badge palette. */
+.status-badge { border-radius: 9999px; padding: .25rem .625rem; font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.status-placed, .status-payment-pending { background: rgb(245 158 11 / .12); color: #b45309; }
+.status-confirmed { background: rgb(59 130 246 / .12); color: #2563eb; }
+.status-assigned { background: rgb(168 85 247 / .12); color: #7e22ce; }
+.status-packed { background: rgb(99 102 241 / .12); color: #4f46e5; }
+.status-out-for-delivery { background: rgb(14 165 233 / .12); color: #0369a1; }
+.status-delivered, .status-paid, .status-in-stock { background: rgb(16 185 129 / .12); color: #047857; }
+.status-cancelled, .status-out-of-stock, .status-failed { background: rgb(239 68 68 / .12); color: #b91c1c; }
+html.dark .status-placed, html.dark .status-payment-pending { color: #fcd34d; }
+html.dark .status-confirmed { color: #93c5fd; }
+html.dark .status-assigned { color: #d8b4fe; }
+html.dark .status-packed { color: #c7d2fe; }
+html.dark .status-out-for-delivery { color: #7dd3fc; }
+html.dark .status-delivered, html.dark .status-paid, html.dark .status-in-stock { color: #6ee7b7; }
+html.dark .status-cancelled, html.dark .status-out-of-stock, html.dark .status-failed { color: #fca5a5; }
+
+/* Material's checkbox is retained, with the compact square control used by the MERN admin. */
+.mat-mdc-checkbox .mdc-checkbox { padding: 4px; }
+.mat-mdc-checkbox .mdc-checkbox__background { border-radius: 4px !important; border-color: var(--app-border) !important; }
+.mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background { background-color: #0f172a !important; border-color: #0f172a !important; }
+html.dark .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background { background-color: #f8fafc !important; border-color: #f8fafc !important; }
+html.dark .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__checkmark { color: #0f172a !important; }

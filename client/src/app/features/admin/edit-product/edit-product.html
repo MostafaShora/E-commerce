@@ -148,11 +148,11 @@
           </div>
           @if (selectedImages().length || imageUrls().length) {
             <div class="mt-4 grid grid-cols-2 gap-3">
-              @for (file of selectedImages(); track file.name + file.lastModified; let index = $index) {
-                <div><p class="truncate rounded-lg border p-3 text-xs">{{ file.name }}</p><button type="button" (click)="removeSelectedImage(index)" class="mt-1 text-xs text-red-600">Remove</button></div>
+            @for (image of selectedImages(); track image.preview; let index = $index) {
+                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="image.preview" [alt]="image.file.name" class="size-full object-cover" /><button type="button" (click)="removeSelectedImage(index)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><mat-icon class="!text-[16px]">close</mat-icon></button></div>
               }
               @for (url of imageUrls(); track url) {
-                <div><img [src]="url" alt="Product image" class="aspect-square w-full rounded-lg border object-cover" /><button type="button" (click)="removeImageUrl(url)" class="mt-1 text-xs text-red-600">Remove</button></div>
+                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="url" alt="Product image" class="size-full object-cover" /><button type="button" (click)="removeImageUrl(url)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><mat-icon class="!text-[16px]">close</mat-icon></button></div>
               }
             </div>
           }

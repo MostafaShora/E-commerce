@@ -62,7 +62,7 @@
               <td class="px-4 py-3 font-medium">{{ product.discountPercent ? product.discountPercent + '%' : '—' }}</td>
               <td class="px-4 py-3 font-semibold">${{ product.salePrice.toFixed(2) }}</td>
               <td class="px-4 py-3" [class.text-red-600]="product.stockCount === 0">{{ product.stockCount }}</td>
-              <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold" [class.bg-emerald-100]="product.stockCount > 0" [class.text-emerald-700]="product.stockCount > 0" [class.bg-red-100]="product.stockCount === 0" [class.text-red-700]="product.stockCount === 0">{{ product.stockCount > 0 ? 'In Stock' : 'Out of Stock' }}</span></td>
+              <td class="px-4 py-3"><span class="status-badge" [class.status-in-stock]="product.stockCount > 0" [class.status-out-of-stock]="product.stockCount === 0">{{ product.stockCount > 0 ? 'In Stock' : 'Out of Stock' }}</span></td>
               <td class="px-4 py-3">
                 <div class="flex items-center gap-1">
                   <a [routerLink]="['/admin/products', product._id, 'edit']" class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100" aria-label="Edit product" title="Edit product">

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { AdminService } from '../services/admin';
 import type { CreatedOrder, OrderStatus } from '../../checkout/services/order';
+import { orderStatusClass, paymentStatusClass } from '../models/admin.model';
 
 const statuses: OrderStatus[] = [
   'placed',
@@ -25,6 +26,8 @@ export class AdminOrdersComponent {
   readonly error = signal<string | null>(null);
   readonly page = signal(1);
   readonly statuses = statuses;
+  readonly orderStatusClass = orderStatusClass;
+  readonly paymentStatusClass = paymentStatusClass;
   readonly pagination = signal<{
     page: number;
     totalPages: number;

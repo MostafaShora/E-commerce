@@ -110,13 +110,11 @@
           <h3 class="text-sm font-medium">Product Images</h3>
           <p class="mt-1 text-xs text-slate-500">Upload JPEG, PNG, or WebP files (5MB each), or add image URLs.</p>
         </div>
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          (change)="chooseImage($event)"
-          class="block w-full text-sm"
-        />
+        <label class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center hover:border-slate-500">
+          <mat-icon>upload</mat-icon><span class="text-sm font-medium">Choose Files</span>
+          <span class="text-xs text-slate-500">JPEG, PNG, or WebP · maximum 5MB each</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" multiple (change)="chooseImage($event)" class="hidden" />
+        </label>
         <div class="flex gap-2">
           <input [value]="imageUrlInput()" (input)="imageUrlInput.set($any($event.target).value)" (keydown.enter)="$event.preventDefault(); addImageUrl()" placeholder="Paste image URL" class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           <button type="button" (click)="addImageUrl()" class="rounded-lg border border-slate-300 px-3 text-sm font-medium">Add URL</button>
@@ -129,12 +127,13 @@
           </div>
         }
         @if (selectedImages().length || imageUrls().length) {
-          <div class="grid grid-cols-2 gap-3">
-            @for (file of selectedImages(); track file.name + file.lastModified; let index = $index) {
-              <div class="relative"><p class="truncate rounded-lg border p-3 text-xs">{{ file.name }}</p><button type="button" (click)="removeSelectedImage(index)" class="mt-1 text-xs text-red-600">Remove</button></div>
+          <p class="text-xs font-medium text-slate-500">{{ selectedImages().length + imageUrls().length }} image{{ selectedImages().length + imageUrls().length === 1 ? '' : 's' }}</p>
+          <div class="mt-3 grid grid-cols-2 gap-3">
+            @for (image of selectedImages(); track image.preview; let index = $index) {
+              <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="image.preview" [alt]="image.file.name" class="size-full object-cover" /><button type="button" (click)="removeSelectedImage(index)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><mat-icon class="!text-[16px]">close</mat-icon></button></div>
             }
             @for (url of imageUrls(); track url) {
-              <div class="relative"><img [src]="url" alt="Product image" class="aspect-square w-full rounded-lg border object-cover" /><button type="button" (click)="removeImageUrl(url)" class="mt-1 text-xs text-red-600">Remove</button></div>
+              <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="url" alt="Product image" class="size-full object-cover" /><button type="button" (click)="removeImageUrl(url)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><mat-icon class="!text-[16px]">close</mat-icon></button></div>
             }
           </div>
         }

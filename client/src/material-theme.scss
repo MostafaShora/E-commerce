@@ -36,3 +36,13 @@ body {
   margin: 0;
   height: 100%;
 }
+
+// ThemeService owns the html class.  Material components must follow that
+// explicit setting rather than the browser's system preference.
+html.dark body {
+  color-scheme: dark;
+}
+
+html.light body {
+  color-scheme: light;
+}

@@ -53,8 +53,8 @@
                 <td class="px-3 py-3 text-xs text-slate-500">{{ order.shippingAddress.street }}, {{ order.shippingAddress.city }}</td>
                 <td class="px-3 py-3 text-xs text-slate-500">{{ order.createdAt | date: 'mediumDate' }}</td>
                 <td class="px-3 py-3 font-semibold">${{ order.total.toFixed(2) }}</td>
-                <td class="px-3 py-3 capitalize">{{ order.paymentStatus }}</td>
-                <td class="px-3 py-3 capitalize">{{ order.status.replaceAll('_', ' ') }}</td>
+                <td class="px-3 py-3"><span class="status-badge" [class]="paymentStatusClass(order.paymentStatus)">{{ order.paymentStatus }}</span></td>
+                <td class="px-3 py-3"><span class="status-badge capitalize" [class]="orderStatusClass(order.status)">{{ order.status.replaceAll('_', ' ') }}</span></td>
               </tr>
             }
           </tbody>

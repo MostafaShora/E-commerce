@@ -6,9 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
 import { NotificationService } from '../../../core/services/notification';
-import { AdminService, type CreateAdminProduct } from '../services/admin';
+import { AdminService } from '../services/admin';
 import { HomeService } from '../../home/services/home';
 import type { CatalogCategory, CatalogProduct } from '../../../shared/models/catalog';
+import { prepareProductImages, type PendingProductImage } from '../models/admin.model';
 
 @Component({
   selector: 'app-admin-edit-product',
@@ -26,7 +27,7 @@ export class AdminEditProductComponent {
 
   readonly categories = signal<CatalogCategory[]>([]);
   readonly product = signal<CatalogProduct | null>(null);
-  readonly selectedImages = signal<File[]>([]);
+  readonly selectedImages = signal<PendingProductImage[]>([]);
   readonly imageUrls = signal<string[]>([]);
   readonly imageUrlInput = signal('');
   readonly imagePreview = signal<string | null>(null);
@@ -106,10 +107,12 @@ export class AdminEditProductComponent {
 
   chooseImage(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const files = Array.from(input.files ?? []);
-    if (!files.length) return;
-    this.selectedImages.update((current) => [...current, ...files]);
-    this.imageError.set(null);
+    const result = prepareProductImages(Array.from(input.files ?? []));
+    if (result.error) this.imageError.set(result.error);
+    else if (result.images.length) {
+      this.selectedImages.update((current) => [...current, ...result.images]);
+      this.imageError.set(null);
+    }
     input.value = '';
   }
 
@@ -130,7 +133,10 @@ export class AdminEditProductComponent {
   }
 
   removeSelectedImage(index: number): void {
-    this.selectedImages.update((images) => images.filter((_, imageIndex) => imageIndex !== index));
+    this.selectedImages.update((images) => {
+      URL.revokeObjectURL(images[index].preview);
+      return images.filter((_, imageIndex) => imageIndex !== index);
+    });
   }
 
   salePrice(): number {
@@ -209,7 +215,7 @@ export class AdminEditProductComponent {
       },
       complete: () => this.saving.set(false),
     });
-    const files = this.selectedImages();
+    const files = this.selectedImages().map((image) => image.file);
     if (files.length) {
       this.adminService.uploadProductImages(files).subscribe({
         next: (response) => save(response.images),

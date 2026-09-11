@@ -285,9 +285,12 @@ export class ProductService {
         ...data,
         userId: new Types.ObjectId(userId),
         categoryId: new Types.ObjectId(data.categoryId),
-        images: uploadedImage
-          ? [{ url: uploadedImage.url, publicId: uploadedImage.publicId }]
-          : (data.images ?? []).map((url) => ({ url })),
+        images: [
+          ...(data.images ?? []).map((url) => ({ url })),
+          ...(uploadedImage
+            ? [{ url: uploadedImage.url, publicId: uploadedImage.publicId }]
+            : []),
+        ],
       });
 
       return transformProductForResponse(product.toObject ? product.toObject() : product);

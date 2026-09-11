@@ -42,8 +42,9 @@
               <td class="px-4 py-3 text-slate-600">{{ order.createdAt | date: 'mediumDate' }}</td>
               <td class="px-4 py-3">{{ order.items.length }}</td>
               <td class="px-4 py-3 font-medium">${{ order.total.toFixed(2) }}</td>
-              <td class="px-4 py-3 capitalize">{{ order.paymentStatus }}</td>
+              <td class="px-4 py-3"><span class="status-badge capitalize" [class]="paymentStatusClass(order.paymentStatus)">{{ order.paymentStatus }}</span></td>
               <td class="px-4 py-3">
+                <span class="status-badge capitalize" [class]="orderStatusClass(order.status)">{{ order.status.replaceAll('_', ' ') }}</span>
                 <select
                   [value]="order.status"
                   (change)="update(order, $event)"
@@ -52,7 +53,7 @@
                     order.status === 'cancelled' ||
                     updatingOrderId() === order._id
                   "
-                  class="rounded-lg border border-slate-300 px-2 py-1 capitalize"
+                  class="ml-2 rounded-lg border border-slate-300 px-2 py-1 capitalize"
                 >
                   @for (status of statuses; track status) {
                     <option [value]="status">{{ status.replaceAll('_', ' ') }}</option>

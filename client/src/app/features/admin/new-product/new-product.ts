@@ -9,6 +9,7 @@ import { NotificationService } from '../../../core/services/notification';
 import { AdminService, type CreateAdminProduct } from '../services/admin';
 import { HomeService } from '../../home/services/home';
 import type { CatalogCategory } from '../../../shared/models/catalog';
+import { prepareProductImages, type PendingProductImage } from '../models/admin.model';
 
 @Component({
   selector: 'app-admin-new-product',
@@ -24,7 +25,7 @@ export class AdminNewProductComponent {
   private readonly notifications = inject(NotificationService);
 
   readonly categories = signal<CatalogCategory[]>([]);
-  readonly selectedImages = signal<File[]>([]);
+  readonly selectedImages = signal<PendingProductImage[]>([]);
   readonly imageUrls = signal<string[]>([]);
   readonly imageUrlInput = signal('');
   readonly loadingCategories = signal(true);
@@ -54,10 +55,12 @@ export class AdminNewProductComponent {
 
   chooseImage(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const files = Array.from(input.files ?? []);
-    if (!files.length) return;
-    this.selectedImages.update((current) => [...current, ...files]);
-    this.imageError.set(null);
+    const result = prepareProductImages(Array.from(input.files ?? []));
+    if (result.error) this.imageError.set(result.error);
+    else if (result.images.length) {
+      this.selectedImages.update((current) => [...current, ...result.images]);
+      this.imageError.set(null);
+    }
     input.value = '';
   }
 
@@ -79,7 +82,10 @@ export class AdminNewProductComponent {
   }
 
   removeSelectedImage(index: number): void {
-    this.selectedImages.update((images) => images.filter((_, imageIndex) => imageIndex !== index));
+    this.selectedImages.update((images) => {
+      URL.revokeObjectURL(images[index].preview);
+      return images.filter((_, imageIndex) => imageIndex !== index);
+    });
   }
 
   salePrice(): number {
@@ -149,7 +155,7 @@ export class AdminNewProductComponent {
       },
       complete: () => this.saving.set(false),
     });
-    const files = this.selectedImages();
+    const files = this.selectedImages().map((image) => image.file);
     if (files.length) {
       this.adminService.uploadProductImages(files).subscribe({
         next: (response) => save(response.images),
