@@ -7,7 +7,9 @@ import {
 import {
   catchError,
   map,
+  Observable,
   of,
+  shareReplay,
   switchMap,
   tap,
   throwError,
@@ -33,6 +35,7 @@ import type {
   providedIn: 'root',
 })
 export class AuthService {
+  private hydration$?: Observable<AuthUser | null>;
 
   constructor(
     private readonly http: HttpClient,
@@ -50,6 +53,31 @@ export class AuthService {
 
   get authError() {
     return this.authStore.authError;
+  }
+
+  get authStatus() {
+    return this.authStore.status;
+  }
+
+  /**
+   * Restores the cookie-backed session exactly once during application startup.
+   * Guards use this same observable if navigation begins before initialization
+   * has completed, so they never treat an unknown session as logged out.
+   */
+  initialize(): Observable<AuthUser | null> {
+    if (!this.hydration$) {
+      this.hydration$ = this.loadCurrentUser().pipe(
+        switchMap((user) => user
+          ? this.cartService.loadCart().pipe(
+              map(() => user),
+              catchError(() => of(user)),
+            )
+          : of(null)),
+        shareReplay({ bufferSize: 1, refCount: false }),
+      );
+    }
+
+    return this.hydration$;
   }
 
   login(data: LoginRequest) {
@@ -147,7 +175,7 @@ export class AuthService {
   }
 
   loadCurrentUser() {
-    this.startLoading();
+    this.authStore.beginInitialization();
 
     return this.http
       .get<AuthStatusResponse>(
@@ -168,8 +196,11 @@ export class AuthService {
         }),
 
         catchError((error: HttpErrorResponse) => {
-          this.authStore.setError(normalizeApiError(error));
-          this.authStore.setUser(null);
+          if (error.status === 401 || error.status === 403) {
+            this.authStore.setUser(null);
+          } else {
+            this.authStore.setInitializationError(normalizeApiError(error));
+          }
           this.stopLoading();
 
           return of(null);

@@ -15,7 +15,7 @@
         (click)="cart.close()"
         aria-label="Close cart"
       >
-        <mat-icon>close</mat-icon>
+        <svg lucideX class="size-[18px]"></svg>
       </button>
     </header>
 
@@ -61,7 +61,7 @@
                       (click)="decrease(item.productId._id, item.quantity)"
                       aria-label="Decrease quantity"
                     >
-                      <mat-icon class="text-sm">remove</mat-icon>
+                      <svg lucideMinus class="size-[18px]"></svg>
                     </button>
                     <span class="min-w-6 text-center text-xs font-medium">{{ item.quantity }}</span>
                     <button
@@ -70,7 +70,7 @@
                       (click)="increase(item.productId._id, item.quantity)"
                       aria-label="Increase quantity"
                     >
-                      <mat-icon class="text-sm">add</mat-icon>
+                      <svg lucidePlus class="size-[18px]"></svg>
                     </button>
                   </div>
                   <button

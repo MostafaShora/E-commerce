@@ -1,10 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideX } from '@lucide/angular';
 
 @Component({
   selector: 'app-storefront-banner',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [LucideX],
   templateUrl: './banner.html',
 })
 export class BannerComponent {

@@ -100,7 +100,7 @@
                       class="p-0"
                       [attr.aria-label]="star + ' star' + (star === 1 ? '' : 's')"
                     >
-                      <mat-icon class="text-xl">star</mat-icon>
+                      <svg lucideStar class="size-5"></svg>
                     </button>
                   }
                 </div>
@@ -173,12 +173,11 @@
                   </div>
                   <div class="flex items-center gap-0 text-amber-500" aria-label="Submitted rating">
                     @for (star of [1, 2, 3, 4, 5]; track star) {
-                      <mat-icon
-                        class="text-lg"
+                      <svg lucideStar
+                        class="size-[18px]"
                         [class.text-amber-500]="star <= review.rating"
                         [class.text-slate-300]="star > review.rating"
-                        >star</mat-icon
-                      >
+                      ></svg>
                     }
                   </div>
                   @if (review.comment) {

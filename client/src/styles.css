@@ -2,13 +2,3 @@
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'tailwindcss';
-
-mat-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-}

@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideArrowLeft, LucideLogOut } from '@lucide/angular';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, MatIconModule],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, LucideArrowLeft, LucideLogOut],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',
 })

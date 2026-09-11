@@ -8,7 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideStar } from '@lucide/angular';
 import { catchError, forkJoin, of } from 'rxjs';
 import {
   ReviewService,
@@ -33,7 +33,7 @@ type ReviewForm = FormGroup<{
 @Component({
   selector: 'app-account-reviews-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideStar],
   templateUrl: './account-reviews.html',
 })
 export class AccountReviewsPageComponent {

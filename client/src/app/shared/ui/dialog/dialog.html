@@ -4,7 +4,7 @@
       <header class="flex items-start justify-between gap-4">
         @if (title) { <h2 class="text-xl font-semibold text-slate-900">{{ title }}</h2> }
         <button type="button" class="ml-auto grid size-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100" (click)="close()" aria-label="Close dialog">
-          <mat-icon>close</mat-icon>
+          <svg lucideX class="size-[18px]"></svg>
         </button>
       </header>
       <div class="mt-4"><ng-content /></div>

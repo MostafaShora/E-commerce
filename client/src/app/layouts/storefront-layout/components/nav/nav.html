@@ -25,7 +25,7 @@
           class="flex items-center gap-1 px-2 text-sm font-medium text-slate-700"
           aria-label="Search products"
         >
-          <mat-icon>search</mat-icon>
+          <svg lucideSearch class="size-[18px]"></svg>
           <span class="hidden sm:inline">Search</span>
         </button>
 
@@ -124,9 +124,7 @@
                 (click)="logout()"
                 class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-red-600 transition hover:bg-red-50"
               >
-                <mat-icon class="text-[20px]">
-                  logout
-                </mat-icon>
+                <svg lucideLogOut class="size-[18px]"></svg>
 
                 <span>Logout</span>
               </button>
@@ -147,9 +145,7 @@
           aria-label="Sign in or register"
         >
 
-          <mat-icon>
-            person
-          </mat-icon>
+          <svg lucideUser class="size-[18px]"></svg>
 
           <span class="hidden sm:inline">
             Sign in / Register

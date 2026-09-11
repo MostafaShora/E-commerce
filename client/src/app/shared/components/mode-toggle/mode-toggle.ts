@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideMoon, LucideSun } from '@lucide/angular';
 
 import { ThemeService } from '../../../core/services/theme';
 
 @Component({
   selector: 'app-mode-toggle',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [LucideMoon, LucideSun],
   templateUrl: './mode-toggle.html',
 })
 export class ModeToggleComponent {

@@ -30,5 +30,5 @@ export interface AuthResponse {
 
 export interface AuthStatusResponse {
   message: string;
-  user: AuthUser;
+  user?: AuthUser;
 }

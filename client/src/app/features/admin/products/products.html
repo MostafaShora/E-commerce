@@ -1,11 +1,18 @@
 <div class="flex flex-col gap-6">
-  <header>
-    <h1 class="text-2xl font-semibold">Products</h1>
-    <p class="mt-1 text-sm text-slate-600">Manage catalog visibility and inventory records.</p>
+  <header class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">Products</h1>
+      <p class="mt-1 text-sm text-slate-600">Manage your store catalog and product inventory.</p>
+    </div>
+    <a routerLink="/admin/products/new" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+      <svg lucidePlus class="size-4"></svg>
+      New Product
+    </a>
   </header>
   @if (error()) {
-    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-      {{ error() }}
+    <div class="flex items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <span>{{ error() }}</span>
+      <button type="button" (click)="load()" class="font-semibold underline">Try again</button>
     </div>
   }
   @if (loading()) {
@@ -14,15 +21,25 @@
     <div
       class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-600"
     >
-      No products found.
+      <svg lucidePackage class="mx-auto size-8 text-slate-400"></svg>
+      <p class="mt-3 font-medium text-slate-700">No products found.</p>
+      <p class="mt-1">Create your first product to start building the catalog.</p>
+      <a routerLink="/admin/products/new" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 font-semibold text-white hover:bg-slate-800">
+        <svg lucidePlus class="size-4"></svg>
+        New Product
+      </a>
     </div>
   } @else {
     <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
       <table class="w-full min-w-180 text-left text-sm">
+        <caption class="border-b border-slate-200 px-4 py-3 text-left text-base font-semibold text-slate-900">Catalog ({{ pagination()?.total ?? 0 }})</caption>
         <thead class="border-b border-slate-200 text-xs uppercase text-slate-500">
           <tr>
             <th class="px-4 py-3">Product</th>
-            <th class="px-4 py-3">Price</th>
+            <th class="px-4 py-3">Slug</th>
+            <th class="px-4 py-3">Original price</th>
+            <th class="px-4 py-3">Discount</th>
+            <th class="px-4 py-3">Sale price</th>
             <th class="px-4 py-3">Stock</th>
             <th class="px-4 py-3">Status</th>
             <th class="px-4 py-3">Actions</th>
@@ -30,28 +47,32 @@
         </thead>
         <tbody class="divide-y divide-slate-100">
           @for (product of products(); track product._id) {
-            <tr>
+            <tr class="hover:bg-slate-50">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
                   <img
                     [src]="imageUrl(product)"
                     [alt]="product.name"
                     class="size-10 object-contain"
-                  /><span>{{ product.name }}</span>
+                  /><div class="min-w-0"><p class="truncate font-medium text-slate-900">{{ product.name }}</p><span class="text-xs text-slate-500">{{ product.unit || 'unit' }}</span></div>
                 </div>
               </td>
-              <td class="px-4 py-3">${{ product.salePrice.toFixed(2) }}</td>
-              <td class="px-4 py-3">{{ product.stockCount }}</td>
-              <td class="px-4 py-3 capitalize">{{ isActive(product) ? 'Active' : 'Inactive' }}</td>
+              <td class="max-w-40 truncate px-4 py-3 font-mono text-xs text-slate-500">{{ product.slug }}</td>
+              <td class="px-4 py-3 text-slate-600">${{ product.originalPrice.toFixed(2) }}</td>
+              <td class="px-4 py-3 font-medium">{{ product.discountPercent ? product.discountPercent + '%' : '—' }}</td>
+              <td class="px-4 py-3 font-semibold">${{ product.salePrice.toFixed(2) }}</td>
+              <td class="px-4 py-3" [class.text-red-600]="product.stockCount === 0">{{ product.stockCount }}</td>
+              <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold" [class.bg-emerald-100]="product.stockCount > 0" [class.text-emerald-700]="product.stockCount > 0" [class.bg-red-100]="product.stockCount === 0" [class.text-red-700]="product.stockCount === 0">{{ product.stockCount > 0 ? 'In Stock' : 'Out of Stock' }}</span></td>
               <td class="px-4 py-3">
-                <div class="flex gap-3">
-                  <a [routerLink]="['/admin/products', product._id, 'edit']" class="underline">
-                    Edit
+                <div class="flex items-center gap-1">
+                  <a [routerLink]="['/admin/products', product._id, 'edit']" class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100" aria-label="Edit product" title="Edit product">
+                    <svg lucidePencil class="size-4"></svg>
                   </a>
-                  <button type="button" (click)="toggle(product)" class="underline">
-                    {{ isActive(product) ? 'Deactivate' : 'Activate' }}</button
-                  ><button type="button" (click)="remove(product)" class="text-red-600 underline">
-                    Delete
+                  <button type="button" (click)="toggle(product)" class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100" [attr.aria-label]="isActive(product) ? 'Deactivate product' : 'Activate product'" [title]="isActive(product) ? 'Deactivate product' : 'Activate product'">
+                    <svg lucideCirclePower class="size-4"></svg>
+                  </button>
+                  <button type="button" (click)="remove(product)" class="grid size-8 place-items-center rounded text-red-600 hover:bg-red-50" aria-label="Delete product" title="Delete product">
+                    <svg lucideTrash2 class="size-4"></svg>
                   </button>
                 </div>
               </td>

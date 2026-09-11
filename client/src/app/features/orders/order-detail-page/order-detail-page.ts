@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideArrowLeft, LucideBike, LucideCircleCheck, LucideCircleX, LucideHouse, LucidePackageCheck, LucideShoppingCart, LucideStar, LucideTruck } from '@lucide/angular';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize, map, of, switchMap } from 'rxjs';
@@ -18,7 +18,7 @@ import { getProductImageUrl, onImageError } from '../../../shared/utils/image.ut
 @Component({
   selector: 'app-order-detail-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideArrowLeft, LucideShoppingCart, LucideCircleCheck, LucideTruck, LucidePackageCheck, LucideBike, LucideHouse, LucideCircleX, LucideStar],
   templateUrl: './order-detail-page.html',
 })
 export class OrderDetailPageComponent {
@@ -147,19 +147,6 @@ export class OrderDetailPageComponent {
 
   trackingIndex(status: OrderStatus): number {
     return this.displayTrackingSteps().findIndex((step) => step.status === status);
-  }
-
-  getTrackingIcon(status: OrderStatus): string {
-    const iconMap: Record<OrderStatus, string> = {
-      'placed': 'shopping_cart',
-      'confirmed': 'check_circle',
-      'assigned': 'local_shipping',
-      'packed': 'done_all',
-      'out_for_delivery': 'delivery_dining',
-      'delivered': 'home',
-      'cancelled': 'cancel',
-    };
-    return iconMap[status] || 'circle';
   }
 
   private loadReviewableItems(orderId: string): void {

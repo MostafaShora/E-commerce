@@ -4,6 +4,7 @@ import type { ApiError } from '../api/api-error';
 import type { AuthUser } from './auth.models';
 
 export type AuthView = 'login' | 'register';
+export type AuthStatus = 'unknown' | 'initializing' | 'authenticated' | 'unauthenticated' | 'error';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,7 @@ export class AuthState {
   readonly view = signal<AuthView>('login');
   readonly currentUser = signal<AuthUser | null>(null);
   readonly isLoading = signal(false);
+  readonly status = signal<AuthStatus>('unknown');
   readonly authError = signal<ApiError | null>(null);
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
   readonly isAdmin = computed(
@@ -38,6 +40,19 @@ export class AuthState {
         ? { ...user, isAdmin: user.role === 'admin' || user.isAdmin === true }
         : null,
     );
+    this.status.set(user ? 'authenticated' : 'unauthenticated');
+  }
+
+  beginInitialization(): void {
+    this.status.set('initializing');
+    this.setLoading(true);
+    this.setError(null);
+  }
+
+  setInitializationError(error: ApiError): void {
+    this.currentUser.set(null);
+    this.status.set('error');
+    this.setError(error);
   }
 
   setLoading(value: boolean): void {
@@ -52,5 +67,6 @@ export class AuthState {
     this.currentUser.set(null);
     this.authError.set(null);
     this.isLoading.set(false);
+    this.status.set('unauthenticated');
   }
 }

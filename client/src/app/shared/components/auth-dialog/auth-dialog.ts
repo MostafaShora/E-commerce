@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideX } from '@lucide/angular';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthState } from '../../../core/auth/auth.state';
@@ -11,7 +11,7 @@ import type { LoginRequest, RegisterRequest } from '../../../core/auth/auth.mode
 @Component({
   selector: 'app-auth-dialog',
   standalone: true,
-  imports: [LoginFormComponent, RegisterFormComponent, MatIconModule],
+  imports: [LoginFormComponent, RegisterFormComponent, LucideX],
   templateUrl: './auth-dialog.html',
 })
 export class AuthDialogComponent {

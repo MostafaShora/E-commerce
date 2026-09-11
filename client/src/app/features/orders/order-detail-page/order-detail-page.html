@@ -3,7 +3,7 @@
     routerLink="/account/orders"
     class="inline-flex w-fit items-center gap-1 text-sm font-medium text-slate-700 underline-offset-4 hover:underline"
   >
-    <mat-icon>arrow_back</mat-icon>
+    <svg lucideArrowLeft class="size-[18px]"></svg>
     <span>Back to orders</span>
   </a>
 
@@ -129,7 +129,15 @@
               [class.border-red-600]="step.status === 'cancelled'"
               [class.bg-red-600]="step.status === 'cancelled'"
             >
-              <mat-icon [class.text-lg]="true">{{ getTrackingIcon(step.status) }}</mat-icon>
+              @switch (step.status) {
+                @case ('placed') { <svg lucideShoppingCart class="size-[18px]"></svg> }
+                @case ('confirmed') { <svg lucideCircleCheck class="size-[18px]"></svg> }
+                @case ('assigned') { <svg lucideTruck class="size-[18px]"></svg> }
+                @case ('packed') { <svg lucidePackageCheck class="size-[18px]"></svg> }
+                @case ('out_for_delivery') { <svg lucideBike class="size-[18px]"></svg> }
+                @case ('delivered') { <svg lucideHouse class="size-[18px]"></svg> }
+                @case ('cancelled') { <svg lucideCircleX class="size-[18px]"></svg> }
+              }
             </span>
             <span
               class="mt-2 text-xs font-semibold"
@@ -208,7 +216,7 @@
                     "
                     [attr.aria-label]="star + ' stars'"
                   >
-                    <mat-icon class="text-lg">star</mat-icon>
+                    <svg lucideStar class="size-[18px]"></svg>
                   </button>
                 }
               </div>

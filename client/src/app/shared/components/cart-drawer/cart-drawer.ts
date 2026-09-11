@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideMinus, LucidePlus, LucideX } from '@lucide/angular';
 import { Router, RouterLink } from '@angular/router';
 
 import { CartService } from '../../../core/cart/cart';
@@ -10,7 +10,7 @@ import { getProductImageUrl, onImageError } from '../../utils/image.util';
 @Component({
   selector: 'app-cart-drawer',
   standalone: true,
-  imports: [RouterLink, MatIconModule],
+  imports: [RouterLink, LucideX, LucideMinus, LucidePlus],
   templateUrl: './cart-drawer.html',
 })
 export class CartDrawerComponent {

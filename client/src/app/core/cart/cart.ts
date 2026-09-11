@@ -15,7 +15,6 @@ import {
 	} from 'rxjs';
 
 import type { CatalogProduct } from '../../shared/models/catalog';
-import { CartStorage } from './cart-storage';
 import { NotificationService } from '../services/notification';
 
 export type CartProduct = Pick<
@@ -75,7 +74,6 @@ export class CartService {
 
 	constructor(
 		private readonly http: HttpClient,
-		private readonly storage: CartStorage,
 		private readonly notifications: NotificationService,
 	) {
 		this.syncRequests.pipe(
@@ -86,14 +84,12 @@ export class CartService {
 				return this.http.post<CartResponse>('/api/cart', { items: request.items }).pipe(
 					tap((response) => {
 						this.applyResponse(response);
-						this.storage.write(this.toUpdateItems());
 						this.notifications.success('Cart saved successfully.');
 						request.result.next(response);
 						request.result.complete();
 					}),
 					catchError((error: unknown) => {
 						this.items.set(request.previousItems);
-						this.storage.write(this.toUpdateItems());
 						this.subtotal.set(0);
 						this.deliveryFee.set(0);
 						this.tax.set(0);
@@ -120,7 +116,6 @@ export class CartService {
 		return this.http.get<CartResponse>('/api/cart').pipe(
 			tap((response) => {
 				this.applyResponse(response);
-				this.storage.write(this.toUpdateItems());
 			}),
 			catchError((error: unknown) => {
 				this.errorMessage.set('Unable to load your cart right now.');
@@ -202,7 +197,6 @@ export class CartService {
 	private saveItems(items: CartUpdateItem[], optimisticProduct?: CartProduct): Observable<CartResponse> {
 		const previousItems = this.items();
 		this.items.set(this.withUpdatedItems(items, optimisticProduct));
-		this.storage.write(items);
 		this.saving.set(true);
 		this.errorMessage.set(null);
 		const result = new ReplaySubject<CartResponse>(1);

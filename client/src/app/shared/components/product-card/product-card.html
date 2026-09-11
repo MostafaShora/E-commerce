@@ -42,7 +42,7 @@
 
     <div class="mt-auto flex items-center gap-1 text-amber-500">
       @for (star of [0, 1, 2, 3, 4]; track star) {
-        <mat-icon class="text-lg" [class.text-slate-300]="star >= roundedRating()">star</mat-icon>
+        <svg lucideStar class="size-[18px]" [class.text-slate-300]="star >= roundedRating()"></svg>
       }
       <span class="ml-1 text-sm text-slate-500">({{ product().reviewCount }})</span>
     </div>

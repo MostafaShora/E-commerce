@@ -4,7 +4,7 @@
     (click)="goBack()"
     class="inline-flex w-fit items-center gap-1 text-sm font-medium text-slate-700 underline-offset-4 hover:underline"
   >
-    <mat-icon>arrow_back</mat-icon>
+    <svg lucideArrowLeft class="size-[18px]"></svg>
     <span>Back to products</span>
   </button>
 
@@ -59,7 +59,7 @@
       <div class="flex flex-col gap-5">
         <div class="flex items-center gap-2 text-sm text-amber-500" aria-label="Product rating">
           @for (star of [0, 1, 2, 3, 4]; track star) {
-            <mat-icon class="text-lg" [class.text-slate-300]="star >= roundedRating(item)">star</mat-icon>
+            <svg lucideStar class="size-[18px]" [class.text-slate-300]="star >= roundedRating(item)"></svg>
           }
           <span class="text-slate-600">{{ item.ratingAverage }} ({{ item.reviewCount }})</span>
         </div>
@@ -113,7 +113,7 @@
       <div class="mt-4 flex items-center gap-2 text-sm text-slate-600">
         <span class="flex items-center gap-0 text-amber-500">
           @for (star of [0, 1, 2, 3, 4]; track star) {
-            <mat-icon class="text-lg" [class.text-slate-300]="star >= roundedRating(item)">star</mat-icon>
+            <svg lucideStar class="size-[18px]" [class.text-slate-300]="star >= roundedRating(item)"></svg>
           }</span
         ><span
           >{{ item.ratingAverage }} average from {{ item.reviewCount }} review{{
@@ -146,7 +146,7 @@
             <article class="border-b border-slate-200 pb-5 last:border-0">
               <div class="flex items-center gap-0 text-amber-500">
                 @for (star of [0, 1, 2, 3, 4]; track star) {
-                  <mat-icon class="text-lg" [class.text-slate-300]="star >= reviewRating(review)">star</mat-icon>
+                  <svg lucideStar class="size-[18px]" [class.text-slate-300]="star >= reviewRating(review)"></svg>
                 }
               </div>
               <p class="mt-2 text-sm font-medium text-slate-900">By {{ reviewUserName(review) }}</p>

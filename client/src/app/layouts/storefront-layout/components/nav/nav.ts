@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideLogOut, LucideSearch, LucideUser } from '@lucide/angular';
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -13,7 +13,7 @@ import { AvatarComponent } from '../../../../shared/ui/avatar/avatar';
 @Component({
   selector: 'app-storefront-nav',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LogoComponent, ModeToggleComponent, CartButtonComponent, AvatarComponent, MatIconModule],
+  imports: [ReactiveFormsModule, RouterLink, LogoComponent, ModeToggleComponent, CartButtonComponent, AvatarComponent, LucideSearch, LucideLogOut, LucideUser],
   templateUrl: './nav.html',
 })
 export class StorefrontNavComponent {

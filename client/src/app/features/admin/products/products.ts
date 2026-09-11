@@ -1,17 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { LucideCirclePower, LucidePackage, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../services/admin';
+import { normalizeApiError } from '../../../core/api/api-error';
+import { NotificationService } from '../../../core/services/notification';
 import type { CatalogProduct } from '../../../shared/models/catalog';
 
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LucidePlus, LucidePackage, LucidePencil, LucideCirclePower, LucideTrash2],
   templateUrl: './products.html',
 })
 export class AdminProductsComponent {
   readonly service = inject(AdminService);
+  private readonly notifications = inject(NotificationService);
   readonly products = signal<CatalogProduct[]>([]);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -34,7 +38,7 @@ export class AdminProductsComponent {
         this.products.set(r.products);
         this.pagination.set(r.pagination);
       },
-      error: () => this.error.set('Unable to load admin products.'),
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
       complete: () => this.loading.set(false),
     });
   }
@@ -42,8 +46,11 @@ export class AdminProductsComponent {
     this.service
       .toggleProduct(product._id, !this.isActive(product))
       .subscribe({
-        next: () => this.load(),
-        error: () => this.error.set('Unable to change product status.'),
+        next: (response) => {
+          this.notifications.success(response.message);
+          this.load();
+        },
+        error: (error: unknown) => this.error.set(normalizeApiError(error).message),
       });
   }
   remove(product: CatalogProduct): void {
@@ -51,8 +58,11 @@ export class AdminProductsComponent {
     this.service
       .deleteProduct(product._id)
       .subscribe({
-        next: () => this.load(),
-        error: () => this.error.set('Unable to delete product.'),
+        next: (response) => {
+          this.notifications.success(response.message);
+          this.load();
+        },
+        error: (error: unknown) => this.error.set(normalizeApiError(error).message),
       });
   }
   isActive(product: CatalogProduct): boolean {

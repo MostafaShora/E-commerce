@@ -1,10 +1,10 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideX } from '@lucide/angular';
 
 @Component({
   selector: 'app-dialog',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [LucideX],
   templateUrl: './dialog.html',
 })
 export class DialogComponent {

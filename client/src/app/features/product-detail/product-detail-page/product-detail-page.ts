@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideArrowLeft, LucideStar } from '@lucide/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
@@ -18,7 +18,7 @@ import { getProductImageUrl, onImageError } from '../../../shared/utils/image.ut
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent, MatIconModule],
+  imports: [CommonModule, ProductCardComponent, LucideArrowLeft, LucideStar],
   templateUrl: './product-detail-page.html',
 })
 export class ProductDetailPage {

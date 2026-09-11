@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideArrowLeft } from '@lucide/angular';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router, RouterLink } from '@angular/router';
+import { normalizeApiError } from '../../../core/api/api-error';
+import { NotificationService } from '../../../core/services/notification';
 import { AdminService, type CreateAdminProduct } from '../services/admin';
 import { HomeService } from '../../home/services/home';
 import type { CatalogCategory } from '../../../shared/models/catalog';
@@ -11,7 +13,7 @@ import type { CatalogCategory } from '../../../shared/models/catalog';
 @Component({
   selector: 'app-admin-new-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule, MatCheckboxModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideArrowLeft, MatCheckboxModule],
   templateUrl: './new-product.html',
 })
 export class AdminNewProductComponent {
@@ -19,6 +21,7 @@ export class AdminNewProductComponent {
   private readonly adminService = inject(AdminService);
   private readonly homeService = inject(HomeService);
   private readonly router = inject(Router);
+  private readonly notifications = inject(NotificationService);
 
   readonly categories = signal<CatalogCategory[]>([]);
   readonly selectedImage = signal<File | null>(null);
@@ -43,7 +46,7 @@ export class AdminNewProductComponent {
   constructor() {
     this.homeService.getCategories().subscribe({
       next: (response) => this.categories.set(response.categories ?? []),
-      error: () => this.errorMessage.set('Unable to load categories.'),
+      error: (error: unknown) => this.errorMessage.set(normalizeApiError(error).message),
       complete: () => this.loadingCategories.set(false),
     });
   }
@@ -88,7 +91,7 @@ export class AdminNewProductComponent {
           this.form.controls.description.setValue(response.result);
         }
       },
-      error: () => this.errorMessage.set('AI generation failed. Please try again.'),
+      error: (error: unknown) => this.errorMessage.set(normalizeApiError(error).message),
       complete: () => this.aiAction.set(null),
     });
   }
@@ -114,9 +117,12 @@ export class AdminNewProductComponent {
       description: value.description || undefined,
     };
     this.adminService.createProduct(request, image).subscribe({
-      next: () => void this.router.navigate(['/admin/products']),
-      error: () => {
-        this.errorMessage.set('Unable to create this product. Please try again.');
+      next: (response) => {
+        this.notifications.success(response.message);
+        void this.router.navigate(['/admin/products']);
+      },
+      error: (error: unknown) => {
+        this.errorMessage.set(normalizeApiError(error).message);
         this.saving.set(false);
       },
       complete: () => this.saving.set(false),

@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideShoppingCart } from '@lucide/angular';
 
 import { CartService } from '../../../core/cart/cart';
 
 @Component({
   selector: 'app-cart-button',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [LucideShoppingCart],
   templateUrl: './cart-button.html',
 })
 export class CartButtonComponent {
