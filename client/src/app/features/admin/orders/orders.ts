@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { MatSelectModule } from '@angular/material/select';
 import { AdminService } from '../services/admin';
 import type { CreatedOrder, OrderStatus } from '../../checkout/services/order';
 import { orderStatusClass, paymentStatusClass } from '../models/admin.model';
+import { NotificationService } from '../../../core/services/notification';
+import { normalizeApiError } from '../../../core/api/api-error';
 
 const statuses: OrderStatus[] = [
   'placed',
@@ -16,11 +19,12 @@ const statuses: OrderStatus[] = [
 @Component({
   selector: 'app-admin-orders',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatSelectModule],
   templateUrl: './orders.html',
 })
 export class AdminOrdersComponent {
   readonly service = inject(AdminService);
+  private readonly notifications = inject(NotificationService);
   readonly orders = signal<CreatedOrder[]>([]);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -47,21 +51,32 @@ export class AdminOrdersComponent {
         this.orders.set(r.orders);
         this.pagination.set(r.pagination);
       },
-      error: () => this.error.set('Unable to load admin orders.'),
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
       complete: () => this.loading.set(false),
     });
   }
-  update(order: CreatedOrder, event: Event): void {
-    const status = (event.target as HTMLSelectElement).value as OrderStatus;
+  update(order: CreatedOrder, status: OrderStatus): void {
     if (status === order.status) return;
     this.updatingOrderId.set(order._id);
     this.service
       .updateOrderStatus(order._id, status)
       .subscribe({
-        next: () => this.load(),
-        error: () => this.error.set('Unable to update order status.'),
+        next: (response) => {
+          if (response.order) {
+            this.orders.update((orders) => orders.map((item) => item._id === order._id ? response.order! : item));
+            this.notifications.success(response.message);
+          }
+        },
+        error: (error: unknown) => this.error.set(normalizeApiError(error).message),
         complete: () => this.updatingOrderId.set(null),
       });
+  }
+  statusOptions(order: CreatedOrder): OrderStatus[] {
+    const used = new Set(order.statusHistory?.map((entry) => entry.status) ?? []);
+    return statuses.filter((status) => status === order.status || !used.has(status));
+  }
+  statusLabel(status: OrderStatus): string {
+    return status.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
   nextPage(): void {
     if (this.pagination()?.hasNextPage) {

@@ -2,6 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { normalizeApiError } from '../../../core/api/api-error';
+
 import type { CatalogProduct } from '../../../shared/models/catalog';
 import type { CreatedOrder, OrderStatus } from '../../checkout/services/order';
 
@@ -69,6 +71,17 @@ export type AdminAiResponse = {
   result: string;
 };
 
+export function getAiGenerationErrorMessage(error: unknown): string {
+  const message = normalizeApiError(error).message;
+
+  if (message === 'AI service is not configured') return message;
+  if (message === 'AI service is busy. Please try again shortly.') return message;
+
+  // Do not render raw provider / SDK errors if a proxy or a future backend
+  // change returns one unexpectedly.
+  return 'AI generation is currently unavailable. Please try again.';
+}
+
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   constructor(private readonly http: HttpClient) {}
@@ -111,8 +124,11 @@ export class AdminService {
       params: new HttpParams().set('page', page).set('limit', limit),
     });
   }
-  updateCategory(id: string, value: Record<string, unknown>): Observable<AdminMutationResponse> {
-    return this.http.patch<AdminMutationResponse>(`/api/category/${id}`, value);
+  createCategory(value: { name: string; description?: string; isActive: boolean }, image: File): Observable<AdminMutationResponse> {
+    return this.http.post<AdminMutationResponse>('/api/category', this.categoryFormData(value, image));
+  }
+  updateCategory(id: string, value: { name: string; description?: string; isActive: boolean }, image?: File): Observable<AdminMutationResponse> {
+    return this.http.patch<AdminMutationResponse>(`/api/category/${id}`, this.categoryFormData(value, image));
   }
   toggleCategory(id: string, active: boolean): Observable<AdminMutationResponse> {
     return this.http.patch<AdminMutationResponse>(
@@ -122,6 +138,15 @@ export class AdminService {
   }
   deleteCategory(id: string): Observable<AdminMutationResponse> {
     return this.http.delete<AdminMutationResponse>(`/api/category/${id}`);
+  }
+
+  private categoryFormData(value: { name: string; description?: string; isActive: boolean }, image?: File): FormData {
+    const body = new FormData();
+    body.set('name', value.name.trim());
+    if (value.description?.trim()) body.set('description', value.description.trim());
+    body.set('isActive', String(value.isActive));
+    if (image) body.set('image', image);
+    return body;
   }
 
   getOrders(page = 1, limit = 10, status?: OrderStatus): Observable<AdminOrdersResponse> {

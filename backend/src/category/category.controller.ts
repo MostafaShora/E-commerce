@@ -91,6 +91,16 @@ export class CategoryController {
     @Body() data: UpdateCategoryDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
+    if (file) {
+      if (file.size > MAX_CATEGORY_IMAGE_SIZE) {
+        throw new BadRequestException('Image size must not exceed 5MB');
+      }
+      const { fileTypeFromBuffer } = await import('file-type');
+      const detectedType = await fileTypeFromBuffer(file.buffer);
+      if (!detectedType || !['image/jpeg', 'image/png', 'image/webp'].includes(detectedType.mime)) {
+        throw new BadRequestException('Only JPEG, PNG, JPG, and WebP images are allowed');
+      }
+    }
     const category = await this.categoryService.updateCategory(id, data, file);
 
     return {

@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { finalize } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
 import { NotificationService } from '../../../core/services/notification';
-import { AdminService } from '../services/admin';
+import { AdminService, getAiGenerationErrorMessage } from '../services/admin';
 import { HomeService } from '../../home/services/home';
 import type { CatalogCategory, CatalogProduct } from '../../../shared/models/catalog';
 import { prepareProductImages, type PendingProductImage } from '../models/admin.model';
@@ -163,7 +164,7 @@ export class AdminEditProductComponent {
 
   private runAi(request: Parameters<AdminService['generateAi']>[0]): void {
     this.aiAction.set(request.action);
-    this.adminService.generateAi(request).subscribe({
+    this.adminService.generateAi(request).pipe(finalize(() => this.aiAction.set(null))).subscribe({
       next: (response) => {
         if (request.action === 'rephrase-title') {
           this.form.controls.name.setValue(response.result);
@@ -171,8 +172,7 @@ export class AdminEditProductComponent {
           this.form.controls.description.setValue(response.result);
         }
       },
-      error: (error: unknown) => this.errorMessage.set(normalizeApiError(error).message),
-      complete: () => this.aiAction.set(null),
+      error: (error: unknown) => this.errorMessage.set(getAiGenerationErrorMessage(error)),
     });
   }
 

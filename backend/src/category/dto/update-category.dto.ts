@@ -6,6 +6,7 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class UpdateCategoryDto {
   @IsOptional()
@@ -23,6 +24,7 @@ export class UpdateCategoryDto {
   description?: string;
 
   @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   isActive?: boolean;
 }

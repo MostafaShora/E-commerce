@@ -91,25 +91,114 @@ html select {
 }
 
 /* Shared admin status semantics, matching the reference badge palette. */
-.status-badge { border-radius: 9999px; padding: .25rem .625rem; font-size: .75rem; font-weight: 600; white-space: nowrap; }
-.status-placed, .status-payment-pending { background: rgb(245 158 11 / .12); color: #b45309; }
-.status-confirmed { background: rgb(59 130 246 / .12); color: #2563eb; }
-.status-assigned { background: rgb(168 85 247 / .12); color: #7e22ce; }
-.status-packed { background: rgb(99 102 241 / .12); color: #4f46e5; }
-.status-out-for-delivery { background: rgb(14 165 233 / .12); color: #0369a1; }
-.status-delivered, .status-paid, .status-in-stock { background: rgb(16 185 129 / .12); color: #047857; }
-.status-cancelled, .status-out-of-stock, .status-failed { background: rgb(239 68 68 / .12); color: #b91c1c; }
-html.dark .status-placed, html.dark .status-payment-pending { color: #fcd34d; }
-html.dark .status-confirmed { color: #93c5fd; }
-html.dark .status-assigned { color: #d8b4fe; }
-html.dark .status-packed { color: #c7d2fe; }
-html.dark .status-out-for-delivery { color: #7dd3fc; }
-html.dark .status-delivered, html.dark .status-paid, html.dark .status-in-stock { color: #6ee7b7; }
-html.dark .status-cancelled, html.dark .status-out-of-stock, html.dark .status-failed { color: #fca5a5; }
+.status-badge {
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-placed,
+.status-payment-pending {
+  background: rgb(245 158 11 / 0.12);
+  color: #b45309;
+}
+.status-confirmed {
+  background: rgb(59 130 246 / 0.12);
+  color: #2563eb;
+}
+.status-assigned {
+  background: rgb(168 85 247 / 0.12);
+  color: #7e22ce;
+}
+.status-packed {
+  background: rgb(99 102 241 / 0.12);
+  color: #4f46e5;
+}
+.status-out-for-delivery {
+  background: rgb(14 165 233 / 0.12);
+  color: #0369a1;
+}
+.status-delivered,
+.status-paid,
+.status-in-stock {
+  background: rgb(16 185 129 / 0.12);
+  color: #047857;
+}
+.status-cancelled,
+.status-out-of-stock,
+.status-failed {
+  background: rgb(239 68 68 / 0.12);
+  color: #b91c1c;
+}
+html.dark .status-placed,
+html.dark .status-payment-pending {
+  color: #fcd34d;
+}
+html.dark .status-confirmed {
+  color: #93c5fd;
+}
+html.dark .status-assigned {
+  color: #d8b4fe;
+}
+html.dark .status-packed {
+  color: #c7d2fe;
+}
+html.dark .status-out-for-delivery {
+  color: #7dd3fc;
+}
+html.dark .status-delivered,
+html.dark .status-paid,
+html.dark .status-in-stock {
+  color: #6ee7b7;
+}
+html.dark .status-cancelled,
+html.dark .status-out-of-stock,
+html.dark .status-failed {
+  color: #fca5a5;
+}
 
 /* Material's checkbox is retained, with the compact square control used by the MERN admin. */
-.mat-mdc-checkbox .mdc-checkbox { padding: 4px; }
-.mat-mdc-checkbox .mdc-checkbox__background { border-radius: 4px !important; border-color: var(--app-border) !important; }
-.mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background { background-color: #0f172a !important; border-color: #0f172a !important; }
-html.dark .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background { background-color: #f8fafc !important; border-color: #f8fafc !important; }
-html.dark .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__checkmark { color: #0f172a !important; }
+.mat-mdc-checkbox .mdc-checkbox {
+  padding: 4px;
+}
+.mat-mdc-checkbox .mdc-checkbox__background {
+  border-radius: 4px !important;
+  border-color: var(--app-border) !important;
+}
+.mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #0f172a !important;
+  border-color: #0f172a !important;
+}
+html.dark .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #f8fafc !important;
+  border-color: #f8fafc !important;
+}
+html.dark .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__checkmark {
+  color: #0f172a !important;
+}
+
+.order-status-select .mat-mdc-select-trigger {
+  min-height: 40px;
+  padding: 0 0.75rem;
+  align-items: center;
+}
+.order-status-select .mat-mdc-select-value {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.order-status-select .mat-mdc-select-arrow-wrapper {
+  padding-right: 0.25rem;
+}
+.order-status-select.mat-mdc-select-disabled {
+  opacity: 0.55;
+}
+.order-status-select {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+.order-status-select:focus-within {
+  border-color: #64748b;
+  box-shadow: 0 0 0 3px rgb(100 116 139 / 0.18);
+}

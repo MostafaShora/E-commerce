@@ -1,87 +1,317 @@
-<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-8 animate-in fade-in duration-500">
+  <!-- Header -->
   <header>
-    <h1 class="text-2xl font-semibold">Orders</h1>
-    <p class="mt-1 text-sm text-slate-600">Manage customer fulfillment status.</p>
+    <h1 class="text-2xl font-bold tracking-tight">Orders</h1>
+
+    <p class="mt-1 text-sm text-muted-foreground">
+      Manage and update customer order status here.
+    </p>
   </header>
+
+  <!-- Error -->
   @if (error()) {
-    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-      <span>{{ error() }}</span
-      ><button type="button" (click)="load()" class="ml-3 underline">Retry</button>
-    </div>
-  }
-  @if (loading()) {
-    <div class="h-64 animate-pulse rounded-xl bg-slate-200"></div>
-  } @else if (orders().length === 0) {
     <div
-      class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-600"
+      class="flex items-center rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
     >
-      No orders found.
-    </div>
-  } @else {
-    <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table class="w-full min-w-190 text-left text-sm">
-        <thead class="border-b text-xs uppercase text-slate-500">
-          <tr>
-            <th class="px-4 py-3">Order</th>
-            <th class="px-4 py-3">Customer</th>
-            <th class="px-4 py-3">Date</th>
-            <th class="px-4 py-3">Items</th>
-            <th class="px-4 py-3">Total</th>
-            <th class="px-4 py-3">Payment</th>
-            <th class="px-4 py-3">Status</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y">
-          @for (order of orders(); track order._id) {
-            <tr>
-              <td class="px-4 py-3 font-medium">#{{ order.orderNo }}</td>
-              <td class="px-4 py-3">
-                {{ order.shippingAddress.recipientName
-                }}<span class="block text-xs text-slate-500">{{ order.shippingAddress.city }}</span>
-              </td>
-              <td class="px-4 py-3 text-slate-600">{{ order.createdAt | date: 'mediumDate' }}</td>
-              <td class="px-4 py-3">{{ order.items.length }}</td>
-              <td class="px-4 py-3 font-medium">${{ order.total.toFixed(2) }}</td>
-              <td class="px-4 py-3"><span class="status-badge capitalize" [class]="paymentStatusClass(order.paymentStatus)">{{ order.paymentStatus }}</span></td>
-              <td class="px-4 py-3">
-                <span class="status-badge capitalize" [class]="orderStatusClass(order.status)">{{ order.status.replaceAll('_', ' ') }}</span>
-                <select
-                  [value]="order.status"
-                  (change)="update(order, $event)"
-                  [disabled]="
-                    order.status === 'delivered' ||
-                    order.status === 'cancelled' ||
-                    updatingOrderId() === order._id
-                  "
-                  class="ml-2 rounded-lg border border-slate-300 px-2 py-1 capitalize"
-                >
-                  @for (status of statuses; track status) {
-                    <option [value]="status">{{ status.replaceAll('_', ' ') }}</option>
-                  }
-                </select>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </section>
-    <nav class="flex items-center justify-between text-sm">
+      <span>{{ error() }}</span>
+
       <button
         type="button"
-        (click)="previousPage()"
-        [disabled]="!pagination()?.hasPrevPage"
-        class="rounded-lg border px-3 py-2 disabled:opacity-40"
+        (click)="load()"
+        class="ml-3 font-medium underline underline-offset-2 transition-opacity hover:opacity-80"
       >
-        Previous</button
-      ><span>Page {{ pagination()?.page }} of {{ pagination()?.totalPages }}</span
-      ><button
-        type="button"
-        (click)="nextPage()"
-        [disabled]="!pagination()?.hasNextPage"
-        class="rounded-lg border px-3 py-2 disabled:opacity-40"
-      >
-        Next
+        Retry
       </button>
-    </nav>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <section
+      class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+    >
+      <div class="border-b border-border/50 px-5 py-4">
+        <div
+          class="h-5 w-48 animate-pulse rounded bg-muted"
+        ></div>
+      </div>
+
+      <div class="overflow-hidden">
+        <table class="w-full table-fixed text-left text-sm">
+          <colgroup>
+            <col class="w-[13%]" />
+            <col class="w-[13%]" />
+            <col class="w-[18%]" />
+            <col class="w-[13%]" />
+            <col class="w-[8%]" />
+            <col class="w-[8%]" />
+            <col class="w-[10%]" />
+            <col class="w-[17%]" />
+          </colgroup>
+
+          <thead class="border-b border-border/50">
+            <tr>
+              @for (
+                item of [
+                  'Order ID',
+                  'Customer',
+                  'Shipping To',
+                  'Date',
+                  'Items',
+                  'Total',
+                  'Payment',
+                  'Status Update'
+                ];
+                track item
+              ) {
+                <th class="px-2 py-3 first:pl-4 last:pr-4">
+                  <div
+                    class="h-3.5 w-16 animate-pulse rounded bg-muted"
+                  ></div>
+                </th>
+              }
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-border/40">
+            @for (row of [1, 2, 3, 4, 5]; track row) {
+              <tr>
+                @for (cell of [1, 2, 3, 4, 5, 6, 7, 8]; track cell) {
+                  <td class="px-2 py-3 first:pl-4 last:pr-4">
+                    <div
+                      class="h-4 w-full animate-pulse rounded bg-muted"
+                    ></div>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="border-t border-border/50 px-5 py-4">
+        <div
+          class="h-4 w-56 animate-pulse rounded bg-muted"
+        ></div>
+      </div>
+    </section>
+  } @else {
+    <!-- Orders Card -->
+    <section
+      class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+    >
+      <!-- Card Header -->
+      <div class="border-b border-border/50 px-5 py-4">
+        <h2 class="font-semibold">
+          All Orders ({{ pagination()?.total ?? 0 }})
+        </h2>
+      </div>
+
+      @if (orders().length === 0) {
+        <!-- Empty -->
+        <div
+          class="flex min-h-40 items-center justify-center px-6 text-center text-sm text-muted-foreground"
+        >
+          No orders found.
+        </div>
+      } @else {
+        <!-- Table -->
+        <div class="overflow-hidden">
+          <table class="w-full table-fixed text-left text-sm">
+            <colgroup>
+              <col class="w-[13%]" />
+              <col class="w-[13%]" />
+              <col class="w-[18%]" />
+              <col class="w-[13%]" />
+              <col class="w-[8%]" />
+              <col class="w-[8%]" />
+              <col class="w-[10%]" />
+              <col class="w-[17%]" />
+            </colgroup>
+
+            <!-- Table Head -->
+            <thead
+              class="border-b border-border/50 text-xs uppercase text-muted-foreground"
+            >
+              <tr>
+                <th class="px-2 py-3 pl-4 text-left">
+                  Order ID
+                </th>
+
+                <th class="px-2 py-3 text-left">
+                  Customer
+                </th>
+
+                <th class="px-2 py-3 text-left">
+                  Shipping To
+                </th>
+
+                <th class="px-2 py-3 text-left">
+                  Date
+                </th>
+
+                <th class="px-2 py-3 text-left">
+                  Items
+                </th>
+
+                <th class="px-2 py-3 text-left">
+                  Total
+                </th>
+
+                <th class="px-2 py-3 text-left">
+                  Payment
+                </th>
+
+                <th class="px-2 py-3 pr-4 text-left">
+                  Status Update
+                </th>
+              </tr>
+            </thead>
+
+            <!-- Table Body -->
+            <tbody class="divide-y divide-border/40">
+              @for (order of orders(); track order._id) {
+                <tr
+                  class="text-[13px] transition-colors hover:bg-muted/20"
+                >
+                  <!-- Order ID -->
+                  <td class="px-2 py-2 pl-4 font-medium">
+                    <span class="block truncate">
+                      #{{ order.orderNo }}
+                    </span>
+                  </td>
+
+                  <!-- Customer -->
+                  <td class="px-2 py-2">
+                    <div class="flex min-w-0 flex-col">
+                      <span class="truncate font-medium">
+                        {{ order.shippingAddress.recipientName }}
+                      </span>
+
+                      <span
+                        class="truncate text-xs text-muted-foreground"
+                      >
+                        {{ order.shippingAddress.phone }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Shipping -->
+                  <td class="px-2 py-2 text-xs text-muted-foreground">
+                    <div class="flex min-w-0 flex-col">
+                      <span class="truncate">
+                        {{ order.shippingAddress.recipientName }}
+                      </span>
+
+                      <span class="truncate">
+                        {{ order.shippingAddress.street }}
+                      </span>
+
+                      <span class="truncate">
+                        {{ order.shippingAddress.state }},
+                        {{ order.shippingAddress.country }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Date -->
+                  <td
+                    class="whitespace-nowrap px-2 py-2 text-xs text-muted-foreground"
+                  >
+                    {{ order.createdAt | date: 'mediumDate' }}
+                  </td>
+
+                  <!-- Items -->
+                  <td class="whitespace-nowrap px-2 py-2">
+                    {{ order.items.length }}
+                    {{ order.items.length === 1 ? 'Item' : 'Items' }}
+                  </td>
+
+                  <!-- Total -->
+                  <td
+                    class="whitespace-nowrap px-2 py-2 font-semibold"
+                  >
+                    ${{ order.total.toFixed(2) }}
+                  </td>
+
+                  <!-- Payment -->
+                  <td class="px-2 py-2">
+                    <span
+                      class="status-badge capitalize"
+                      [ngClass]="
+                        paymentStatusClass(order.paymentStatus)
+                      "
+                    >
+                      {{ order.paymentStatus }}
+                    </span>
+                  </td>
+
+                  <!-- Status -->
+                  <td class="px-2 py-2 pr-4">
+                    <mat-select
+                      [value]="order.status"
+                      (selectionChange)="update(order, $event.value)"
+                      [disabled]="
+                        order.status === 'delivered' ||
+                        order.status === 'cancelled' ||
+                        updatingOrderId() === order._id
+                      "
+                      class="order-status-select h-9 w-[135px] rounded-md border border-border bg-background px-2.5 text-xs font-medium transition-colors"
+                      [ngClass]="orderStatusClass(order.status)"
+                    >
+                      @for (
+                        status of statusOptions(order);
+                        track status
+                      ) {
+                        <mat-option [value]="status">
+                          {{ statusLabel(status) }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav
+          class="flex flex-col gap-3 border-t border-border/50 px-5 py-3.5 text-sm sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p class="text-muted-foreground">
+            Page {{ pagination()?.page || 1 }}
+            of {{ pagination()?.totalPages || 1 }}
+            ({{ pagination()?.total || 0 }} orders)
+          </p>
+
+          <div class="flex items-center justify-end gap-1.5">
+            <button
+              type="button"
+              (click)="previousPage()"
+              [disabled]="!pagination()?.hasPrevPage"
+              class="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+            >
+              Previous
+            </button>
+
+            <span
+              class="flex h-8 min-w-8 items-center justify-center rounded-md border border-border bg-muted/50 px-2.5 text-xs font-medium"
+            >
+              {{ pagination()?.page || 1 }}
+            </span>
+
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="!pagination()?.hasNextPage"
+              class="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        </nav>
+      }
+    </section>
   }
 </div>
