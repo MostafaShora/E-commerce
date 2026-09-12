@@ -1,64 +1,92 @@
-<div class="flex min-h-screen w-full bg-[var(--app-background)] text-[var(--app-foreground)]">
+<div
+  class="flex h-screen w-full overflow-hidden bg-[var(--app-background)] text-[var(--app-foreground)]"
+>
+  <!-- Sidebar -->
   <aside
-    class="hidden w-64 shrink-0 border-r border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
+    class="hidden h-full w-64 shrink-0 border-r border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
   >
-    <div class="flex h-16 items-center border-b border-[var(--app-border)] px-5">
+    <!-- Logo -->
+    <div class="flex h-16 shrink-0 items-center border-b border-[var(--app-border)] px-5">
       <a routerLink="/admin" class="flex items-center gap-2 text-base font-semibold">
-        <span>Nexora</span
-        ><span class="text-xs font-bold uppercase tracking-wider text-amber-600">Admin</span>
+        <span>Nexora</span>
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-600"> Admin </span>
       </a>
     </div>
-    <nav class="flex flex-1 flex-col gap-1 p-3">
+
+    <!-- Sidebar Navigation -->
+    <nav class="flex min-h-0 flex-1 flex-col gap-1 p-3">
       <a
         routerLink="/admin"
         [routerLinkActiveOptions]="{ exact: true }"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
-        ><mat-icon class="!text-[18px]">dashboard</mat-icon>Dashboard</a
-      ><a
+      >
+        <svg lucideLayoutDashboard class="size-[18px]"></svg>
+        <span>Dashboard</span>
+      </a>
+
+      <a
         routerLink="/admin/products"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
-        ><mat-icon class="!text-[18px]">inventory_2</mat-icon>Products</a
-      ><a
+      >
+        <svg lucidePackage class="size-[18px]"></svg>
+        <span>Products</span>
+      </a>
+
+      <a
         routerLink="/admin/categories"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
-        ><mat-icon class="!text-[18px]">category</mat-icon>Categories</a
-      ><a
+      >
+        <svg lucideTags class="size-[18px]"></svg>
+        <span>Categories</span>
+      </a>
+
+      <a
         routerLink="/admin/orders"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
-        ><mat-icon class="!text-[18px]">shopping_bag</mat-icon>Orders</a
       >
+        <svg lucideShoppingBag class="size-[18px]"></svg>
+        <span>Orders</span>
+      </a>
     </nav>
-    <div class="border-t border-[var(--app-border)] p-3">
+
+    <!-- Sidebar Footer -->
+    <div class="shrink-0 border-t border-[var(--app-border)] p-3">
       <a
         routerLink="/"
         class="mb-2 flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white"
       >
-        <mat-icon class="!text-[18px]">storefront</mat-icon>
+        <svg lucideStore class="size-[18px]"></svg>
         <span>Storefront</span>
       </a>
+
       <button
         type="button"
         (click)="logout()"
         class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50"
         aria-label="Log out"
       >
-        <mat-icon class="!text-[18px]">logout</mat-icon>
+        <svg lucideLogOut class="size-[18px]"></svg>
         <span>Log out</span>
       </button>
     </div>
   </aside>
-  <div class="flex min-w-0 flex-1 flex-col">
+
+  <!-- Right Side -->
+  <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+    <!-- Header -->
     <header
-      class="flex h-16 items-center justify-between border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 sm:px-6"
+      class="flex h-16 shrink-0 items-center justify-between border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 sm:px-6"
     >
       <div>
         <h1 class="text-lg font-semibold">Admin Portal</h1>
+
         <p class="hidden text-xs text-slate-500 sm:block">Store management</p>
       </div>
+
       @if (auth.currentUser(); as user) {
         <div class="text-right text-xs">
           <p class="font-semibold">{{ user.name }}</p>
@@ -66,37 +94,54 @@
         </div>
       }
     </header>
+
+    <!-- Mobile Navigation -->
     <nav
-      class="flex gap-2 overflow-x-auto border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
+      class="flex shrink-0 gap-2 overflow-x-auto border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
     >
       <a
         routerLink="/admin"
         [routerLinkActiveOptions]="{ exact: true }"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
-        ><mat-icon class="!text-[18px]">dashboard</mat-icon>Dashboard</a
       >
+        <svg lucideLayoutDashboard class="size-[18px]"></svg>
+        <span>Dashboard</span>
+      </a>
+
       <a
         routerLink="/admin/products"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
-        ><mat-icon class="!text-[18px]">inventory_2</mat-icon>Products</a
       >
+        <svg lucidePackage class="size-[18px]"></svg>
+        <span>Products</span>
+      </a>
+
       <a
         routerLink="/admin/categories"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
-        ><mat-icon class="!text-[18px]">category</mat-icon>Categories</a
       >
+        <svg lucideTags class="size-[18px]"></svg>
+        <span>Categories</span>
+      </a>
+
       <a
         routerLink="/admin/orders"
         routerLinkActive="bg-slate-900 text-white"
         class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
-        ><mat-icon class="!text-[18px]">shopping_bag</mat-icon>Orders</a
       >
+        <svg lucideShoppingBag class="size-[18px]"></svg>
+        <span>Orders</span>
+      </a>
     </nav>
-    <main class="mx-auto w-full max-w-275 flex-1 overflow-y-auto p-4 sm:p-6">
-      <router-outlet></router-outlet>
+
+    <!-- Scrollable Content Only -->
+    <main class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+      <div class="mx-auto w-full max-w-275">
+        <router-outlet></router-outlet>
+      </div>
     </main>
   </div>
 </div>

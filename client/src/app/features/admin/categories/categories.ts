@@ -1,8 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
+
+import {
+  LucidePlus,
+  LucideX,
+  LucideSave,
+  LucideImage,
+  LucideFolderTree,
+  LucidePencil,
+  LucideEye,
+  LucideEyeOff,
+  LucideTrash2,
+} from '@lucide/angular';
+
 import { AdminService, type AdminCategory } from '../services/admin';
 import { NotificationService } from '../../../core/services/notification';
 import { normalizeApiError } from '../../../core/api/api-error';
@@ -10,10 +21,24 @@ import { normalizeApiError } from '../../../core/api/api-error';
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatCheckboxModule, MatIconModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+
+    LucidePlus,
+    LucideX,
+    LucideSave,
+    LucideImage,
+    LucideFolderTree,
+    LucidePencil,
+    LucideEye,
+    LucideEyeOff,
+    LucideTrash2,
+  ],
   templateUrl: './categories.html',
 })
 export class AdminCategoriesComponent {
+
   readonly service = inject(AdminService);
   private readonly notifications = inject(NotificationService);
   readonly categories = signal<AdminCategory[]>([]);
@@ -34,13 +59,11 @@ export class AdminCategoriesComponent {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.service
-      .getCategories()
-      .subscribe({
-        next: (r) => this.categories.set(r.categories),
-        error: (error: unknown) => this.error.set(normalizeApiError(error).message),
-        complete: () => this.loading.set(false),
-      });
+    this.service.getCategories().subscribe({
+      next: (r) => this.categories.set(r.categories),
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
+      complete: () => this.loading.set(false),
+    });
   }
   edit(category: AdminCategory): void {
     this.editing.set(category._id);
@@ -62,9 +85,15 @@ export class AdminCategoriesComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) this.error.set('Only JPEG, PNG, and WebP images are allowed.');
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type))
+      this.error.set('Only JPEG, PNG, and WebP images are allowed.');
     else if (file.size > 5 * 1024 * 1024) this.error.set('Category image must not exceed 5MB.');
-    else { this.revokePreview(); this.imageFile.set(file); this.imagePreview.set(URL.createObjectURL(file)); this.error.set(null); }
+    else {
+      this.revokePreview();
+      this.imageFile.set(file);
+      this.imagePreview.set(URL.createObjectURL(file));
+      this.error.set(null);
+    }
     input.value = '';
   }
   save(): void {
@@ -73,11 +102,17 @@ export class AdminCategoriesComponent {
       return;
     }
     if (!this.editing() || this.editing() === 'new') {
-      if (!this.imageFile()) { this.error.set('Choose a category image before creating the category.'); return; }
+      if (!this.imageFile()) {
+        this.error.set('Choose a category image before creating the category.');
+        return;
+      }
     }
     this.saving.set(true);
     const value = this.form.getRawValue();
-    const request = this.editing() === 'new' ? this.service.createCategory(value, this.imageFile()!) : this.service.updateCategory(this.editing()!, value, this.imageFile() ?? undefined);
+    const request =
+      this.editing() === 'new'
+        ? this.service.createCategory(value, this.imageFile()!)
+        : this.service.updateCategory(this.editing()!, value, this.imageFile() ?? undefined);
     request.subscribe({
       next: (response) => {
         this.notifications.success(response.message);
@@ -89,13 +124,26 @@ export class AdminCategoriesComponent {
     });
   }
   toggle(category: AdminCategory): void {
-    this.service
-      .toggleCategory(category._id, !category.isActive)
-      .subscribe({ next: (response) => { this.notifications.success(response.message); this.load(); }, error: (error: unknown) => this.error.set(normalizeApiError(error).message) });
+    this.service.toggleCategory(category._id, !category.isActive).subscribe({
+      next: (response) => {
+        this.notifications.success(response.message);
+        this.load();
+      },
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
+    });
   }
   remove(category: AdminCategory): void {
     if (!window.confirm(`Delete ${category.name}?`)) return;
-    this.service.deleteCategory(category._id).subscribe({ next: (response) => { this.notifications.success(response.message); this.load(); }, error: (error: unknown) => this.error.set(normalizeApiError(error).message) });
+    this.service.deleteCategory(category._id).subscribe({
+      next: (response) => {
+        this.notifications.success(response.message);
+        this.load();
+      },
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
+    });
   }
-  private revokePreview(): void { const preview = this.imagePreview(); if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview); }
+  private revokePreview(): void {
+    const preview = this.imagePreview();
+    if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
+  }
 }

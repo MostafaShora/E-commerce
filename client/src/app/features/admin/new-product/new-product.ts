@@ -3,11 +3,15 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideArrowLeft, LucideUpload, LucideImage, LucideX } from '@lucide/angular';
 import { Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
 import { NotificationService } from '../../../core/services/notification';
-import { AdminService, getAiGenerationErrorMessage, type CreateAdminProduct } from '../services/admin';
+import {
+  AdminService,
+  getAiGenerationErrorMessage,
+  type CreateAdminProduct,
+} from '../services/admin';
 import { HomeService } from '../../home/services/home';
 import type { CatalogCategory } from '../../../shared/models/catalog';
 import { prepareProductImages, type PendingProductImage } from '../models/admin.model';
@@ -15,7 +19,15 @@ import { prepareProductImages, type PendingProductImage } from '../models/admin.
 @Component({
   selector: 'app-admin-new-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatCheckboxModule, MatIconModule],
+imports: [
+  CommonModule,
+  ReactiveFormsModule,
+  RouterLink,
+  LucideArrowLeft,
+  LucideUpload,
+  LucideImage,
+  LucideX,
+],
   templateUrl: './new-product.html',
 })
 export class AdminNewProductComponent {
@@ -34,6 +46,7 @@ export class AdminNewProductComponent {
   readonly errorMessage = signal<string | null>(null);
   readonly imageError = signal<string | null>(null);
   readonly aiAction = signal<'rephrase-title' | 'generate-desc' | null>(null);
+  readonly categoryOpen = signal(false);
   readonly form = this.formBuilder.nonNullable.group({
     categoryId: ['', Validators.required],
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(160)]],
@@ -113,16 +126,19 @@ export class AdminNewProductComponent {
 
   private runAi(request: Parameters<AdminService['generateAi']>[0]): void {
     this.aiAction.set(request.action);
-    this.adminService.generateAi(request).pipe(finalize(() => this.aiAction.set(null))).subscribe({
-      next: (response) => {
-        if (request.action === 'rephrase-title') {
-          this.form.controls.name.setValue(response.result);
-        } else {
-          this.form.controls.description.setValue(response.result);
-        }
-      },
-      error: (error: unknown) => this.errorMessage.set(getAiGenerationErrorMessage(error)),
-    });
+    this.adminService
+      .generateAi(request)
+      .pipe(finalize(() => this.aiAction.set(null)))
+      .subscribe({
+        next: (response) => {
+          if (request.action === 'rephrase-title') {
+            this.form.controls.name.setValue(response.result);
+          } else {
+            this.form.controls.description.setValue(response.result);
+          }
+        },
+        error: (error: unknown) => this.errorMessage.set(getAiGenerationErrorMessage(error)),
+      });
   }
 
   submit(): void {
@@ -144,25 +160,36 @@ export class AdminNewProductComponent {
       discountLabel: value.discountLabel || undefined,
       description: value.description || undefined,
     };
-    const save = (uploadedImages: string[]) => this.adminService.createProduct({ ...request, images: [...this.imageUrls(), ...uploadedImages] }).subscribe({
-      next: (response) => {
-        this.notifications.success(response.message);
-        void this.router.navigate(['/admin/products']);
-      },
-      error: (error: unknown) => {
-        this.errorMessage.set(normalizeApiError(error).message);
-        this.saving.set(false);
-      },
-      complete: () => this.saving.set(false),
-    });
+    const save = (uploadedImages: string[]) =>
+      this.adminService
+        .createProduct({ ...request, images: [...this.imageUrls(), ...uploadedImages] })
+        .subscribe({
+          next: (response) => {
+            this.notifications.success(response.message);
+            void this.router.navigate(['/admin/products']);
+          },
+          error: (error: unknown) => {
+            this.errorMessage.set(normalizeApiError(error).message);
+            this.saving.set(false);
+          },
+          complete: () => this.saving.set(false),
+        });
     const files = this.selectedImages().map((image) => image.file);
     if (files.length) {
       this.adminService.uploadProductImages(files).subscribe({
         next: (response) => save(response.images),
-        error: (error: unknown) => { this.errorMessage.set(normalizeApiError(error).message); this.saving.set(false); },
+        error: (error: unknown) => {
+          this.errorMessage.set(normalizeApiError(error).message);
+          this.saving.set(false);
+        },
       });
     } else {
       save([]);
     }
   }
+
+  selectCategory(categoryId: string): void {
+  this.form.controls.categoryId.setValue(categoryId);
+  this.categoryOpen.set(false);
+}
 }

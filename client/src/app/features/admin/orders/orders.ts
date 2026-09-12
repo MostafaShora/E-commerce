@@ -40,6 +40,11 @@ export class AdminOrdersComponent {
   } | null>(null);
   readonly updatingOrderId = signal<string | null>(null);
   readonly statusMenuOpenId = signal<string | null>(null);
+  readonly statusMenuOrder = signal<CreatedOrder | null>(null);
+  readonly statusMenuPosition = signal({
+    top: 0,
+    left: 0,
+  });
   constructor() {
     this.load();
   }
@@ -58,18 +63,18 @@ export class AdminOrdersComponent {
   update(order: CreatedOrder, status: OrderStatus): void {
     if (status === order.status) return;
     this.updatingOrderId.set(order._id);
-    this.service
-      .updateOrderStatus(order._id, status)
-      .subscribe({
-        next: (response) => {
-          if (response.order) {
-            this.orders.update((orders) => orders.map((item) => item._id === order._id ? response.order! : item));
-            this.notifications.success(response.message);
-          }
-        },
-        error: (error: unknown) => this.error.set(normalizeApiError(error).message),
-        complete: () => this.updatingOrderId.set(null),
-      });
+    this.service.updateOrderStatus(order._id, status).subscribe({
+      next: (response) => {
+        if (response.order) {
+          this.orders.update((orders) =>
+            orders.map((item) => (item._id === order._id ? response.order! : item)),
+          );
+          this.notifications.success(response.message);
+        }
+      },
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
+      complete: () => this.updatingOrderId.set(null),
+    });
   }
   statusOptions(order: CreatedOrder): OrderStatus[] {
     const used = new Set(order.statusHistory?.map((entry) => entry.status) ?? []);
@@ -79,30 +84,98 @@ export class AdminOrdersComponent {
     return status.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
 
-  toggleStatusMenu(orderId: string): void {
-    this.statusMenuOpenId.update((current) =>
-      current === orderId ? null : orderId,
-    );
-  }
-
-  @HostListener('document:click', ['$event'])
-onDocumentClick(event: MouseEvent): void {
-  const target = event.target as HTMLElement;
-
-  if (!target.closest('.order-status-dropdown')) {
-    this.statusMenuOpenId.set(null);
-  }
-}
-
-  selectStatus(order: CreatedOrder, status: OrderStatus): void {
-    this.statusMenuOpenId.set(null);
-
-    if (status === order.status) {
+  toggleStatusMenu(orderId: string, event: MouseEvent): void {
+    if (this.statusMenuOpenId() === orderId) {
+      this.closeStatusMenu();
       return;
     }
 
-    this.update(order, status);
+    const order = this.orders().find((item) => item._id === orderId);
+
+    if (!order) {
+      return;
+    }
+
+    const trigger = event.currentTarget as HTMLElement;
+
+    const menuHeight = Math.min(
+      this.statusOptions(order).length * 40 + 12,
+      window.innerHeight - 32,
+    );
+
+    const menuWidth = 180;
+    const margin = 24;
+
+    const rect = trigger.getBoundingClientRect();
+
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+
+    const needsScroll = spaceAbove < menuHeight + margin || spaceBelow < menuHeight + margin;
+
+    const openMenu = () => {
+      const updatedRect = trigger.getBoundingClientRect();
+
+      let top = updatedRect.bottom + 8;
+
+      // لو مفيش مساحة تحت
+      if (top + menuHeight > window.innerHeight - 8) {
+        top = updatedRect.top - menuHeight - 8;
+      }
+
+      let left = updatedRect.right - menuWidth;
+
+      // منع خروج الـ dropdown من يمين الشاشة
+      left = Math.max(8, Math.min(left, window.innerWidth - menuWidth - 8));
+
+      this.statusMenuPosition.set({
+        top,
+        left,
+      });
+
+      this.statusMenuOrder.set(order);
+      this.statusMenuOpenId.set(orderId);
+    };
+
+    if (needsScroll) {
+      trigger.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+
+      window.setTimeout(openMenu, 400);
+    } else {
+      openMenu();
+    }
   }
+
+  closeStatusMenu(): void {
+    this.statusMenuOpenId.set(null);
+    this.statusMenuOrder.set(null);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    if (
+      !target.closest('.order-status-dropdown') &&
+      !target.closest('.order-status-menu')
+    ) {
+      this.closeStatusMenu();
+    }
+  }
+
+selectStatus(order: CreatedOrder, status: OrderStatus): void {
+  this.closeStatusMenu();
+
+  if (status === order.status) {
+    return;
+  }
+
+  this.update(order, status);
+}
 
   nextPage(): void {
     if (this.pagination()?.hasNextPage) {

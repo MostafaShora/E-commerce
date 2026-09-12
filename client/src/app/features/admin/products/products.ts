@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import {
+  LucidePlus,
+  LucidePackage,
+  LucidePencil,
+  LucidePower,
+  LucideTrash2,
+} from '@lucide/angular';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../services/admin';
 import { normalizeApiError } from '../../../core/api/api-error';
@@ -10,7 +16,15 @@ import type { CatalogProduct } from '../../../shared/models/catalog';
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    LucidePlus,
+    LucidePackage,
+    LucidePencil,
+    LucidePower,
+    LucideTrash2,
+  ],
   templateUrl: './products.html',
 })
 export class AdminProductsComponent {
@@ -43,27 +57,23 @@ export class AdminProductsComponent {
     });
   }
   toggle(product: CatalogProduct): void {
-    this.service
-      .toggleProduct(product._id, !this.isActive(product))
-      .subscribe({
-        next: (response) => {
-          this.notifications.success(response.message);
-          this.load();
-        },
-        error: (error: unknown) => this.error.set(normalizeApiError(error).message),
-      });
+    this.service.toggleProduct(product._id, !this.isActive(product)).subscribe({
+      next: (response) => {
+        this.notifications.success(response.message);
+        this.load();
+      },
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
+    });
   }
   remove(product: CatalogProduct): void {
     if (!window.confirm(`Delete ${product.name}?`)) return;
-    this.service
-      .deleteProduct(product._id)
-      .subscribe({
-        next: (response) => {
-          this.notifications.success(response.message);
-          this.load();
-        },
-        error: (error: unknown) => this.error.set(normalizeApiError(error).message),
-      });
+    this.service.deleteProduct(product._id).subscribe({
+      next: (response) => {
+        this.notifications.success(response.message);
+        this.load();
+      },
+      error: (error: unknown) => this.error.set(normalizeApiError(error).message),
+    });
   }
   isActive(product: CatalogProduct): boolean {
     return (product as CatalogProduct & { isActive?: boolean }).isActive !== false;
@@ -71,7 +81,7 @@ export class AdminProductsComponent {
 
   imageUrl(product: CatalogProduct): string {
     const image = product.images?.[0] as unknown as string | { url?: string } | undefined;
-    return typeof image === 'string' ? image : image?.url ?? '/placeholder.png';
+    return typeof image === 'string' ? image : (image?.url ?? '/placeholder.png');
   }
   nextPage(): void {
     if (this.pagination()?.hasNextPage) {

@@ -12,7 +12,7 @@
         (click)="editing.set('new')"
         class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
       >
-        <mat-icon class="!text-[18px]">add</mat-icon>Add Category
+        <svg lucidePlus class="size-[18px]"></svg>Add Category
       </button>
     }
   </header>
@@ -22,7 +22,7 @@
     >
       <span>{{ error() }}</span
       ><button type="button" (click)="error.set(null)" aria-label="Dismiss error">
-        <mat-icon class="!text-[18px]">close</mat-icon>
+        <svg lucideX class="size-[18px]"></svg>
       </button>
     </div>
   }
@@ -61,14 +61,24 @@
             placeholder="Optional category description"
           ></textarea>
         </label>
-        <mat-checkbox formControlName="isActive">Active and visible in the catalog</mat-checkbox>
+        <label
+          class="inline-flex cursor-pointer items-center gap-2.5 text-sm font-medium text-slate-700"
+        >
+          <input
+            type="checkbox"
+            formControlName="isActive"
+            class="size-4 cursor-pointer rounded border-slate-300 accent-slate-900 focus:ring-2 focus:ring-slate-400"
+          />
+
+          <span>Active and visible in the catalog</span>
+        </label>
         <div class="flex flex-wrap gap-3">
           <button
             type="submit"
             [disabled]="saving()"
             class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
-            <mat-icon class="!text-[18px]">save</mat-icon
+            <svg lucideSave class="size-[18px]"></svg
             >{{
               saving() ? 'Saving…' : editing() === 'new' ? 'Create category' : 'Save changes'
             }}</button
@@ -93,7 +103,7 @@
             class="size-full max-h-48 object-contain"
           />
         } @else {
-          <mat-icon>image</mat-icon><span class="text-sm font-medium">Upload image</span
+          <svg lucideImage class="size-5"></svg><span class="text-sm font-medium">Upload image</span
           ><span class="text-xs text-slate-500">JPEG, PNG, WebP · 5MB max</span>
         }
         <input
@@ -110,7 +120,7 @@
     <div
       class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-600"
     >
-      <mat-icon class="!text-[32px]">category</mat-icon>
+      <svg lucideFolderTree class="size-8"></svg>
       <p class="mt-3 font-medium">No categories found.</p>
       <button
         type="button"
@@ -131,6 +141,7 @@
             <th class="px-4 py-3">Actions</th>
           </tr>
         </thead>
+
         <tbody class="divide-y divide-slate-100">
           @for (category of categories(); track category._id) {
             <tr class="hover:bg-slate-50">
@@ -138,15 +149,16 @@
                 <div class="flex items-center gap-3">
                   @if (category.image?.url) {
                     <img
-                      [src]="category.image?.url"
+                      [src]="category.image.url"
                       [alt]="category.name"
                       width="48"
                       height="48"
                       class="size-12 rounded-lg object-cover"
                     />
                   } @else {
-                    <mat-icon>image</mat-icon>
+                    <svg lucideImage class="size-5 text-slate-400"></svg>
                   }
+
                   <div>
                     <p class="font-medium">{{ category.name }}</p>
                     <p class="text-xs text-slate-500">
@@ -155,15 +167,21 @@
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-3">{{ category.productsCount }}</td>
+
+              <td class="px-4 py-3">
+                {{ category.productsCount }}
+              </td>
+
               <td class="px-4 py-3">
                 <span
                   class="status-badge"
                   [class.status-in-stock]="category.isActive"
                   [class.status-out-of-stock]="!category.isActive"
-                  >{{ category.isActive ? 'Active' : 'Inactive' }}</span
                 >
+                  {{ category.isActive ? 'Active' : 'Inactive' }}
+                </span>
               </td>
+
               <td class="px-4 py-3">
                 <div class="flex gap-1">
                   <button
@@ -172,8 +190,10 @@
                     class="grid size-8 place-items-center rounded hover:bg-slate-100"
                     aria-label="Edit category"
                   >
-                    <mat-icon class="!text-[18px]">edit</mat-icon></button
-                  ><button
+                    <svg lucidePencil class="size-[18px]"></svg>
+                  </button>
+
+                  <button
                     type="button"
                     (click)="toggle(category)"
                     class="grid size-8 place-items-center rounded hover:bg-slate-100"
@@ -181,16 +201,20 @@
                       category.isActive ? 'Deactivate category' : 'Activate category'
                     "
                   >
-                    <mat-icon class="!text-[18px]">{{
-                      category.isActive ? 'visibility_off' : 'visibility'
-                    }}</mat-icon></button
-                  ><button
+                    @if (category.isActive) {
+                      <svg lucideEyeOff class="size-[18px]"></svg>
+                    } @else {
+                      <svg lucideEye class="size-[18px]"></svg>
+                    }
+                  </button>
+
+                  <button
                     type="button"
                     (click)="remove(category)"
                     class="grid size-8 place-items-center rounded text-red-600 hover:bg-red-50"
                     aria-label="Delete category"
                   >
-                    <mat-icon class="!text-[18px]">delete</mat-icon>
+                    <svg lucideTrash2 class="size-[18px]"></svg>
                   </button>
                 </div>
               </td>

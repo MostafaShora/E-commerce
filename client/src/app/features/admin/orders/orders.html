@@ -22,7 +22,7 @@
   <!-- Loading -->
   @if (loading()) {
     <section
-      class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+      class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
     >
       <div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
         <div class="h-5 w-48 animate-pulse rounded bg-slate-200"></div>
@@ -84,7 +84,7 @@
   } @else {
     <!-- Orders Card -->
     <section
-      class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+      class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
     >
       <!-- Card Header -->
       <div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
@@ -195,7 +195,7 @@
 
                   <!-- Status -->
                   <td class="px-2 py-3 pr-4">
-                    <div class="order-status-dropdown relative">
+                    <div class="order-status-dropdown">
                       <!-- Select Trigger -->
                       <button
                         type="button"
@@ -205,7 +205,7 @@
                           order.status === 'cancelled' ||
                           updatingOrderId() === order._id
                         "
-                        (click)="toggleStatusMenu(order._id)"
+                        (click)="toggleStatusMenu(order._id, $event)"
                         [attr.aria-expanded]="statusMenuOpenId() === order._id"
                         aria-haspopup="listbox"
                       >
@@ -264,7 +264,7 @@
                       </button>
 
                       <!-- Dropdown -->
-                      @if (statusMenuOpenId() === order._id) {
+                      <!-- @if (statusMenuOpenId() === order._id) {
                         <div
                           class="absolute bottom-full right-0 z-50 mb-2 w-[180px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-900"
                           role="listbox"
@@ -392,7 +392,7 @@
                             }
                           }
                         </div>
-                      }
+                      } -->
                     </div>
                   </td>
                 </tr>
@@ -400,6 +400,121 @@
             </tbody>
           </table>
         </div>
+
+        @if (statusMenuOrder(); as order) {
+          <div
+            class="order-status-menu fixed z-[100] w-[180px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-900"
+            [style.top.px]="statusMenuPosition().top"
+            [style.left.px]="statusMenuPosition().left"
+            role="listbox"
+          >
+            @for (status of statusOptions(order); track status) {
+              @switch (status) {
+                @case ('placed') {
+                  <button
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="status === order.status"
+                    (click)="selectStatus(order, status)"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                    [class.bg-slate-100]="status === order.status"
+                    [class.font-medium]="status === order.status"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full bg-slate-500"></span>
+                      <span>Placed</span>
+                    </span>
+                  </button>
+                }
+
+                @case ('confirmed') {
+                  <button
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="status === order.status"
+                    (click)="selectStatus(order, status)"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                      <span>Confirmed</span>
+                    </span>
+                  </button>
+                }
+
+                @case ('assigned') {
+                  <button
+                    type="button"
+                    role="option"
+                    (click)="selectStatus(order, status)"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full bg-violet-500"></span>
+                      <span>Assigned</span>
+                    </span>
+                  </button>
+                }
+
+                @case ('packed') {
+                  <button
+                    type="button"
+                    role="option"
+                    (click)="selectStatus(order, status)"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                      <span>Packed</span>
+                    </span>
+                  </button>
+                }
+
+                @case ('out_for_delivery') {
+                  <button
+                    type="button"
+                    role="option"
+                    (click)="selectStatus(order, status)"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full bg-orange-500"></span>
+                      <span>Out For Delivery</span>
+                    </span>
+                  </button>
+                }
+
+                @case ('delivered') {
+                  <button
+                    type="button"
+                    role="option"
+                    (click)="selectStatus(order, status)"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                      <span>Delivered</span>
+                    </span>
+                  </button>
+                }
+
+                @case ('cancelled') {
+                  <button
+                    type="button"
+                    role="option"
+                    (click)="selectStatus(order, status)"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <span class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                      <span>Cancelled</span>
+                    </span>
+                  </button>
+                }
+              }
+            }
+          </div>
+        }
 
         <!-- Pagination -->
         <nav
