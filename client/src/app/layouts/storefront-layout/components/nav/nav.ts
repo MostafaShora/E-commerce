@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LucideLogOut, LucideSearch, LucideUser } from '@lucide/angular';
 import { Router, RouterLink } from '@angular/router';
@@ -13,7 +13,17 @@ import { AvatarComponent } from '../../../../shared/ui/avatar/avatar';
 @Component({
   selector: 'app-storefront-nav',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LogoComponent, ModeToggleComponent, CartButtonComponent, AvatarComponent, LucideSearch, LucideLogOut, LucideUser],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    LogoComponent,
+    ModeToggleComponent,
+    CartButtonComponent,
+    AvatarComponent,
+    LucideSearch,
+    LucideLogOut,
+    LucideUser,
+  ],
   templateUrl: './nav.html',
 })
 export class StorefrontNavComponent {
@@ -23,6 +33,16 @@ export class StorefrontNavComponent {
     query: new FormControl('', { nonNullable: true }),
   });
   private readonly router = inject(Router);
+  @ViewChild('accountMenu') accountMenu?: ElementRef<HTMLDetailsElement>;
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as Node;
+
+    if (this.accountMenu && !this.accountMenu.nativeElement.contains(target)) {
+      this.accountMenu.nativeElement.removeAttribute('open');
+    }
+  }
 
   submitSearch(): void {
     const query = this.searchForm.controls.query.value.trim();
