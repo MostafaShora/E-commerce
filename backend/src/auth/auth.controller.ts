@@ -49,9 +49,10 @@ export class AuthController {
 
     res.cookie('instant_access_token', token, {
       httpOnly: true,
-      secure: ENV.NODE_ENV === 'production',
-      sameSite: ENV.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
     return {
@@ -87,15 +88,11 @@ export class AuthController {
 
     res.cookie('instant_access_token', token, {
       httpOnly: true,
-      secure: ENV.NODE_ENV === 'production',
-      sameSite: ENV.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
-
-    console.log('COOKIE SET');
-    console.log('NODE_ENV:', ENV.NODE_ENV);
-    console.log('JWT_SECRET EXISTS:', !!ENV.JWT_SECRET);
-    console.log('SET-COOKIE:', res.getHeader('Set-Cookie'));
 
     return {
       message: 'User logged in successfully',

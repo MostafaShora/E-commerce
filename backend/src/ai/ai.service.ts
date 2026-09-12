@@ -23,7 +23,9 @@ export class AIService {
 
   constructor(private readonly configService: ConfigService) {}
 
-  async generateAdminContent(data: GenerateAIAdminDto): Promise<{ result: string }> {
+  async generateAdminContent(
+    data: GenerateAIAdminDto,
+  ): Promise<{ result: string }> {
     const request = this.createRequest(data);
     const apiKey = this.configService.get<string>('GEMINI_API_KEY')?.trim();
 
@@ -32,7 +34,8 @@ export class AIService {
     }
 
     const modelId =
-      this.configService.get<string>('GEMINI_MODEL')?.trim() || DEFAULT_GEMINI_MODEL;
+      this.configService.get<string>('GEMINI_MODEL')?.trim() ||
+      DEFAULT_GEMINI_MODEL;
 
     try {
       const { createGoogleGenerativeAI, generateText } = await this.loadAiSdk();
@@ -44,8 +47,12 @@ export class AIService {
       const result = text.trim();
 
       if (!result) {
-        this.logger.warn('Gemini returned an empty response for admin content generation');
-        throw new BadGatewayException('AI service returned an invalid response');
+        this.logger.warn(
+          'Gemini returned an empty response for admin content generation',
+        );
+        throw new BadGatewayException(
+          'AI service returned an invalid response',
+        );
       }
 
       return { result };
@@ -72,7 +79,10 @@ export class AIService {
     };
   }
 
-  private createRequest(data: GenerateAIAdminDto): { system: string; prompt: string } {
+  private createRequest(data: GenerateAIAdminDto): {
+    system: string;
+    prompt: string;
+  } {
     if (!data.title?.trim()) {
       throw new BadRequestException(
         data.action === AIAdminAction.REPHRASE_TITLE
@@ -117,7 +127,10 @@ export class AIService {
     });
 
     if (statusCode === 429) {
-      throw new HttpException('AI service is busy. Please try again shortly.', 429);
+      throw new HttpException(
+        'AI service is busy. Please try again shortly.',
+        429,
+      );
     }
 
     if (statusCode === 404) {
@@ -131,12 +144,14 @@ export class AIService {
     }
 
     // 401/403 are Gemini credentials or permission failures, never app auth errors.
-    throw new ServiceUnavailableException('AI service is temporarily unavailable');
+    throw new ServiceUnavailableException(
+      'AI service is temporarily unavailable',
+    );
   }
 
-  private findProviderError(error: unknown):
-    | { statusCode?: number; responseBody?: unknown }
-    | undefined {
+  private findProviderError(
+    error: unknown,
+  ): { statusCode?: number; responseBody?: unknown } | undefined {
     let current: unknown = error;
 
     // AI SDK can wrap an APICallError in a retry error. Inspect only status-code
@@ -152,7 +167,10 @@ export class AIService {
       if (typeof providerError.statusCode === 'number') {
         return {
           statusCode: providerError.statusCode,
-          responseBody: 'responseBody' in providerError ? providerError.responseBody : undefined,
+          responseBody:
+            'responseBody' in providerError
+              ? providerError.responseBody
+              : undefined,
         };
       }
 
@@ -162,7 +180,9 @@ export class AIService {
     return undefined;
   }
 
-  private getProviderDiagnostics(providerError: { responseBody?: unknown } | undefined) {
+  private getProviderDiagnostics(
+    providerError: { responseBody?: unknown } | undefined,
+  ) {
     if (typeof providerError?.responseBody !== 'string') return {};
 
     try {
@@ -171,11 +191,18 @@ export class AIService {
       };
       const message = parsed.error?.message;
       return {
-        providerCode: typeof parsed.error?.code === 'number' ? parsed.error.code : undefined,
+        providerCode:
+          typeof parsed.error?.code === 'number'
+            ? parsed.error.code
+            : undefined,
         providerErrorStatus:
-          typeof parsed.error?.status === 'string' ? parsed.error.status : undefined,
+          typeof parsed.error?.status === 'string'
+            ? parsed.error.status
+            : undefined,
         providerMessage:
-          typeof message === 'string' ? this.redactProviderMessage(message) : undefined,
+          typeof message === 'string'
+            ? this.redactProviderMessage(message)
+            : undefined,
       };
     } catch {
       return { providerErrorBody: 'unparseable' };
