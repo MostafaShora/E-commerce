@@ -62,7 +62,7 @@ export class ProductsPage {
           this.selectedCategory.set(category);
           this.currentCategoryName.set(
             this.categories().find((item) => item._id === category)?.name ??
-              (category === 'all' ? 'All' : 'Category'),
+            (category === 'all' ? 'All' : 'Category'),
           );
           return this.loadProducts({
             categoryId: category === 'all' ? undefined : category,
@@ -128,7 +128,7 @@ export class ProductsPage {
           const category = this.selectedCategory();
           this.currentCategoryName.set(
             this.categories().find((item) => item._id === category)?.name ??
-              (category === 'all' ? 'All' : 'Category'),
+            (category === 'all' ? 'All' : 'Category'),
           );
         },
         error: () => this.categoriesError.set('Unable to load categories right now.'),
@@ -178,5 +178,12 @@ export class ProductsPage {
 
     const price = Number(value);
     return Number.isFinite(price) && price >= 0 ? price : undefined;
+  }
+
+  sortOpen = false;
+
+  selectSort(value: ProductSort): void {
+    this.filters.controls.sort.setValue(value);
+    this.sortOpen = false;
   }
 }

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { MatSelectModule } from '@angular/material/select';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { AdminService } from '../services/admin';
 import type { CreatedOrder, OrderStatus } from '../../checkout/services/order';
 import { orderStatusClass, paymentStatusClass } from '../models/admin.model';
@@ -19,7 +18,7 @@ const statuses: OrderStatus[] = [
 @Component({
   selector: 'app-admin-orders',
   standalone: true,
-  imports: [CommonModule, MatSelectModule],
+  imports: [CommonModule],
   templateUrl: './orders.html',
 })
 export class AdminOrdersComponent {
@@ -40,6 +39,7 @@ export class AdminOrdersComponent {
     hasPrevPage?: boolean;
   } | null>(null);
   readonly updatingOrderId = signal<string | null>(null);
+  readonly statusMenuOpenId = signal<string | null>(null);
   constructor() {
     this.load();
   }
@@ -78,6 +78,32 @@ export class AdminOrdersComponent {
   statusLabel(status: OrderStatus): string {
     return status.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
+
+  toggleStatusMenu(orderId: string): void {
+    this.statusMenuOpenId.update((current) =>
+      current === orderId ? null : orderId,
+    );
+  }
+
+  @HostListener('document:click', ['$event'])
+onDocumentClick(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+
+  if (!target.closest('.order-status-dropdown')) {
+    this.statusMenuOpenId.set(null);
+  }
+}
+
+  selectStatus(order: CreatedOrder, status: OrderStatus): void {
+    this.statusMenuOpenId.set(null);
+
+    if (status === order.status) {
+      return;
+    }
+
+    this.update(order, status);
+  }
+
   nextPage(): void {
     if (this.pagination()?.hasNextPage) {
       this.page.update((value) => value + 1);

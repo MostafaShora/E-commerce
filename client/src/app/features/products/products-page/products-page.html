@@ -1,147 +1,385 @@
-<div class="flex flex-col gap-6 px-4 py-6">
+<div class="flex flex-col gap-6">
+  <!-- Header -->
   <header>
     <h1 class="text-2xl font-semibold text-slate-900">All products</h1>
+
     <p class="mt-1 text-sm text-slate-600">
       Browse groceries by category, price, and availability.
     </p>
   </header>
 
   <div class="grid gap-8 lg:grid-cols-[240px_1fr]">
-    <aside class="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
-      <section class="flex flex-col gap-3">
-        <h2 class="text-sm font-semibold text-slate-900">Categories</h2>
+    <!-- Sidebar -->
+    <aside class="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
+      <!-- Categories -->
+      <section class="flex flex-col">
+        <h2 class="mb-2 text-sm font-semibold text-slate-900">Categories</h2>
+
         @if (categoriesLoading()) {
-          @for (item of [1, 2, 3, 4, 5, 6]; track item) {
-            <div class="h-9 animate-pulse rounded-lg bg-slate-200"></div>
-          }
+          <div class="flex flex-col gap-1">
+            @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+              <div class="h-9 animate-pulse rounded-lg bg-slate-200"></div>
+            }
+          </div>
         } @else {
-          <button
-            type="button"
-            (click)="selectCategory('all')"
-            [class]="
-              selectedCategory() === 'all'
-                ? 'rounded-lg bg-slate-100 px-3 py-2 text-left text-sm font-medium text-slate-900'
-                : 'rounded-lg px-3 py-2 text-left text-sm text-slate-600 hover:bg-slate-100'
-            "
-          >
-            All
-          </button>
-          @for (category of categories(); track category._id) {
+          <div class="flex flex-col gap-0.5">
+            <!-- All -->
             <button
               type="button"
-              (click)="selectCategory(category._id)"
+              (click)="selectCategory('all')"
               [class]="
-                selectedCategory() === category._id
-                  ? 'rounded-lg bg-slate-100 px-3 py-2 text-left text-sm font-medium text-slate-900'
-                  : 'rounded-lg px-3 py-2 text-left text-sm text-slate-600 hover:bg-slate-100'
+                selectedCategory() === 'all'
+                  ? 'flex h-9 w-full items-center rounded-lg bg-slate-100 px-3 text-left text-sm font-medium text-slate-900'
+                  : 'flex h-9 w-full items-center rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900'
               "
             >
-              {{ category.name }}
+              All
             </button>
-          }
+
+            <!-- Categories -->
+            @for (category of categories(); track category._id) {
+              <button
+                type="button"
+                (click)="selectCategory(category._id)"
+                [class]="
+                  selectedCategory() === category._id
+                    ? 'flex h-9 w-full items-center rounded-lg bg-slate-100 px-3 text-left text-sm font-medium text-slate-900'
+                    : 'flex h-9 w-full items-center rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900'
+                "
+              >
+                {{ category.name }}
+              </button>
+            }
+          </div>
         }
       </section>
 
-      <form [formGroup]="filters" class="flex flex-col gap-3">
-        <h2 class="text-sm font-semibold text-slate-900">Filters</h2>
-        <mat-checkbox formControlName="dealsOnly" class="text-sm">Deals only</mat-checkbox>
-        <mat-checkbox formControlName="inStockOnly" class="text-sm">In stock</mat-checkbox>
+      <!-- Filters -->
+      <form [formGroup]="filters" class="flex flex-col">
+        <h2 class="mb-2 text-sm font-semibold text-slate-900">Filters</h2>
+
+        <div class="flex flex-col gap-1">
+          <!-- Deals only -->
+          <label
+            class="group flex h-8 cursor-pointer items-center gap-2 rounded-md px-2 text-sm text-slate-700 transition-colors "
+          >
+            <span class="relative h-4 w-4 shrink-0">
+              <input
+                type="checkbox"
+                formControlName="dealsOnly"
+                class="peer absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded-[4px] border border-slate-300 bg-white transition-colors checked:border-slate-900 checked:bg-slate-900 focus:outline-none focus:ring-0"
+              />
+
+              <svg
+                class="pointer-events-none absolute inset-0 hidden h-4 w-4 p-0.5 text-white peer-checked:block"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l3 3 7-7" />
+              </svg>
+            </span>
+
+            <span class="select-none">Deals only</span>
+          </label>
+
+          <!-- In stock -->
+          <label
+            class="group flex h-8 cursor-pointer items-center gap-2 rounded-md px-2 text-sm text-slate-700 transition-colors "
+          >
+            <span class="relative h-4 w-4 shrink-0">
+              <input
+                type="checkbox"
+                formControlName="inStockOnly"
+                class="peer absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded-[4px] border border-slate-300 bg-white transition-colors checked:border-slate-900 checked:bg-slate-900 focus:outline-none focus:ring-0"
+              />
+
+              <svg
+                class="pointer-events-none absolute inset-0 hidden h-4 w-4 p-0.5 text-white peer-checked:block"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l3 3 7-7" />
+              </svg>
+            </span>
+
+            <span class="select-none">In stock</span>
+          </label>
+        </div>
       </form>
 
-      <form [formGroup]="priceInputs" (ngSubmit)="applyPriceFilter()" class="flex flex-col gap-3">
-        <h2 class="text-sm font-semibold text-slate-900">Price range</h2>
+      <!-- Price -->
+      <form [formGroup]="priceInputs" (ngSubmit)="applyPriceFilter()" class="flex flex-col">
+        <h2 class="mb-2 text-sm font-semibold text-slate-900">Price range</h2>
+
         <div class="grid grid-cols-[1fr_1fr_auto] gap-2">
           <input
-            class="min-w-0 rounded-lg border border-slate-300 px-3 py-2 text-sm"
             type="number"
             min="0"
             placeholder="Min"
             formControlName="min"
+            class="h-10 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
           />
+
           <input
-            class="min-w-0 rounded-lg border border-slate-300 px-3 py-2 text-sm"
             type="number"
             min="0"
             placeholder="Max"
             formControlName="max"
+            class="h-10 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
           />
-          <button class="rounded-lg bg-slate-900 px-3 text-sm font-medium text-white" type="submit">
+
+          <button
+            type="submit"
+            class="h-10 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+          >
             Apply
           </button>
         </div>
       </form>
 
       @if (categoriesError()) {
-        <p class="text-sm text-red-600">{{ categoriesError() }}</p>
+        <p class="text-sm text-red-600">
+          {{ categoriesError() }}
+        </p>
       }
     </aside>
 
+    <!-- Products -->
     <section class="flex min-w-0 flex-col gap-5">
+      <!-- Toolbar -->
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="text-xl font-semibold text-slate-900">{{ currentCategoryName() }}</h2>
+          <h2 class="text-xl font-semibold text-slate-900">
+            {{ currentCategoryName() }}
+          </h2>
+
           <p class="text-sm text-slate-600">
             {{ loading() ? 'Loading...' : (pagination()?.total ?? 0) + ' products' }}
           </p>
         </div>
+
         <div class="flex items-center gap-3 text-sm">
           <button
             type="button"
             (click)="resetFilters()"
-            class="text-slate-600 underline-offset-4 hover:underline"
+            class="text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline"
           >
             Reset
           </button>
-          <label
-            class="flex items-center gap-2 font-medium text-slate-900"
-            [formGroup]="filters"
-            >Sort by
-            <select
-              class="rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal"
-              formControlName="sort"
-            >
-              <option value="best-match">Best Match</option>
-              <option value="price-low">Price: low to high</option>
-              <option value="price-high">Price: high to low</option>
-              <option value="highest-rating">Highest rated</option>
-            </select>
-          </label>
+
+          <div class="flex items-center gap-2">
+            <span class="whitespace-nowrap text-sm font-medium text-slate-600"> Sort by: </span>
+
+            <div class="relative" [formGroup]="filters">
+              <button
+                type="button"
+                class="flex h-10 min-w-[175px] items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 shadow-sm transition-all hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-100"
+                (click)="sortOpen = !sortOpen"
+                [attr.aria-expanded]="sortOpen"
+                aria-haspopup="listbox"
+              >
+                <span>
+                  @switch (filters.controls.sort.value) {
+                    @case ('best-match') {
+                      Best Match
+                    }
+                    @case ('price-low') {
+                      Price: low to high
+                    }
+                    @case ('price-high') {
+                      Price: high to low
+                    }
+                    @case ('highest-rating') {
+                      Highest rated
+                    }
+                  }
+                </span>
+
+                <svg
+                  class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200"
+                  [class.rotate-180]="sortOpen"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 011.08 1.04l-4.25 4.51a.75.75 0 01-1.08 0l-4.25-4.51a.75.75 0 01.02-1.06z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              @if (sortOpen) {
+                <div
+                  class="absolute right-0 z-50 mt-2 w-full min-w-[210px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
+                  role="listbox"
+                >
+                  <!-- Best Match -->
+                  <button
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="filters.controls.sort.value === 'best-match'"
+                    (click)="selectSort('best-match')"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                    [class.bg-slate-100]="filters.controls.sort.value === 'best-match'"
+                    [class.font-medium]="filters.controls.sort.value === 'best-match'"
+                  >
+                    <span>Best Match</span>
+
+                    @if (filters.controls.sort.value === 'best-match') {
+                      <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.704 5.29a1 1 0 010 1.42l-7.25 7.25a1 1 0 01-1.42 0l-3.25-3.25a1 1 0 111.42-1.42l2.54 2.54 6.54-6.54a1 1 0 011.42 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    }
+                  </button>
+
+                  <!-- Price Low -->
+                  <button
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="filters.controls.sort.value === 'price-low'"
+                    (click)="selectSort('price-low')"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                    [class.bg-slate-100]="filters.controls.sort.value === 'price-low'"
+                    [class.font-medium]="filters.controls.sort.value === 'price-low'"
+                  >
+                    <span>Price: low to high</span>
+
+                    @if (filters.controls.sort.value === 'price-low') {
+                      <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.704 5.29a1 1 0 010 1.42l-7.25 7.25a1 1 0 01-1.42 0l-3.25-3.25a1 1 0 111.42-1.42l2.54 2.54 6.54-6.54a1 1 0 011.42 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    }
+                  </button>
+
+                  <!-- Price High -->
+                  <button
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="filters.controls.sort.value === 'price-high'"
+                    (click)="selectSort('price-high')"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                    [class.bg-slate-100]="filters.controls.sort.value === 'price-high'"
+                    [class.font-medium]="filters.controls.sort.value === 'price-high'"
+                  >
+                    <span>Price: high to low</span>
+
+                    @if (filters.controls.sort.value === 'price-high') {
+                      <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.704 5.29a1 1 0 010 1.42l-7.25 7.25a1 1 0 01-1.42 0l-3.25-3.25a1 1 0 01-1.42 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    }
+                  </button>
+
+                  <!-- Highest Rating -->
+                  <button
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="filters.controls.sort.value === 'highest-rating'"
+                    (click)="selectSort('highest-rating')"
+                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                    [class.bg-slate-100]="filters.controls.sort.value === 'highest-rating'"
+                    [class.font-medium]="filters.controls.sort.value === 'highest-rating'"
+                  >
+                    <span>Highest rated</span>
+
+                    @if (filters.controls.sort.value === 'highest-rating') {
+                      <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.704 5.29a1 1 0 010 1.42l-7.25 7.25a1 1 0 01-1.42 0l-3.25-3.25a1 1 0 01-1.42 0l-3.25-3.25a1 1 0 011.42-1.42l2.54 2.54 6.54-6.54a1 1 0 011.42 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    }
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- Error -->
       @if (errorMessage()) {
         <div
           class="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
         >
-          <span>{{ errorMessage() }}</span
-          ><button type="button" (click)="retryProducts()" class="font-medium underline">
+          <span>
+            {{ errorMessage() }}
+          </span>
+
+          <button
+            type="button"
+            (click)="retryProducts()"
+            class="font-medium underline underline-offset-2"
+          >
             Retry
           </button>
         </div>
-      } @else if (loading()) {
+      }
+
+      <!-- Loading -->
+      @else if (loading()) {
         <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 xl:grid-cols-4">
           @for (item of [1, 2, 3, 4, 5, 6, 7, 8]; track item) {
             <div class="flex flex-col gap-2">
               <div class="aspect-square animate-pulse rounded-xl bg-slate-200"></div>
+
               <div class="h-5 w-16 animate-pulse rounded bg-slate-200"></div>
+
               <div class="h-4 w-full animate-pulse rounded bg-slate-200"></div>
             </div>
           }
         </div>
-      } @else if (products().length === 0) {
-        <div class="flex flex-col items-center justify-center py-12 text-center text-slate-600">
+      }
+
+      <!-- Empty -->
+      @else if (products().length === 0) {
+        <div
+          class="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white py-16 text-center shadow-sm"
+        >
           <p class="text-lg font-medium text-slate-900">No products found</p>
-          <p class="text-sm">Try modifying your category or filter selection.</p>
-          <button type="button" (click)="resetFilters()" class="mt-4 font-medium underline">
+
+          <p class="mt-1 text-sm text-slate-600">
+            Try modifying your category or filter selection.
+          </p>
+
+          <button
+            type="button"
+            (click)="resetFilters()"
+            class="mt-4 text-sm font-medium text-slate-900 underline underline-offset-4"
+          >
             Clear filters
           </button>
         </div>
-      } @else {
+      }
+
+      <!-- Products -->
+      @else {
         <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 xl:grid-cols-4">
           @for (product of products(); track product._id) {
             <app-product-card [product]="product" />
           }
         </div>
+
+        <!-- Pagination -->
         @if (pagination(); as page) {
           <nav
             class="flex items-center justify-between border-t border-slate-200 pt-5"
@@ -151,18 +389,20 @@
               type="button"
               (click)="goToPage(page.page - 1)"
               [disabled]="!page.hasPrevPage"
-              class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+              class="inline-flex h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
             >
               Previous
             </button>
-            <span class="text-sm text-slate-600"
-              >Page {{ page.page }} of {{ page.totalPages }}</span
-            >
+
+            <span class="text-sm text-slate-600">
+              Page {{ page.page }} of {{ page.totalPages }}
+            </span>
+
             <button
               type="button"
               (click)="goToPage(page.page + 1)"
               [disabled]="!page.hasNextPage"
-              class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+              class="inline-flex h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
             >
               Next
             </button>

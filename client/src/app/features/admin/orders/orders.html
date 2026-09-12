@@ -1,9 +1,9 @@
-<div class="flex flex-col gap-8 animate-in fade-in duration-500">
+<div class="flex flex-col gap-6">
   <!-- Header -->
   <header>
     <h1 class="text-2xl font-bold tracking-tight">Orders</h1>
 
-    <p class="mt-1 text-sm text-muted-foreground">
+    <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
       Manage and update customer order status here.
     </p>
   </header>
@@ -11,33 +11,25 @@
   <!-- Error -->
   @if (error()) {
     <div
-      class="flex items-center rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
+      class="flex items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
     >
       <span>{{ error() }}</span>
 
-      <button
-        type="button"
-        (click)="load()"
-        class="ml-3 font-medium underline underline-offset-2 transition-opacity hover:opacity-80"
-      >
-        Retry
-      </button>
+      <button type="button" (click)="load()" class="font-semibold underline">Retry</button>
     </div>
   }
 
   <!-- Loading -->
   @if (loading()) {
     <section
-      class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+      class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
     >
-      <div class="border-b border-border/50 px-5 py-4">
-        <div
-          class="h-5 w-48 animate-pulse rounded bg-muted"
-        ></div>
+      <div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+        <div class="h-5 w-48 animate-pulse rounded bg-slate-200"></div>
       </div>
 
-      <div class="overflow-hidden">
-        <table class="w-full table-fixed text-left text-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[950px] text-left text-sm">
           <colgroup>
             <col class="w-[13%]" />
             <col class="w-[13%]" />
@@ -49,7 +41,7 @@
             <col class="w-[17%]" />
           </colgroup>
 
-          <thead class="border-b border-border/50">
+          <thead class="border-b border-slate-200 dark:border-slate-800">
             <tr>
               @for (
                 item of [
@@ -60,27 +52,23 @@
                   'Items',
                   'Total',
                   'Payment',
-                  'Status Update'
+                  'Status Update',
                 ];
                 track item
               ) {
                 <th class="px-2 py-3 first:pl-4 last:pr-4">
-                  <div
-                    class="h-3.5 w-16 animate-pulse rounded bg-muted"
-                  ></div>
+                  <div class="h-3.5 w-16 animate-pulse rounded bg-slate-200"></div>
                 </th>
               }
             </tr>
           </thead>
 
-          <tbody class="divide-y divide-border/40">
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
             @for (row of [1, 2, 3, 4, 5]; track row) {
               <tr>
                 @for (cell of [1, 2, 3, 4, 5, 6, 7, 8]; track cell) {
                   <td class="px-2 py-3 first:pl-4 last:pr-4">
-                    <div
-                      class="h-4 w-full animate-pulse rounded bg-muted"
-                    ></div>
+                    <div class="h-4 w-full animate-pulse rounded bg-slate-200"></div>
                   </td>
                 }
               </tr>
@@ -89,35 +77,27 @@
         </table>
       </div>
 
-      <div class="border-t border-border/50 px-5 py-4">
-        <div
-          class="h-4 w-56 animate-pulse rounded bg-muted"
-        ></div>
+      <div class="border-t border-slate-200 px-5 py-4 dark:border-slate-800">
+        <div class="h-4 w-56 animate-pulse rounded bg-slate-200"></div>
       </div>
     </section>
   } @else {
     <!-- Orders Card -->
     <section
-      class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+      class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
     >
       <!-- Card Header -->
-      <div class="border-b border-border/50 px-5 py-4">
-        <h2 class="font-semibold">
-          All Orders ({{ pagination()?.total ?? 0 }})
-        </h2>
+      <div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+        <h2 class="font-semibold">All Orders ({{ pagination()?.total ?? 0 }})</h2>
       </div>
 
       @if (orders().length === 0) {
         <!-- Empty -->
-        <div
-          class="flex min-h-40 items-center justify-center px-6 text-center text-sm text-muted-foreground"
-        >
-          No orders found.
-        </div>
+        <div class="p-8 text-center text-sm text-slate-500">No orders found.</div>
       } @else {
         <!-- Table -->
-        <div class="overflow-hidden">
-          <table class="w-full table-fixed text-left text-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[950px] text-left text-sm">
             <colgroup>
               <col class="w-[13%]" />
               <col class="w-[13%]" />
@@ -131,73 +111,46 @@
 
             <!-- Table Head -->
             <thead
-              class="border-b border-border/50 text-xs uppercase text-muted-foreground"
+              class="border-b border-slate-200 text-xs uppercase text-slate-500 dark:border-slate-800"
             >
               <tr>
-                <th class="px-2 py-3 pl-4 text-left">
-                  Order ID
-                </th>
-
-                <th class="px-2 py-3 text-left">
-                  Customer
-                </th>
-
-                <th class="px-2 py-3 text-left">
-                  Shipping To
-                </th>
-
-                <th class="px-2 py-3 text-left">
-                  Date
-                </th>
-
-                <th class="px-2 py-3 text-left">
-                  Items
-                </th>
-
-                <th class="px-2 py-3 text-left">
-                  Total
-                </th>
-
-                <th class="px-2 py-3 text-left">
-                  Payment
-                </th>
-
-                <th class="px-2 py-3 pr-4 text-left">
-                  Status Update
-                </th>
+                <th class="px-2 py-3 pl-4 text-left">Order ID</th>
+                <th class="px-2 py-3 text-left">Customer</th>
+                <th class="px-2 py-3 text-left">Shipping To</th>
+                <th class="px-2 py-3 text-left">Date</th>
+                <th class="px-2 py-3 text-left">Items</th>
+                <th class="px-2 py-3 text-left">Total</th>
+                <th class="px-2 py-3 text-left">Payment</th>
+                <th class="px-2 py-3 pr-4 text-left">Status Update</th>
               </tr>
             </thead>
 
             <!-- Table Body -->
-            <tbody class="divide-y divide-border/40">
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
               @for (order of orders(); track order._id) {
                 <tr
-                  class="text-[13px] transition-colors hover:bg-muted/20"
+                  class="text-[13px] transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60"
                 >
                   <!-- Order ID -->
-                  <td class="px-2 py-2 pl-4 font-medium">
-                    <span class="block truncate">
-                      #{{ order.orderNo }}
-                    </span>
+                  <td class="px-2 py-3 pl-4 font-medium">
+                    <span class="block truncate"> #{{ order.orderNo }} </span>
                   </td>
 
                   <!-- Customer -->
-                  <td class="px-2 py-2">
+                  <td class="px-2 py-3">
                     <div class="flex min-w-0 flex-col">
                       <span class="truncate font-medium">
                         {{ order.shippingAddress.recipientName }}
                       </span>
 
-                      <span
-                        class="truncate text-xs text-muted-foreground"
-                      >
+                      <span class="truncate text-xs text-slate-500">
                         {{ order.shippingAddress.phone }}
                       </span>
                     </div>
                   </td>
 
                   <!-- Shipping -->
-                  <td class="px-2 py-2 text-xs text-muted-foreground">
+                  <td class="px-2 py-3 text-xs text-slate-500">
                     <div class="flex min-w-0 flex-col">
                       <span class="truncate">
                         {{ order.shippingAddress.recipientName }}
@@ -215,59 +168,232 @@
                   </td>
 
                   <!-- Date -->
-                  <td
-                    class="whitespace-nowrap px-2 py-2 text-xs text-muted-foreground"
-                  >
+                  <td class="whitespace-nowrap px-2 py-3 text-xs text-slate-500">
                     {{ order.createdAt | date: 'mediumDate' }}
                   </td>
 
                   <!-- Items -->
-                  <td class="whitespace-nowrap px-2 py-2">
+                  <td class="whitespace-nowrap px-2 py-3">
                     {{ order.items.length }}
                     {{ order.items.length === 1 ? 'Item' : 'Items' }}
                   </td>
 
                   <!-- Total -->
-                  <td
-                    class="whitespace-nowrap px-2 py-2 font-semibold"
-                  >
+                  <td class="whitespace-nowrap px-2 py-3 font-semibold">
                     ${{ order.total.toFixed(2) }}
                   </td>
 
                   <!-- Payment -->
-                  <td class="px-2 py-2">
+                  <td class="px-2 py-3">
                     <span
                       class="status-badge capitalize"
-                      [ngClass]="
-                        paymentStatusClass(order.paymentStatus)
-                      "
+                      [ngClass]="paymentStatusClass(order.paymentStatus)"
                     >
                       {{ order.paymentStatus }}
                     </span>
                   </td>
 
                   <!-- Status -->
-                  <td class="px-2 py-2 pr-4">
-                    <mat-select
-                      [value]="order.status"
-                      (selectionChange)="update(order, $event.value)"
-                      [disabled]="
-                        order.status === 'delivered' ||
-                        order.status === 'cancelled' ||
-                        updatingOrderId() === order._id
-                      "
-                      class="order-status-select h-9 w-[135px] rounded-md border border-border bg-background px-2.5 text-xs font-medium transition-colors"
-                      [ngClass]="orderStatusClass(order.status)"
-                    >
-                      @for (
-                        status of statusOptions(order);
-                        track status
-                      ) {
-                        <mat-option [value]="status">
-                          {{ statusLabel(status) }}
-                        </mat-option>
+                  <td class="px-2 py-3 pr-4">
+                    <div class="order-status-dropdown relative">
+                      <!-- Select Trigger -->
+                      <button
+                        type="button"
+                        class="flex h-9 w-[145px] items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 shadow-sm transition-all hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                        [disabled]="
+                          order.status === 'delivered' ||
+                          order.status === 'cancelled' ||
+                          updatingOrderId() === order._id
+                        "
+                        (click)="toggleStatusMenu(order._id)"
+                        [attr.aria-expanded]="statusMenuOpenId() === order._id"
+                        aria-haspopup="listbox"
+                      >
+                        <span class="flex min-w-0 items-center gap-2">
+                          @switch (order.status) {
+                            @case ('placed') {
+                              <span class="h-2 w-2 shrink-0 rounded-full bg-slate-500"></span>
+                              <span class="truncate">Placed</span>
+                            }
+
+                            @case ('confirmed') {
+                              <span class="h-2 w-2 shrink-0 rounded-full bg-blue-500"></span>
+                              <span class="truncate">Confirmed</span>
+                            }
+
+                            @case ('assigned') {
+                              <span class="h-2 w-2 shrink-0 rounded-full bg-violet-500"></span>
+                              <span class="truncate">Assigned</span>
+                            }
+
+                            @case ('packed') {
+                              <span class="h-2 w-2 shrink-0 rounded-full bg-amber-500"></span>
+                              <span class="truncate">Packed</span>
+                            }
+
+                            @case ('out_for_delivery') {
+                              <span class="h-2 w-2 shrink-0 rounded-full bg-orange-500"></span>
+                              <span class="truncate">Out For Delivery</span>
+                            }
+
+                            @case ('delivered') {
+                              <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
+                              <span class="truncate">Delivered</span>
+                            }
+
+                            @case ('cancelled') {
+                              <span class="h-2 w-2 shrink-0 rounded-full bg-red-500"></span>
+                              <span class="truncate">Cancelled</span>
+                            }
+                          }
+                        </span>
+
+                        <!-- Check Icon -->
+                        <svg
+                          class="h-4 w-4 shrink-0 text-emerald-600"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M16.704 5.29a1 1 0 010 1.42l-7.25 7.25a1 1 0 01-1.42 0l-3.25-3.25a1 1 0 111.42-1.42l2.54 2.54 6.54-6.54a1 1 0 011.42 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+
+                      <!-- Dropdown -->
+                      @if (statusMenuOpenId() === order._id) {
+                        <div
+                          class="absolute bottom-full right-0 z-50 mb-2 w-[180px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-900"
+                          role="listbox"
+                        >
+                          @for (status of statusOptions(order); track status) {
+                            @switch (status) {
+                              @case ('placed') {
+                                <button
+                                  type="button"
+                                  role="option"
+                                  [attr.aria-selected]="status === order.status"
+                                  (click)="selectStatus(order, status)"
+                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                                  [class.bg-slate-100]="status === order.status"
+                                  [class.font-medium]="status === order.status"
+                                >
+                                  <span class="flex items-center gap-2">
+                                    <span class="h-2 w-2 rounded-full bg-slate-500"></span>
+                                    <span>Placed</span>
+                                  </span>
+                                </button>
+                              }
+
+                              @case ('confirmed') {
+                                <button
+                                  type="button"
+                                  role="option"
+                                  [attr.aria-selected]="status === order.status"
+                                  (click)="selectStatus(order, status)"
+                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                                  [class.bg-slate-100]="status === order.status"
+                                  [class.font-medium]="status === order.status"
+                                >
+                                  <span class="flex items-center gap-2">
+                                    <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                                    <span>Confirmed</span>
+                                  </span>
+                                </button>
+                              }
+
+                              @case ('assigned') {
+                                <button
+                                  type="button"
+                                  role="option"
+                                  [attr.aria-selected]="status === order.status"
+                                  (click)="selectStatus(order, status)"
+                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                                  [class.bg-slate-100]="status === order.status"
+                                  [class.font-medium]="status === order.status"
+                                >
+                                  <span class="flex items-center gap-2">
+                                    <span class="h-2 w-2 rounded-full bg-violet-500"></span>
+                                    <span>Assigned</span>
+                                  </span>
+                                </button>
+                              }
+
+                              @case ('packed') {
+                                <button
+                                  type="button"
+                                  role="option"
+                                  [attr.aria-selected]="status === order.status"
+                                  (click)="selectStatus(order, status)"
+                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                                  [class.bg-slate-100]="status === order.status"
+                                  [class.font-medium]="status === order.status"
+                                >
+                                  <span class="flex items-center gap-2">
+                                    <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                                    <span>Packed</span>
+                                  </span>
+                                </button>
+                              }
+
+                              @case ('out_for_delivery') {
+                                <button
+                                  type="button"
+                                  role="option"
+                                  [attr.aria-selected]="status === order.status"
+                                  (click)="selectStatus(order, status)"
+                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                                  [class.bg-slate-100]="status === order.status"
+                                  [class.font-medium]="status === order.status"
+                                >
+                                  <span class="flex items-center gap-2">
+                                    <span class="h-2 w-2 rounded-full bg-orange-500"></span>
+                                    <span>Out For Delivery</span>
+                                  </span>
+                                </button>
+                              }
+
+                              @case ('delivered') {
+                                <button
+                                  type="button"
+                                  role="option"
+                                  [attr.aria-selected]="status === order.status"
+                                  (click)="selectStatus(order, status)"
+                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                                  [class.bg-slate-100]="status === order.status"
+                                  [class.font-medium]="status === order.status"
+                                >
+                                  <span class="flex items-center gap-2">
+                                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                                    <span>Delivered</span>
+                                  </span>
+                                </button>
+                              }
+
+                              @case ('cancelled') {
+                                <button
+                                  type="button"
+                                  role="option"
+                                  [attr.aria-selected]="status === order.status"
+                                  (click)="selectStatus(order, status)"
+                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                                  [class.bg-slate-100]="status === order.status"
+                                  [class.font-medium]="status === order.status"
+                                >
+                                  <span class="flex items-center gap-2">
+                                    <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                                    <span>Cancelled</span>
+                                  </span>
+                                </button>
+                              }
+                            }
+                          }
+                        </div>
                       }
-                    </mat-select>
+                    </div>
                   </td>
                 </tr>
               }
@@ -277,11 +403,11 @@
 
         <!-- Pagination -->
         <nav
-          class="flex flex-col gap-3 border-t border-border/50 px-5 py-3.5 text-sm sm:flex-row sm:items-center sm:justify-between"
+          class="flex flex-col gap-3 border-t border-slate-200 px-5 py-3.5 text-sm dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between"
         >
-          <p class="text-muted-foreground">
-            Page {{ pagination()?.page || 1 }}
-            of {{ pagination()?.totalPages || 1 }}
+          <p class="text-slate-500">
+            Page {{ pagination()?.page || 1 }} of
+            {{ pagination()?.totalPages || 1 }}
             ({{ pagination()?.total || 0 }} orders)
           </p>
 
@@ -290,13 +416,13 @@
               type="button"
               (click)="previousPage()"
               [disabled]="!pagination()?.hasPrevPage"
-              class="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+              class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-xs font-medium transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               Previous
             </button>
 
             <span
-              class="flex h-8 min-w-8 items-center justify-center rounded-md border border-border bg-muted/50 px-2.5 text-xs font-medium"
+              class="flex h-8 min-w-8 items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-2.5 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
             >
               {{ pagination()?.page || 1 }}
             </span>
@@ -305,7 +431,7 @@
               type="button"
               (click)="nextPage()"
               [disabled]="!pagination()?.hasNextPage"
-              class="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+              class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-xs font-medium transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               Next
             </button>

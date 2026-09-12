@@ -1,11 +1,26 @@
 @if (isVisible()) {
-  <div class="relative flex min-h-9 w-full items-center justify-center bg-slate-900 px-10 text-white">
-    <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-1 text-xs font-semibold sm:text-sm">
-      <span>Free delivery on orders above $20</span>
-      <span class="hidden h-5 w-px bg-white/40 sm:block"></span>
-      <span>Farm-fresh produce delivered daily</span>
+  <div class="promo-banner">
+    <div
+      #tickerViewport
+      class="promo-banner__ticker"
+      aria-label="Free delivery on orders above $20. Farm-fresh produce delivered daily."
+    >
+      <div class="promo-banner__characters" aria-hidden="true">
+        @for (char of tickerCharacters; track $index) {
+          <span
+            #tickerCharacter
+            class="promo-banner__character"
+          >{{ char === ' ' ? '\u00A0' : char }}</span>
+        }
+      </div>
     </div>
-    <button type="button" class="absolute right-3 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-md text-white/90 hover:bg-white/15" (click)="dismiss()" aria-label="Dismiss promotion banner">
+
+    <button
+      type="button"
+      class="promo-banner__close"
+      (click)="dismiss()"
+      aria-label="Dismiss promotion banner"
+    >
       <svg lucideX class="size-[18px]"></svg>
     </button>
   </div>
