@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
 import { config } from 'dotenv';
+import { ENV } from '../config/env.config';
 
 config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
+const MONGODB_URI = ENV.MONGO_URI;
 
 interface User {
   _id?: string;
@@ -160,7 +161,9 @@ async function seed() {
     const customersResult = await usersCollection.insertMany(customers as any);
 
     const adminId = adminResult.insertedId.toString();
-    const customerIds = Object.values(customersResult.insertedIds).map((id) => id.toString());
+    const customerIds = Object.values(customersResult.insertedIds).map((id) =>
+      id.toString(),
+    );
 
     console.log(`Created ${customerIds.length + 1} users`);
 
@@ -249,8 +252,12 @@ async function seed() {
     ];
 
     const categoriesCollection = db.collection('categories');
-    const categoriesResult = await categoriesCollection.insertMany(categories as any);
-    const categoryIds = Object.values(categoriesResult.insertedIds).map((id) => id.toString());
+    const categoriesResult = await categoriesCollection.insertMany(
+      categories as any,
+    );
+    const categoryIds = Object.values(categoriesResult.insertedIds).map((id) =>
+      id.toString(),
+    );
 
     console.log(`Created ${categoryIds.length} categories`);
 
@@ -267,7 +274,8 @@ async function seed() {
         stockCount: 50,
         ratingAverage: 4.5,
         reviewCount: 23,
-        image: 'https://images.unsplash.com/photo-1560806674-104da8d61e96?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1560806674-104da8d61e96?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 0,
@@ -279,7 +287,8 @@ async function seed() {
         stockCount: 75,
         ratingAverage: 4.7,
         reviewCount: 15,
-        image: 'https://images.unsplash.com/photo-1566673829365-046a34e6b58e?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1566673829365-046a34e6b58e?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 0,
@@ -291,7 +300,8 @@ async function seed() {
         stockCount: 40,
         ratingAverage: 4.6,
         reviewCount: 18,
-        image: 'https://images.unsplash.com/photo-1595566095816-f1b25055e911?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1595566095816-f1b25055e911?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 0,
@@ -303,7 +313,8 @@ async function seed() {
         stockCount: 100,
         ratingAverage: 4.8,
         reviewCount: 45,
-        image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 0,
@@ -315,7 +326,8 @@ async function seed() {
         stockCount: 35,
         ratingAverage: 4.4,
         reviewCount: 12,
-        image: 'https://images.unsplash.com/photo-1628840042765-356cda07f337?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1628840042765-356cda07f337?w=500&h=500&fit=crop',
       },
       // Dairy & Eggs
       {
@@ -328,7 +340,8 @@ async function seed() {
         stockCount: 60,
         ratingAverage: 4.6,
         reviewCount: 28,
-        image: 'https://images.unsplash.com/photo-1550009158-9ebf4a27a891?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1550009158-9ebf4a27a891?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 1,
@@ -340,7 +353,8 @@ async function seed() {
         stockCount: 25,
         ratingAverage: 4.7,
         reviewCount: 34,
-        image: 'https://images.unsplash.com/photo-1452195745677-fc0314a14b00?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1452195745677-fc0314a14b00?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 1,
@@ -352,7 +366,8 @@ async function seed() {
         stockCount: 80,
         ratingAverage: 4.8,
         reviewCount: 51,
-        image: 'https://images.unsplash.com/photo-1585966635170-a7b8d1e95db0?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1585966635170-a7b8d1e95db0?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 1,
@@ -364,7 +379,8 @@ async function seed() {
         stockCount: 45,
         ratingAverage: 4.5,
         reviewCount: 22,
-        image: 'https://images.unsplash.com/photo-1488477304112-4581273d3e5c?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1488477304112-4581273d3e5c?w=500&h=500&fit=crop',
       },
       // Bakery
       {
@@ -377,7 +393,8 @@ async function seed() {
         stockCount: 40,
         ratingAverage: 4.6,
         reviewCount: 19,
-        image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 2,
@@ -389,7 +406,8 @@ async function seed() {
         stockCount: 30,
         ratingAverage: 4.7,
         reviewCount: 26,
-        image: 'https://images.unsplash.com/photo-1623518336963-f6e9bd0cf960?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1623518336963-f6e9bd0cf960?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 2,
@@ -401,7 +419,8 @@ async function seed() {
         stockCount: 55,
         ratingAverage: 4.8,
         reviewCount: 41,
-        image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 2,
@@ -413,7 +432,8 @@ async function seed() {
         stockCount: 50,
         ratingAverage: 4.5,
         reviewCount: 17,
-        image: 'https://images.unsplash.com/photo-1585235743297-7a7ac1f08b50?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1585235743297-7a7ac1f08b50?w=500&h=500&fit=crop',
       },
       // Beverages
       {
@@ -426,7 +446,8 @@ async function seed() {
         stockCount: 35,
         ratingAverage: 4.7,
         reviewCount: 38,
-        image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b8f4?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1559056199-641a0ac8b8f4?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 3,
@@ -438,7 +459,8 @@ async function seed() {
         stockCount: 60,
         ratingAverage: 4.4,
         reviewCount: 21,
-        image: 'https://images.unsplash.com/photo-1597318134204-00e34f1f7e4f?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1597318134204-00e34f1f7e4f?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 3,
@@ -450,7 +472,8 @@ async function seed() {
         stockCount: 45,
         ratingAverage: 4.6,
         reviewCount: 29,
-        image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 3,
@@ -462,7 +485,8 @@ async function seed() {
         stockCount: 70,
         ratingAverage: 4.5,
         reviewCount: 33,
-        image: 'https://images.unsplash.com/photo-1600788148184-403f7691c00f?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1600788148184-403f7691c00f?w=500&h=500&fit=crop',
       },
       // Snacks
       {
@@ -475,7 +499,8 @@ async function seed() {
         stockCount: 50,
         ratingAverage: 4.7,
         reviewCount: 42,
-        image: 'https://images.unsplash.com/photo-1599599810694-b5ac4dd68fcc?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1599599810694-b5ac4dd68fcc?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 4,
@@ -487,7 +512,8 @@ async function seed() {
         stockCount: 100,
         ratingAverage: 4.3,
         reviewCount: 31,
-        image: 'https://images.unsplash.com/photo-1599599810694-b5ac4dd68fcc?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1599599810694-b5ac4dd68fcc?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 4,
@@ -499,7 +525,8 @@ async function seed() {
         stockCount: 80,
         ratingAverage: 4.5,
         reviewCount: 27,
-        image: 'https://images.unsplash.com/photo-1543053521-318c2ec592d7?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1543053521-318c2ec592d7?w=500&h=500&fit=crop',
       },
       // Meat & Seafood
       {
@@ -512,7 +539,8 @@ async function seed() {
         stockCount: 20,
         ratingAverage: 4.8,
         reviewCount: 15,
-        image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 5,
@@ -524,7 +552,8 @@ async function seed() {
         stockCount: 35,
         ratingAverage: 4.6,
         reviewCount: 22,
-        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561cea?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1555939594-58d7cb561cea?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 5,
@@ -536,7 +565,8 @@ async function seed() {
         stockCount: 25,
         ratingAverage: 4.7,
         reviewCount: 18,
-        image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=500&fit=crop',
       },
       // Frozen Foods
       {
@@ -549,7 +579,8 @@ async function seed() {
         stockCount: 60,
         ratingAverage: 4.5,
         reviewCount: 14,
-        image: 'https://images.unsplash.com/photo-1590080901022-ead344fd3e1f?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1590080901022-ead344fd3e1f?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 6,
@@ -561,7 +592,8 @@ async function seed() {
         stockCount: 40,
         ratingAverage: 4.4,
         reviewCount: 24,
-        image: 'https://images.unsplash.com/photo-1571407614527-71f63fb465f8?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1571407614527-71f63fb465f8?w=500&h=500&fit=crop',
       },
       // Pantry Staples
       {
@@ -574,7 +606,8 @@ async function seed() {
         stockCount: 50,
         ratingAverage: 4.6,
         reviewCount: 19,
-        image: 'https://images.unsplash.com/photo-1586080872579-fe1d88a82f27?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1586080872579-fe1d88a82f27?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 7,
@@ -586,7 +619,8 @@ async function seed() {
         stockCount: 80,
         ratingAverage: 4.5,
         reviewCount: 16,
-        image: 'https://images.unsplash.com/photo-1612874742237-6526221fcd2b?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1612874742237-6526221fcd2b?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 7,
@@ -598,7 +632,8 @@ async function seed() {
         stockCount: 70,
         ratingAverage: 4.7,
         reviewCount: 21,
-        image: 'https://images.unsplash.com/photo-1585707572020-96c6250cdb7d?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1585707572020-96c6250cdb7d?w=500&h=500&fit=crop',
       },
       {
         categoryIndex: 7,
@@ -610,7 +645,8 @@ async function seed() {
         stockCount: 30,
         ratingAverage: 4.8,
         reviewCount: 35,
-        image: 'https://images.unsplash.com/photo-1606787619249-a0f8e7e49c8f?w=500&h=500&fit=crop',
+        image:
+          'https://images.unsplash.com/photo-1606787619249-a0f8e7e49c8f?w=500&h=500&fit=crop',
       },
     ];
 
@@ -627,9 +663,11 @@ async function seed() {
         },
       ],
       originalPrice: p.originalPrice,
-      salePrice: Math.round((p.originalPrice * (1 - p.discountPercent / 100)) * 100) / 100,
+      salePrice:
+        Math.round(p.originalPrice * (1 - p.discountPercent / 100) * 100) / 100,
       discountPercent: p.discountPercent,
-      discountLabel: p.discountPercent > 0 ? `${p.discountPercent}% off` : undefined,
+      discountLabel:
+        p.discountPercent > 0 ? `${p.discountPercent}% off` : undefined,
       unit: p.unit,
       stockCount: p.stockCount,
       ratingAverage: p.ratingAverage,
@@ -639,7 +677,9 @@ async function seed() {
 
     const productsCollection = db.collection('products');
     const productsResult = await productsCollection.insertMany(products as any);
-    const productIds = Object.values(productsResult.insertedIds).map((id) => id.toString());
+    const productIds = Object.values(productsResult.insertedIds).map((id) =>
+      id.toString(),
+    );
 
     console.log(`Created ${productIds.length} products`);
 

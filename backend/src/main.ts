@@ -76,7 +76,7 @@ const handler = async (req: express.Request, res: express.Response) => {
   return server(req, res);
 };
 
-if (process.env.NODE_ENV !== 'production') {
+if (ENV.NODE_ENV !== 'production') {
   bootstrap().then(() => {
     const port = ENV.PORT ?? 3000;
 
