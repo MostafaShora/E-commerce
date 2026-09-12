@@ -95,6 +95,7 @@ export class AuthController {
     console.log('COOKIE SET');
     console.log('NODE_ENV:', ENV.NODE_ENV);
     console.log('JWT_SECRET EXISTS:', !!ENV.JWT_SECRET);
+    console.log('SET-COOKIE:', res.getHeader('Set-Cookie'));
 
     return {
       message: 'User logged in successfully',
