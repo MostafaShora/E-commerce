@@ -92,6 +92,10 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    console.log('COOKIE SET');
+    console.log('NODE_ENV:', ENV.NODE_ENV);
+    console.log('JWT_SECRET EXISTS:', !!ENV.JWT_SECRET);
+
     return {
       message: 'User logged in successfully',
       user,
