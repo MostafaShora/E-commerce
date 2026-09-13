@@ -2,6 +2,7 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { interval } from 'rxjs';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 interface HeroSlide {
   id: string;
@@ -15,7 +16,7 @@ interface HeroSlide {
 @Component({
   selector: 'app-hero-carousel',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, LucideChevronLeft, LucideChevronRight],
   templateUrl: './hero-carousel.html',
   styleUrl: './hero-carousel.css',
 })
@@ -56,7 +57,9 @@ export class HeroCarouselComponent {
   }
 
   previous(): void {
-    this.activeSlide.update((index) => (index - 1 + this.heroSlides.length) % this.heroSlides.length);
+    this.activeSlide.update(
+      (index) => (index - 1 + this.heroSlides.length) % this.heroSlides.length,
+    );
   }
 
   next(): void {

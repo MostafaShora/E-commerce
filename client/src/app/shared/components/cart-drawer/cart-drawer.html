@@ -75,10 +75,12 @@
                   </div>
                   <button
                     type="button"
-                    class="text-xs text-slate-500 underline hover:text-slate-700"
+                    class="inline-flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-slate-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
                     (click)="cart.removeProduct(item.productId._id).subscribe()"
+                    aria-label="Remove item"
+                    title="Remove item"
                   >
-                    Remove
+                    <svg lucideTrash2 class="size-4" [strokeWidth]="2" aria-hidden="true"></svg>
                   </button>
                 </div>
               </div>

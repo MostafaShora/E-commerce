@@ -1,38 +1,41 @@
-/**
- * Image utility functions for handling product images with fallbacks
- */
-
-// Fallback image URL - relative path from public assets
 export const PRODUCT_IMAGE_FALLBACK = '/assets/images/product-img-1.jpeg';
 
-/**
- * Get the first valid image URL from an array of image URLs
- * @param images - Array of image URLs or single image string
- * @param fallback - Optional fallback URL (defaults to PRODUCT_IMAGE_FALLBACK)
- * @returns The first image URL or fallback URL
- */
+type ImageItem = string | { url?: string | null };
+
 export function getProductImageUrl(
-  images: string[] | string | undefined | null,
-  fallback: string = PRODUCT_IMAGE_FALLBACK
+  images: ImageItem[] | string | undefined | null,
+  fallback: string = PRODUCT_IMAGE_FALLBACK,
 ): string {
-  // Handle single string image
+  // Single string image
   if (typeof images === 'string' && images.trim()) {
     return images;
   }
-  // Handle array of images
-  if (Array.isArray(images) && images.length > 0 && images[0]?.trim()) {
-    return images[0];
+
+  // Array of images
+  if (Array.isArray(images)) {
+    const firstValidImage = images.find((image) => {
+      if (typeof image === 'string') {
+        return image.trim().length > 0;
+      }
+
+      return typeof image?.url === 'string' && image.url.trim().length > 0;
+    });
+
+    if (typeof firstValidImage === 'string') {
+      return firstValidImage;
+    }
+
+    if (firstValidImage && typeof firstValidImage.url === 'string' && firstValidImage.url.trim()) {
+      return firstValidImage.url;
+    }
   }
+
   return fallback;
 }
 
-/**
- * Handle image loading error by setting fallback image
- * @param event - Image element error event
- * @param fallback - Optional fallback URL
- */
 export function onImageError(event: Event, fallback: string = PRODUCT_IMAGE_FALLBACK): void {
   const imgElement = event.target as HTMLImageElement;
+
   if (imgElement && imgElement.src !== fallback) {
     imgElement.src = fallback;
   }

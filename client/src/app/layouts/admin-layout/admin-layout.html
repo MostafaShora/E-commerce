@@ -18,37 +18,57 @@
       <a
         routerLink="/admin"
         [routerLinkActiveOptions]="{ exact: true }"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
+        routerLinkActive="!bg-slate-900 !text-white"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
       >
-        <svg lucideLayoutDashboard class="size-[18px]"></svg>
+        <svg
+          lucideLayoutDashboard
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+
         <span>Dashboard</span>
       </a>
 
       <a
         routerLink="/admin/products"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
+        routerLinkActive="!bg-slate-900 !text-white"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
       >
-        <svg lucidePackage class="size-[18px]"></svg>
+        <svg
+          lucidePackage
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+
         <span>Products</span>
       </a>
 
       <a
         routerLink="/admin/categories"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
+        routerLinkActive="!bg-slate-900 !text-white"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
       >
-        <svg lucideTags class="size-[18px]"></svg>
+        <svg
+          lucideTags
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+
         <span>Categories</span>
       </a>
 
       <a
         routerLink="/admin/orders"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
+        routerLinkActive="!bg-slate-900 !text-white"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
       >
-        <svg lucideShoppingBag class="size-[18px]"></svg>
+        <svg
+          lucideShoppingBag
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+
         <span>Orders</span>
       </a>
     </nav>

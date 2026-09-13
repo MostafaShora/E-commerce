@@ -1,7 +1,7 @@
 <div class="space-y-6">
   <div class="flex items-center gap-4">
     <a routerLink="/admin/products" class="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900">
-      <mat-icon class="!text-[18px]">arrow_back</mat-icon>
+      <svg lucideArrowLeft class="size-4" [strokeWidth]="2"></svg>
       <span>Back</span>
     </a>
     <div>
@@ -131,7 +131,7 @@
             <div
               class="flex min-h-24 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-4 text-center"
             >
-              <span class="flex items-center gap-2 text-sm font-medium text-slate-900"><mat-icon class="!text-[18px]">upload</mat-icon>Upload images</span>
+              <span class="flex items-center gap-2 text-sm font-medium text-slate-900"><svg lucideUpload class="size-4" [strokeWidth]="2"></svg>Upload images</span>
               <span class="text-xs text-slate-500">PNG, JPG or WebP (max 5MB each)</span>
             </div>
             <input
@@ -149,10 +149,10 @@
           @if (selectedImages().length || imageUrls().length) {
             <div class="mt-4 grid grid-cols-2 gap-3">
             @for (image of selectedImages(); track image.preview; let index = $index) {
-                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="image.preview" [alt]="image.file.name" class="size-full object-cover" /><button type="button" (click)="removeSelectedImage(index)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><mat-icon class="!text-[16px]">close</mat-icon></button></div>
+                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="image.preview" [alt]="image.file.name" class="size-full object-cover" /><button type="button" (click)="removeSelectedImage(index)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><svg lucideX class="size-4" [strokeWidth]="2"></svg></button></div>
               }
               @for (url of imageUrls(); track url) {
-                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="url" alt="Product image" class="size-full object-cover" /><button type="button" (click)="removeImageUrl(url)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><mat-icon class="!text-[16px]">close</mat-icon></button></div>
+                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="url" alt="Product image" class="size-full object-cover" /><button type="button" (click)="removeImageUrl(url)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><svg lucideX class="size-4" [strokeWidth]="2"></svg></button></div>
               }
             </div>
           }

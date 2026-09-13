@@ -2,8 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
+import {
+  LucideArrowLeft,
+  LucideUpload,
+  LucideX,
+} from '@lucide/angular';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
 import { NotificationService } from '../../../core/services/notification';
@@ -15,7 +18,7 @@ import { prepareProductImages, type PendingProductImage } from '../models/admin.
 @Component({
   selector: 'app-admin-edit-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatCheckboxModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideArrowLeft, LucideUpload, LucideX],
   templateUrl: './edit-product.html',
 })
 export class AdminEditProductComponent {
