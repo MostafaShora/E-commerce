@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { LucideChevronRight } from '@lucide/angular';
 
 import type { CatalogProduct } from '../../../shared/models/catalog';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card';
@@ -10,7 +11,7 @@ import { HomeService } from '../services/home';
 @Component({
   selector: 'app-product-sections',
   standalone: true,
-  imports: [CommonModule, RouterLink, ProductCardComponent],
+  imports: [CommonModule, RouterLink, ProductCardComponent, LucideChevronRight],
   templateUrl: './product-sections.html',
 })
 export class ProductSectionsComponent {

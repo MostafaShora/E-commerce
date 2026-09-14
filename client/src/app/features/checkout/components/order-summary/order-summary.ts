@@ -7,7 +7,6 @@ import { finalize } from 'rxjs';
 import {
   LucideArrowLeft,
   LucideCheck,
-  LucideCircleCheck,
   LucideClock3,
   LucideMapPin,
   LucidePackage,
@@ -73,7 +72,6 @@ interface Order {
     RouterLink,
     LucideArrowLeft,
     LucideCheck,
-    LucideCircleCheck,
     LucideClock3,
     LucideMapPin,
     LucidePackage,

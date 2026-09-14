@@ -1,36 +1,86 @@
 @if (loading()) {
-  <section class="flex flex-col gap-5 py-8">
+  <section class="flex flex-col gap-6 py-8 sm:py-10">
+    <!-- Header Skeleton -->
     <div class="flex items-center justify-between gap-4">
-      <div class="h-8 w-48 animate-pulse rounded bg-slate-200"></div>
-      <div class="h-5 w-20 animate-pulse rounded bg-slate-200"></div>
+      <div
+        class="h-7 w-40 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800 sm:h-8 sm:w-48"
+      ></div>
+
+      <div class="h-5 w-16 animate-pulse rounded-md bg-slate-200 dark:bg-slate-800 sm:w-20"></div>
     </div>
-    <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-6">
+
+    <!-- Products Skeleton -->
+    <div class="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-6">
       @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; track item) {
-        <div class="flex flex-col gap-2">
-          <div class="aspect-square w-full animate-pulse rounded-md bg-slate-200"></div>
-          <div class="h-5 w-16 animate-pulse rounded bg-slate-200"></div>
-          <div class="h-4 w-full animate-pulse rounded bg-slate-200"></div>
-          <div class="h-3 w-12 animate-pulse rounded bg-slate-200"></div>
+        <div class="flex min-w-0 flex-col gap-2.5">
+          <!-- Image -->
+          <div
+            class="aspect-square w-full animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800"
+          ></div>
+
+          <!-- Price -->
+          <div class="h-5 w-16 animate-pulse rounded-md bg-slate-200 dark:bg-slate-800"></div>
+
+          <!-- Name -->
+          <div class="h-4 w-full animate-pulse rounded-md bg-slate-200 dark:bg-slate-800"></div>
+
+          <!-- Unit -->
+          <div class="h-3.5 w-12 animate-pulse rounded-md bg-slate-200 dark:bg-slate-800"></div>
         </div>
       }
     </div>
   </section>
 } @else if (errorMessage()) {
-  <section class="rounded-xl border border-red-200 bg-red-50 px-4 py-5 text-sm text-red-700">
-    <p>{{ errorMessage() }}</p>
-    <button type="button" class="mt-2 font-semibold underline" (click)="loadProducts()">Retry</button>
+  <section
+    class="rounded-xl border border-red-200 bg-red-50 px-4 py-5 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
+  >
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p>{{ errorMessage() }}</p>
+
+      <button
+        type="button"
+        class="w-fit font-semibold underline underline-offset-2 transition hover:no-underline"
+        (click)="loadProducts()"
+      >
+        Retry
+      </button>
+    </div>
   </section>
 } @else if (products().length > 0) {
-  <section class="flex flex-col gap-5 py-8">
-    <div class="flex items-center justify-between gap-4">
-      <h2 class="text-2xl font-semibold text-slate-900">More products</h2>
-      <a routerLink="/products" class="inline-flex items-center gap-1 text-sm font-medium underline-offset-4 hover:underline">
-        See more <span aria-hidden="true">&#8250;</span>
+  <section class="flex flex-col gap-6 py-8 sm:py-10">
+    <!-- Header -->
+    <div class="flex items-end justify-between gap-4">
+      <div class="min-w-0">
+        <h2 class="text-xl font-bold tracking-tight text-slate-950 dark:text-slate-50 sm:text-2xl">
+          More products
+        </h2>
+
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Discover more products you may like
+        </p>
+      </div>
+
+      <!-- See More -->
+      <a
+        routerLink="/products"
+        class="group inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+      >
+        <span>See more</span>
+
+        <svg
+          lucideChevronRight
+          class="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+          [strokeWidth]="2"
+        ></svg>
       </a>
     </div>
-    <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-6">
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-6">
       @for (product of products(); track product._id) {
-        <app-product-card [product]="product" />
+        <div class="min-w-0">
+          <app-product-card [product]="product" />
+        </div>
       }
     </div>
   </section>

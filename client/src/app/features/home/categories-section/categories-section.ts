@@ -1,17 +1,11 @@
-import {
-  Component,
-  DestroyRef,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, DestroyRef, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import {
-  LucideArrowLeft,
-  LucideArrowRight,
+  LucideChevronLeft,
+  LucideChevronRight,
 } from '@lucide/angular';
 
 import { EmblaCarouselDirective } from 'embla-carousel-angular';
@@ -22,12 +16,7 @@ import { HomeService } from '../services/home';
 @Component({
   selector: 'app-categories-section',
   standalone: true,
-  imports: [
-    RouterLink,
-    EmblaCarouselDirective,
-    LucideArrowLeft,
-    LucideArrowRight,
-  ],
+  imports: [RouterLink, EmblaCarouselDirective, LucideChevronLeft, LucideChevronRight],
   templateUrl: './categories-section.html',
 })
 export class CategoriesSectionComponent {
@@ -38,8 +27,7 @@ export class CategoriesSectionComponent {
   readonly loading = signal(true);
   readonly errorMessage = signal<string | null>(null);
 
-  readonly emblaRef =
-    viewChild<EmblaCarouselDirective>(EmblaCarouselDirective);
+  readonly emblaRef = viewChild<EmblaCarouselDirective>(EmblaCarouselDirective);
 
   readonly emblaOptions = {
     align: 'start' as const,
@@ -80,9 +68,7 @@ export class CategoriesSectionComponent {
         },
 
         error: () => {
-          this.errorMessage.set(
-            'Unable to load categories right now.',
-          );
+          this.errorMessage.set('Unable to load categories right now.');
 
           this.stopAutoSlide();
         },

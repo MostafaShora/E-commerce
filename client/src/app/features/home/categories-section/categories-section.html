@@ -45,9 +45,9 @@
           type="button"
           aria-label="Previous categories"
           (click)="previous()"
-          class="absolute left-0 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg transition-all duration-200 hover:bg-slate-50 hover:text-slate-950 hover:shadow-xl active:scale-90"
+          class="absolute left-0 top-10 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg transition-all duration-200 hover:bg-slate-50 hover:text-slate-950 hover:shadow-xl active:scale-90 sm:top-12"
         >
-          <svg lucideArrowLeft class="size-5 stroke-[2]"></svg>
+          <svg lucideChevronLeft class="size-5" [strokeWidth]="2"></svg>
         </button>
 
         <!-- Embla -->
@@ -90,9 +90,9 @@
           type="button"
           aria-label="Next categories"
           (click)="next()"
-          class="absolute right-0 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg transition-all duration-200 hover:bg-slate-50 hover:text-slate-950 hover:shadow-xl active:scale-90"
+          class="absolute right-0 top-10 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg transition-all duration-200 hover:bg-slate-50 hover:text-slate-950 hover:shadow-xl active:scale-90 sm:top-12"
         >
-          <svg lucideArrowRight class="size-5 stroke-[2]"></svg>
+          <svg lucideChevronRight class="size-5" [strokeWidth]="2"></svg>
         </button>
       </div>
     </div>
