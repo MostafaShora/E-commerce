@@ -9,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { LucideStar } from '@lucide/angular';
-import { catchError, forkJoin, of } from 'rxjs';
+import { catchError, finalize, forkJoin, of } from 'rxjs';
 import {
   ReviewService,
   type ProductReview,
@@ -112,13 +112,15 @@ export class AccountReviewsPageComponent {
         rating: form.controls.rating.value,
         comment: form.controls.comment.value || undefined,
       })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        finalize(() => this.submittingKey.set(null)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: () => {
           this.loadReviews();
         },
         error: () => this.errorMessage.set('Unable to submit this review. Please try again.'),
-        complete: () => this.submittingKey.set(null),
       });
   }
 

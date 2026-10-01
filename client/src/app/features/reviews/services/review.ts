@@ -13,7 +13,7 @@ export type ProductReview = {
   userId: ReviewUser | string;
   orderId: string;
   orderItemId: string;
-  productId: string | ReviewProduct;
+  productId: string | ReviewProduct | null;
   rating: number;
   comment?: string;
   createdAt: string;

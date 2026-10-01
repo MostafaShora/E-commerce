@@ -39,9 +39,13 @@ export class ReviewService {
       throw new BadRequestException('Invalid order or item ID');
     }
 
+    const userObjectId = new Types.ObjectId(userId);
+    const orderObjectId = new Types.ObjectId(orderId);
+    const orderItemObjectId = new Types.ObjectId(orderItemId);
+
     const order = await this.orderModel.findOne({
-      _id: orderId,
-      userId,
+      _id: orderObjectId,
+      userId: userObjectId,
     });
 
     if (!order) {
@@ -66,7 +70,7 @@ export class ReviewService {
     }
 
     const existingReview = await this.reviewModel.findOne({
-      orderItemId,
+      orderItemId: orderItemObjectId,
     });
 
     if (existingReview) {
@@ -81,9 +85,9 @@ export class ReviewService {
           const [createdReview] = await this.reviewModel.create(
             [
               {
-                userId,
-                orderId,
-                orderItemId,
+                userId: userObjectId,
+                orderId: orderObjectId,
+                orderItemId: orderItemObjectId,
                 productId: orderItem.productId,
                 rating,
                 comment,
@@ -98,8 +102,8 @@ export class ReviewService {
 
           const updateOrderResult = await this.orderModel.updateOne(
             {
-              _id: orderId,
-              'items._id': orderItemId,
+              _id: orderObjectId,
+              'items._id': orderItemObjectId,
               'items.isReviewed': false,
             },
             {
@@ -144,7 +148,7 @@ export class ReviewService {
 
           const newCount = aggResult?.totalReviews ?? 0;
 
-          const productUpdateResult = await this.productModel.updateOne(
+          await this.productModel.updateOne(
             {
               _id: orderItem.productId,
             },
@@ -156,10 +160,6 @@ export class ReviewService {
             },
             { session },
           );
-
-          if (productUpdateResult.matchedCount === 0) {
-            throw new NotFoundException('Product not found');
-          }
 
           return createdReview;
         } catch (error) {
@@ -198,7 +198,7 @@ export class ReviewService {
   async getUserReviews(userId: string) {
     const reviews = await this.reviewModel
       .find({
-        userId,
+        userId: new Types.ObjectId(userId),
       })
       .populate('productId', 'name slug images')
       .sort({
@@ -214,7 +214,7 @@ export class ReviewService {
   async getUserReviewableOrderItems(userId: string) {
     const orders = await this.orderModel
       .find({
-        userId,
+        userId: new Types.ObjectId(userId),
         status: ORDER_STATUS.DELIVERED,
         paymentStatus: PAYMENT_STATUS.PAID,
         'items.isReviewed': false,
