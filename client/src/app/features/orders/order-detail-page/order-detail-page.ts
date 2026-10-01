@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideArrowLeft, LucideBike, LucideCircleCheck, LucideCircleX, LucideHouse, LucidePackageCheck, LucideShoppingCart, LucideStar, LucideTruck } from '@lucide/angular';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize, map, of, switchMap } from 'rxjs';
+import { catchError, finalize, map, merge, of, Subject, switchMap } from 'rxjs';
 
 import {
   OrderService,
@@ -27,6 +27,7 @@ export class OrderDetailPageComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly reviewService = inject(ReviewService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly refreshOrder$ = new Subject<string | null>();
 
   readonly order = signal<CreatedOrder | null>(null);
   readonly loading = signal(true);
@@ -51,16 +52,28 @@ export class OrderDetailPageComponent {
   });
 
   constructor() {
-    this.loadOrder();
-  }
-
-  loadOrder(): void {
-    this.loading.set(true);
-    this.errorMessage.set(null);
-    this.route.paramMap
+    merge(
+      this.route.paramMap.pipe(map((params) => params.get('id'))),
+      this.refreshOrder$,
+    )
       .pipe(
-        map((params) => params.get('id')),
-        switchMap((id) => (id ? this.orderService.getOrderById(id) : of(null))),
+        switchMap((id) => {
+          this.loading.set(true);
+          this.errorMessage.set(null);
+          if (!id) {
+            this.order.set(null);
+            this.loading.set(false);
+            return of(null);
+          }
+
+          return this.orderService.getOrderById(id).pipe(
+            catchError(() => {
+              this.errorMessage.set('Unable to find this order.');
+              return of(null);
+            }),
+            finalize(() => this.loading.set(false)),
+          );
+        }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
@@ -68,9 +81,16 @@ export class OrderDetailPageComponent {
           this.order.set(response?.order ?? null);
           if (response?.order) this.loadReviewableItems(response.order._id);
         },
-        error: () => this.errorMessage.set('Unable to find this order.'),
-        complete: () => this.loading.set(false),
       });
+  }
+
+  @HostListener('window:focus')
+  refreshOnWindowFocus(): void {
+    this.refreshOrder$.next(this.route.snapshot.paramMap.get('id'));
+  }
+
+  loadOrder(): void {
+    this.refreshOrder$.next(this.route.snapshot.paramMap.get('id'));
   }
 
   canCancel(): boolean {
@@ -136,6 +156,17 @@ export class OrderDetailPageComponent {
     { status: 'delivered', label: 'Delivered' },
   ];
 
+  readonly currentTrackingIndex = computed(() => {
+    const status = this.order()?.status ?? 'placed';
+    const index = this.displayTrackingSteps().findIndex((step) => step.status === status);
+    return index < 0 ? 0 : index;
+  });
+
+  readonly trackingProgressPercent = computed(() => {
+    const steps = this.displayTrackingSteps();
+    return steps.length > 1 ? (this.currentTrackingIndex() / (steps.length - 1)) * 100 : 0;
+  });
+
   displayTrackingSteps(): Array<{ status: OrderStatus; label: string }> {
     return this.order()?.status === 'cancelled'
       ? [
@@ -143,10 +174,6 @@ export class OrderDetailPageComponent {
           { status: 'cancelled', label: 'Cancelled' },
         ]
       : this.trackingSteps;
-  }
-
-  trackingIndex(status: OrderStatus): number {
-    return this.displayTrackingSteps().findIndex((step) => step.status === status);
   }
 
   private loadReviewableItems(orderId: string): void {

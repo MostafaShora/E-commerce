@@ -121,6 +121,16 @@ export const routes: Routes = [
         loadComponent: checkoutPage,
       },
       {
+        path: 'orders',
+        canActivate: [authGuard],
+        loadComponent: ordersPage,
+      },
+      {
+        path: 'orders/:id',
+        canActivate: [authGuard],
+        loadComponent: orderDetailPage,
+      },
+      {
         path: 'account',
         component: AccountLayout,
         canActivate: [authGuard],
