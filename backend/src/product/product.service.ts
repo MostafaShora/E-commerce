@@ -226,18 +226,25 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
 
-    const relatedProducts = await this.productModel
-      .find({
-        categoryId: product.categoryId,
-        isActive: true,
-        slug: { $ne: slug },
-      })
-      .sort({ createdAt: -1 })
-      .limit(6)
-      .select(
-        'name slug images originalPrice salePrice discountPercent discountLabel ratingAverage reviewCount',
-      )
-      .lean();
+    const relatedCategoryId =
+      product.categoryId && typeof product.categoryId === 'object' && '_id' in product.categoryId
+        ? product.categoryId._id
+        : product.categoryId;
+
+    const relatedProducts = relatedCategoryId
+      ? await this.productModel
+          .find({
+            categoryId: relatedCategoryId,
+            isActive: true,
+            slug: { $ne: slug },
+          })
+          .sort({ createdAt: -1 })
+          .limit(6)
+          .select(
+            'name slug images originalPrice salePrice discountPercent discountLabel ratingAverage reviewCount',
+          )
+          .lean()
+      : [];
 
     return {
       product: transformProductForResponse(product),

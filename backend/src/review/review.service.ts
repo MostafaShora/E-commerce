@@ -252,7 +252,7 @@ export class ReviewService {
 
     const skip = (page - 1) * limit;
 
-    const [reviews, total] = await Promise.all([
+    const [reviews, total, ratingAgg] = await Promise.all([
       this.reviewModel
         .find({
           productId: product._id,
@@ -268,12 +268,33 @@ export class ReviewService {
       this.reviewModel.countDocuments({
         productId: product._id,
       }),
+
+      this.reviewModel.aggregate([
+        { $match: { productId: product._id } },
+        { $group: { _id: '$rating', count: { $sum: 1 } } },
+        { $sort: { _id: -1 } },
+      ]),
     ]);
+
+    const breakdownMap: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+    for (const item of ratingAgg) {
+      const rating = Number(item._id);
+      if (!Number.isNaN(rating) && breakdownMap[rating] !== undefined) {
+        breakdownMap[rating] = item.count;
+      }
+    }
+
+    const ratingBreakdown = [5, 4, 3, 2, 1].map((rating) => ({
+      rating,
+      count: breakdownMap[rating] ?? 0,
+    }));
 
     const totalPages = Math.ceil(total / limit);
 
     return {
       reviews,
+      ratingBreakdown,
       pagination: {
         page,
         limit,

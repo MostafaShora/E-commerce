@@ -35,9 +35,15 @@ export type ReviewPagination = {
   hasPrevPage: boolean;
 };
 
+export type RatingBreakdownItem = {
+  rating: number;
+  count: number;
+};
+
 export type ProductReviewsResponse = {
   message: string;
   reviews: ProductReview[];
+  ratingBreakdown: RatingBreakdownItem[];
   pagination: ReviewPagination;
 };
 

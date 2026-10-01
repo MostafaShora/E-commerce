@@ -108,96 +108,180 @@
             {{ item.discountLabel || item.discountPercent + '% off' }}
           </p>
         }
+
         <div class="mt-5 border-t border-slate-200 pt-4 text-sm text-slate-600">
           <p>
             Stock available: <span class="font-medium text-slate-900">{{ item.stockCount }}</span>
           </p>
-          <p class="mt-2">Purchase options will be available in the Cart phase.</p>
+
+          @if (cartQuantity(item) > 0) {
+            <div class="mt-4 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
+              <button
+                type="button"
+                (click)="decreaseCartQuantity(item)"
+                class="flex size-8 items-center justify-center rounded-md text-emerald-700 transition hover:bg-emerald-100"
+                aria-label="Decrease quantity"
+              >
+                <svg lucideMinus class="size-4"></svg>
+              </button>
+              <span class="text-sm font-semibold text-emerald-700">
+                {{ cartQuantity(item) }} in cart
+              </span>
+              <button
+                type="button"
+                (click)="increaseCartQuantity(item)"
+                [disabled]="cartQuantity(item) >= item.stockCount"
+                class="flex size-8 items-center justify-center rounded-md text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Increase quantity"
+              >
+                <svg lucidePlus class="size-4"></svg>
+              </button>
+            </div>
+          } @else {
+            <div class="mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+              <button
+                type="button"
+                (click)="decreaseQuantity()"
+                [disabled]="quantity() <= 1"
+                class="flex size-8 items-center justify-center rounded-md text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Decrease quantity"
+              >
+                <svg lucideMinus class="size-4"></svg>
+              </button>
+              <span class="text-sm font-semibold text-slate-900">{{ quantity() }}</span>
+              <button
+                type="button"
+                (click)="increaseQuantity(item)"
+                [disabled]="quantity() >= item.stockCount"
+                class="flex size-8 items-center justify-center rounded-md text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Increase quantity"
+              >
+                <svg lucidePlus class="size-4"></svg>
+              </button>
+            </div>
+            <button
+              type="button"
+              (click)="addToCart(item)"
+              [disabled]="item.stockCount <= 0"
+              class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+            >
+              <svg lucideShoppingCart class="size-4"></svg>
+              Add to cart
+            </button>
+          }
         </div>
       </aside>
     </section>
 
-    <section class="border-t border-slate-200 pt-8">
-      <h2 class="text-xl font-semibold text-slate-900">Customer reviews</h2>
-      <div class="mt-4 flex items-center gap-2 text-sm text-slate-600">
-        <span class="flex items-center gap-0 text-amber-500">
-          @for (star of [0, 1, 2, 3, 4]; track star) {
-            <svg
-              lucideStar
-              class="size-[18px]"
-              [class.text-slate-300]="star >= roundedRating(item)"
-            ></svg>
-          }</span
-        ><span
-          >{{ item.ratingAverage }} average from {{ item.reviewCount }} review{{
-            item.reviewCount === 1 ? '' : 's'
-          }}</span
-        >
-      </div>
-      @if (reviewsLoading()) {
-        <div class="mt-5 flex flex-col gap-4">
-          @for (review of [1, 2]; track review) {
-            <div class="h-24 animate-pulse rounded-xl bg-slate-200"></div>
-          }
-        </div>
-      } @else if (reviewsError()) {
-        <div class="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <span>{{ reviewsError() }}</span
-          ><button
-            type="button"
-            (click)="loadReviews(item.slug)"
-            class="ml-3 font-medium underline"
+    <section class="grid gap-8 border-t border-slate-200 pt-8 lg:grid-cols-[1fr_520px]">
+      <div class="flex flex-col gap-6">
+        <h2 class="text-xl font-semibold text-slate-900">Customer reviews</h2>
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <span class="flex items-center gap-0 text-amber-500">
+            @for (star of [0, 1, 2, 3, 4]; track star) {
+              <svg
+                lucideStar
+                class="size-[18px]"
+                [class.text-slate-300]="star >= roundedRating(item)"
+              ></svg>
+            }</span
+          ><span
+            >{{ item.ratingAverage }} average from {{ item.reviewCount }} review{{
+              item.reviewCount === 1 ? '' : 's'
+            }}</span
           >
-            Retry
-          </button>
         </div>
-      } @else if (reviews().length === 0) {
-        <p class="mt-5 text-sm text-slate-600">No reviews yet for this product.</p>
-      } @else {
-        <div class="mt-5 flex flex-col gap-5">
-          @for (review of reviews(); track review._id) {
-            <article class="border-b border-slate-200 pb-5 last:border-0">
-              <div class="flex items-center gap-0 text-amber-500">
-                @for (star of [0, 1, 2, 3, 4]; track star) {
-                  <svg
-                    lucideStar
-                    class="size-[18px]"
-                    [class.text-slate-300]="star >= reviewRating(review)"
-                  ></svg>
-                }
-              </div>
-              <p class="mt-2 text-sm font-medium text-slate-900">By {{ reviewUserName(review) }}</p>
-              <p class="mt-1 text-xs text-slate-500">
-                Reviewed on {{ formatReviewDate(review.createdAt) }}
-              </p>
-              @if (review.comment) {
-                <p class="mt-3 text-sm leading-6 text-slate-700">{{ review.comment }}</p>
-              }
-            </article>
-          }
-        </div>
-        @if (reviewsPagination(); as page) {
-          <nav class="mt-5 flex items-center justify-between">
-            <button
-              type="button"
-              (click)="loadReviews(item.slug, page.page - 1)"
-              [disabled]="!page.hasPrevPage || reviewsLoading()"
-              class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
-            >
-              Previous</button
-            ><span class="text-sm text-slate-600"
-              >Page {{ page.page }} of {{ page.totalPages }}</span
+        @if (reviewsLoading()) {
+          <div class="mt-5 flex flex-col gap-4">
+            @for (review of [1, 2]; track review) {
+              <div class="h-24 animate-pulse rounded-xl bg-slate-200"></div>
+            }
+          </div>
+        } @else if (reviewsError()) {
+          <div class="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+            <span>{{ reviewsError() }}</span
             ><button
               type="button"
-              (click)="loadReviews(item.slug, page.page + 1)"
-              [disabled]="!page.hasNextPage || reviewsLoading()"
-              class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
+              (click)="loadReviews(item.slug)"
+              class="ml-3 font-medium underline"
             >
-              Next
+              Retry
             </button>
-          </nav>
+          </div>
+        } @else if (reviews().length === 0) {
+          <p class="mt-5 text-sm text-slate-600">No reviews yet for this product.</p>
+        } @else {
+          <div class="mt-5 flex flex-col gap-5">
+            @for (review of reviews(); track review._id) {
+              <article class="border-b border-slate-200 pb-5 last:border-0">
+                <div class="flex items-center gap-0 text-amber-500">
+                  @for (star of [0, 1, 2, 3, 4]; track star) {
+                    <svg
+                      lucideStar
+                      class="size-[18px]"
+                      [class.text-slate-300]="star >= reviewRating(review)"
+                    ></svg>
+                  }
+                </div>
+                <p class="mt-2 text-sm font-medium text-slate-900">By {{ reviewUserName(review) }}</p>
+                <p class="mt-1 text-xs text-slate-500">
+                  Reviewed on {{ formatReviewDate(review.createdAt) }}
+                </p>
+                @if (review.comment) {
+                  <p class="mt-3 text-sm leading-6 text-slate-700">{{ review.comment }}</p>
+                }
+              </article>
+            }
+          </div>
+          @if (reviewsPagination(); as page) {
+            <nav class="mt-5 flex items-center justify-between">
+              <button
+                type="button"
+                (click)="loadReviews(item.slug, page.page - 1)"
+                [disabled]="!page.hasPrevPage || reviewsLoading()"
+                class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
+              >
+                Previous</button
+              ><span class="text-sm text-slate-600"
+                >Page {{ page.page }} of {{ page.totalPages }}</span
+              ><button
+                type="button"
+                (click)="loadReviews(item.slug, page.page + 1)"
+                [disabled]="!page.hasNextPage || reviewsLoading()"
+                class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
+              >
+                Next
+              </button>
+            </nav>
+          }
         }
-      }
+      </div>
+
+      <aside class="flex flex-col gap-4">
+        <p class="text-base font-semibold text-slate-900">Rating Breakdown</p>
+        @if (ratingBreakdown().length === 0) {
+          <p class="text-sm text-slate-600">No ratings yet for this product.</p>
+        } @else {
+          <div class="flex flex-col gap-3">
+            @for (rating of [5, 4, 3, 2, 1]; track rating) {
+              @let entry = ratingBreakdownEntry(rating);
+              <div class="grid grid-cols-[24px_1fr_34px] items-center gap-2 text-sm">
+                <span class="flex items-center gap-1 font-medium text-slate-900">
+                  {{ rating }}
+                  <svg lucideStar class="size-3 text-amber-500"></svg>
+                </span>
+                <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
+                  <div
+                    class="h-full rounded-full bg-amber-500"
+                    [style.width.%]="entry ? ratingBreakdownPercent(rating) : 0"
+                  ></div>
+                </div>
+                <span class="text-right text-slate-500">{{ entry?.count ?? 0 }}</span>
+              </div>
+            }
+          </div>
+        }
+      </aside>
     </section>
 
     <section class="border-t border-slate-200 pt-8">
