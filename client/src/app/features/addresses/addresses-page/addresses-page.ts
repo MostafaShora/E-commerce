@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  LucideCheck,
+  LucideMapPin,
+  LucidePencil,
+  LucidePlus,
+  LucideTrash2,
+} from '@lucide/angular';
 
 import { normalizeApiError } from '../../../core/api/api-error';
 import { AddressService, type Address, type AddressInput } from '../services/address';
@@ -8,7 +15,7 @@ import { AddressService, type Address, type AddressInput } from '../services/add
 @Component({
   selector: 'app-addresses-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, LucideMapPin, LucidePlus, LucidePencil, LucideTrash2, LucideCheck],
   templateUrl: './addresses-page.html',
 })
 export class AddressesPageComponent {

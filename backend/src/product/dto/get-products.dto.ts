@@ -8,7 +8,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export enum ProductSort {
   BEST_MATCH = 'best-match',
@@ -36,23 +36,39 @@ export class GetProductsDto {
   limit = 20;
 
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true) return true;
+    if (value === 'false' || value === false) return false;
+    return value;
+  })
   @IsBoolean()
   hasDiscount?: boolean;
 
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true) return true;
+    if (value === 'false' || value === false) return false;
+    return value;
+  })
   @IsBoolean()
   inStock?: boolean;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    value === null || value === undefined || (typeof value === 'string' && !value.trim())
+      ? undefined
+      : Number(value),
+  )
   @IsNumber()
   @Min(0)
   minPrice?: number;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    value === null || value === undefined || (typeof value === 'string' && !value.trim())
+      ? undefined
+      : Number(value),
+  )
   @IsNumber()
   @Min(0)
   maxPrice?: number;

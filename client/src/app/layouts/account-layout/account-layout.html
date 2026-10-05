@@ -1,129 +1,168 @@
-<div class="w-full overflow-x-hidden">
-  <div
-    class="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-7xl min-w-0 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 lg:px-8 lg:py-8"
+<div
+  class="admin-portal flex h-screen w-full overflow-hidden bg-[var(--app-background)] text-[var(--app-foreground)]"
+>
+  <aside
+    class="hidden h-full w-64 shrink-0 border-r border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
   >
-    <!-- Sidebar -->
-    <aside class="min-w-0 max-w-full border-slate-200 dark:border-slate-800 lg:border-r lg:pr-6">
-      <div class="flex min-w-0 max-w-full flex-col gap-2 lg:sticky lg:top-24">
-        <!-- Back -->
-        <button
-          type="button"
-          class="group flex w-fit max-w-full items-center gap-2 px-0 py-1 text-sm font-medium text-slate-700 transition-colors duration-200 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
-          (click)="back()"
-          aria-label="Go back"
-        >
-          <svg
-            lucideArrowLeft
-            class="size-4 shrink-0 transition-transform duration-200 group-hover:-translate-x-0.5"
-            [strokeWidth]="2"
-            aria-hidden="true"
-          ></svg>
+    <div class="flex h-16 shrink-0 items-center border-b border-[var(--app-border)] px-5">
+      <a routerLink="/account" class="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-white">
+        <span>Nexora</span>
+        <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-300">
+          Account
+        </span>
+      </a>
+    </div>
 
-          <span>Back</span>
-        </button>
+    <nav aria-label="Account navigation" class="flex min-h-0 flex-1 flex-col gap-1 p-3">
+      <a
+        routerLink="/account"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg
+          lucideLayoutDashboard
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+        <span>Overview</span>
+      </a>
 
-        <!-- Divider -->
-        <div class="my-2 h-px w-full shrink-0 bg-slate-200 dark:bg-slate-800"></div>
+      <a
+        routerLink="/account/orders"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg
+          lucideShoppingBag
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+        <span>Orders</span>
+      </a>
 
-        <!-- Navigation -->
-        <nav
-          class="flex min-w-0 max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1 lg:flex-col lg:gap-1.5 lg:overflow-visible lg:pb-0"
-          aria-label="Account navigation"
-        >
-          <!-- Account -->
-          <a
-            routerLink="/account"
-            routerLinkActive="!bg-slate-900 !text-white shadow-sm dark:!bg-slate-100 dark:!text-slate-950"
-            [routerLinkActiveOptions]="{ exact: true }"
-            class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-950 lg:w-full lg:min-w-0 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-          >
-            <svg
-              lucideUserRound
-              class="size-[18px] shrink-0 transition-transform duration-200 group-hover:scale-105"
-              [strokeWidth]="2"
-              aria-hidden="true"
-            ></svg>
+      <a
+        routerLink="/account/reviews"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg
+          lucideStar
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+        <span>Reviews</span>
+      </a>
 
-            <span>Account</span>
-          </a>
+      <a
+        routerLink="/account/addresses"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg
+          lucideMapPin
+          class="size-[18px] transition-transform duration-200 group-hover:scale-105"
+          [strokeWidth]="2"
+        ></svg>
+        <span>Addresses</span>
+      </a>
+    </nav>
 
-          <!-- Order History -->
-          <a
-            routerLink="/account/orders"
-            routerLinkActive="!bg-slate-900 !text-white shadow-sm dark:!bg-slate-100 dark:!text-slate-950"
-            [routerLinkActiveOptions]="{ exact: true }"
-            class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-950 lg:w-full lg:min-w-0 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-          >
-            <svg
-              lucideClipboardList
-              class="size-[18px] shrink-0 transition-transform duration-200 group-hover:scale-105"
-              [strokeWidth]="2"
-              aria-hidden="true"
-            ></svg>
+    <div class="shrink-0 border-t border-[var(--app-border)] p-3">
+      <a
+        routerLink="/"
+        class="mb-2 flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white dark:bg-slate-100 dark:text-slate-950"
+      >
+        <svg lucideStore class="size-[18px]"></svg>
+        <span>Storefront</span>
+      </a>
 
-            <span>Order history</span>
-          </a>
+      <button
+        type="button"
+        (click)="logout()"
+        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
+        aria-label="Log out"
+      >
+        <svg lucideLogOut class="size-[18px]"></svg>
+        <span>Log out</span>
+      </button>
+    </div>
+  </aside>
 
-          <!-- Reviews -->
-          <a
-            routerLink="/account/reviews"
-            routerLinkActive="!bg-slate-900 !text-white shadow-sm dark:!bg-slate-100 dark:!text-slate-950"
-            class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-950 lg:w-full lg:min-w-0 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-          >
-            <svg
-              lucideStar
-              class="size-[18px] shrink-0 transition-transform duration-200 group-hover:scale-105"
-              [strokeWidth]="2"
-              aria-hidden="true"
-            ></svg>
-
-            <span>Ratings &amp; reviews</span>
-          </a>
-
-          <!-- Addresses -->
-          <a
-            routerLink="/account/addresses"
-            routerLinkActive="!bg-slate-900 !text-white shadow-sm dark:!bg-slate-100 dark:!text-slate-950"
-            class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-950 lg:w-full lg:min-w-0 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-          >
-            <svg
-              lucideMapPin
-              class="size-[18px] shrink-0 transition-transform duration-200 group-hover:scale-105"
-              [strokeWidth]="2"
-              aria-hidden="true"
-            ></svg>
-
-            <span>Addresses</span>
-          </a>
-        </nav>
-
-        <!-- Logout divider -->
-        <div class="my-3 hidden h-px w-full bg-slate-200 dark:bg-slate-800 lg:block"></div>
-
-        <!-- Logout -->
-        <button
-          type="button"
-          (click)="logout()"
-          class="group hidden w-full items-center justify-start gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 transition-all duration-200 hover:bg-red-50 hover:text-red-700 lg:flex dark:text-slate-400 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-          aria-label="Log out"
-        >
-          <svg
-            lucideLogOut
-            class="size-[18px] shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
-            [strokeWidth]="2"
-            aria-hidden="true"
-          ></svg>
-
-          <span>Log out</span>
-        </button> 
+  <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+    <header
+      class="flex h-16 shrink-0 items-center justify-between border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 sm:px-6"
+    >
+      <div>
+        <h1 class="text-lg font-semibold">Account</h1>
+        <p class="hidden text-xs text-slate-500 sm:block">Customer portal</p>
       </div>
-    </aside>
 
-    <!-- Content -->
-    <section class="min-w-0 max-w-full">
-      <div class="w-full min-w-0 max-w-5xl">
+      <div class="flex items-center gap-3">
+        <app-mode-toggle />
+        @if (auth.currentUser(); as user) {
+          <div class="text-right text-xs">
+            <p class="font-semibold">{{ user.name }}</p>
+            <p class="text-slate-500">{{ user.email }}</p>
+          </div>
+        }
+      </div>
+    </header>
+
+    <nav
+      aria-label="Account navigation"
+      class="grid shrink-0 grid-cols-2 gap-2 border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
+    >
+      <a
+        routerLink="/account"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg lucideLayoutDashboard class="size-[18px]"></svg>
+        <span>Overview</span>
+      </a>
+
+      <a
+        routerLink="/account/orders"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg lucideShoppingBag class="size-[18px]"></svg>
+        <span>Orders</span>
+      </a>
+
+      <a
+        routerLink="/account/reviews"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg lucideStar class="size-[18px]"></svg>
+        <span>Reviews</span>
+      </a>
+
+      <a
+        routerLink="/account/addresses"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      >
+        <svg lucideMapPin class="size-[18px]"></svg>
+        <span>Addresses</span>
+      </a>
+    </nav>
+
+    <main class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+      <div class="mx-auto w-full max-w-275">
         <router-outlet></router-outlet>
       </div>
-    </section>
+    </main>
   </div>
 </div>

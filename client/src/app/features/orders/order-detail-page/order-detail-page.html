@@ -1,79 +1,88 @@
-<div class="mx-auto flex w-full max-w-5xl flex-col gap-6 py-2">
+<div class="mx-auto flex w-full max-w-5xl flex-col gap-5 py-2 sm:gap-6">
   <a
     routerLink="/account/orders"
-    class="inline-flex w-fit items-center gap-1 text-sm font-medium text-slate-700 underline-offset-4 hover:underline"
+    class="inline-flex w-fit items-center gap-1 rounded-md text-sm font-medium text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none dark:text-slate-400 dark:hover:text-white"
   >
-    <svg lucideArrowLeft class="size-[18px]"></svg>
+    <svg lucideArrowLeft class="size-4.5"></svg>
     <span>Back to orders</span>
   </a>
 
   @if (loading()) {
-    <div class="flex flex-col gap-6">
-      <div class="h-20 animate-pulse rounded-xl bg-slate-200"></div>
-      <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div class="h-80 animate-pulse rounded-xl bg-slate-200"></div>
-        <div class="h-72 animate-pulse rounded-xl bg-slate-200"></div>
+    <div class="flex flex-col gap-5 sm:gap-6" aria-label="Loading order details" aria-busy="true">
+      <div class="h-22 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+      <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] sm:gap-6">
+        <div class="flex flex-col gap-5 sm:gap-6">
+          <div class="h-28 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+          <div class="h-64 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+          <div class="h-52 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+        </div>
+        <div class="flex flex-col gap-5 sm:gap-6">
+          <div class="h-40 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+          <div class="h-64 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+        </div>
       </div>
     </div>
   } @else if (errorMessage()) {
     <section
-      class="flex min-h-[360px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 p-8 text-center"
+      class="flex min-h-90 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700"
     >
-      <p class="text-lg font-semibold text-slate-900">Order not found</p>
-      <p class="mt-2 text-sm text-slate-600">{{ errorMessage() }}</p>
+      <p class="text-lg font-semibold text-slate-900 dark:text-white">Order not found</p>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">{{ errorMessage() }}</p>
       <button type="button" (click)="loadOrder()" class="mt-4 font-medium underline">Retry</button>
     </section>
   } @else if (order(); as item) {
-    <header class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-5">
-      <div>
-        <h1 class="text-2xl font-semibold text-slate-900">Order #{{ item.orderNo }}</h1>
-        <p class="mt-1 text-sm text-slate-500">Placed on {{ formatDate(item.createdAt) }}</p>
+    <header class="flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+      <div class="min-w-0">
+        <div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+          <h1 class="min-w-0 break-all text-2xl font-bold text-slate-900 dark:text-white sm:text-[28px]">
+            Order #{{ item.orderNo }}
+          </h1>
+          <span class="status-badge capitalize" [ngClass]="orderStatusClass(item.status)">
+            {{ statusLabel(item.status) }}
+          </span>
+        </div>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
+          Placed on {{ formatDate(item.createdAt) }}
+        </p>
       </div>
-      <span
-        class="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium capitalize text-slate-700"
-        >{{ statusLabel(item.status) }}</span
-      >
+      @if (canCancel()) {
+        <button
+          type="button"
+          (click)="requestCancellation()"
+          class="inline-flex w-fit shrink-0 items-center justify-center rounded-lg border border-red-200 px-3.5 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-none dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/30"
+        >
+          Cancel order
+        </button>
+      }
     </header>
 
     @if (cancelError()) {
-      <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
         {{ cancelError() }}
       </div>
     }
 
     @if (cancellationMessage()) {
-      <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+      <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
         {{ cancellationMessage() }}
-      </div>
-    }
-
-    @if (canCancel()) {
-      <div class="flex justify-end">
-        <button
-          type="button"
-          (click)="requestCancellation()"
-          class="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
-        >
-          Cancel order
-        </button>
       </div>
     }
 
     @if (showCancelConfirmation()) {
       <section
-        class="rounded-xl border border-red-200 bg-red-50 p-5"
+        class="rounded-xl border border-red-200 bg-red-50 p-5 dark:border-red-900/50 dark:bg-red-950/20"
         role="alertdialog"
         aria-modal="true"
       >
-        <h2 class="font-semibold text-red-900">Cancel this order?</h2>
-        <p class="mt-1 text-sm text-red-800">
+        <h2 class="font-semibold text-red-900 dark:text-red-300">Cancel this order?</h2>
+        <p class="mt-1 text-sm text-red-800 dark:text-red-200">
           This action cannot be undone. The order status and payment information will be updated by
           the server.
         </p>
 
         <form [formGroup]="cancelForm" (ngSubmit)="cancelOrder()" class="mt-4 space-y-3">
-          <label class="block text-sm font-medium text-red-900" for="cancel-reason">
-            Reason for cancellation <span class="text-red-600">(optional)</span>
+          <label class="block text-sm font-medium text-red-900 dark:text-red-300" for="cancel-reason">
+            Reason for cancellation <span class="text-red-600 dark:text-red-400">(optional)</span>
           </label>
           <textarea
             id="cancel-reason"
@@ -81,14 +90,14 @@
             rows="3"
             maxlength="500"
             placeholder="e.g. Changed my mind, ordered twice, shipping delay"
-            class="w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-red-400 focus:outline-none"
+            class="w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-red-400 focus:outline-none dark:border-red-900/50 dark:bg-slate-950 dark:text-slate-200 dark:placeholder:text-slate-500"
           ></textarea>
 
           <div class="flex flex-wrap gap-3">
             <button
               type="submit"
               [disabled]="cancelling()"
-              class="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+              class="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {{ cancelling() ? 'Cancelling...' : 'Yes, cancel order' }}
             </button>
@@ -96,7 +105,7 @@
               type="button"
               (click)="dismissCancellation()"
               [disabled]="cancelling()"
-              class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-800 disabled:opacity-50"
+              class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-700 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-slate-800"
             >
               Keep order
             </button>
@@ -105,7 +114,9 @@
       </section>
     }
 
-    <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_340px] sm:gap-6">
+      <div class="flex min-w-0 flex-col gap-5 sm:gap-6">
+    <section class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5">
       <span
         class="sr-only"
         role="progressbar"
@@ -114,163 +125,185 @@
         aria-valuemax="100"
         [attr.aria-valuenow]="trackingProgressPercent()"
       ></span>
-      <h2 class="text-lg font-semibold text-slate-900">Delivery tracking</h2>
-      <div class="mt-6 grid gap-4 sm:grid-cols-6">
-        @for (
-          step of displayTrackingSteps();
-          track step.status;
-          let index = $index;
-          let last = $last
-        ) {
-          <div class="relative flex flex-col items-center text-center">
-            @if (!last) {
-              <span
-                class="absolute left-1/2 top-4 hidden h-1 w-full -translate-y-1/2 bg-slate-200 sm:block"
-                [class.bg-slate-900]="index < currentTrackingIndex()"
-              ></span>
-            }
-            <span
-              class="relative z-10 grid size-9 place-items-center rounded-full border-2 border-slate-300 bg-white text-slate-500"
-              [class.border-slate-900]="index <= currentTrackingIndex()"
-              [class.bg-slate-900]="index <= currentTrackingIndex()"
-              [class.text-white]="index <= currentTrackingIndex()"
-              [class.ring-4]="index === currentTrackingIndex()"
-              [class.ring-slate-300]="
-                index === currentTrackingIndex() && step.status !== 'cancelled'
-              "
-              [class.ring-red-200]="index === currentTrackingIndex() && step.status === 'cancelled'"
-              [class.scale-110]="index === currentTrackingIndex()"
-              [class.border-red-600]="step.status === 'cancelled'"
-              [class.bg-red-600]="step.status === 'cancelled'"
-            >
-              @switch (step.status) {
-                @case ('placed') {
-                  <svg lucideShoppingCart class="size-[18px]"></svg>
-                }
-                @case ('confirmed') {
-                  <svg lucideCircleCheck class="size-[18px]"></svg>
-                }
-                @case ('assigned') {
-                  <svg lucideTruck class="size-[18px]"></svg>
-                }
-                @case ('packed') {
-                  <svg lucidePackageCheck class="size-[18px]"></svg>
-                }
-                @case ('out_for_delivery') {
-                  <svg lucideBike class="size-[18px]"></svg>
-                }
-                @case ('delivered') {
-                  <svg lucideHouse class="size-[18px]"></svg>
-                }
-                @case ('cancelled') {
-                  <svg lucideCircleX class="size-[18px]"></svg>
-                }
-              }
-            </span>
-            <span
-              class="mt-2 text-xs font-semibold"
-              [attr.aria-current]="index === currentTrackingIndex() ? 'step' : null"
-              [class.text-slate-900]="index <= currentTrackingIndex()"
-              [class.text-slate-500]="index > currentTrackingIndex()"
-              [class.font-bold]="index === currentTrackingIndex()"
-              [class.text-red-700]="step.status === 'cancelled'"
-            >
-              {{ step.label }}
-            </span>
-            @if (step.status === 'placed') {
-              <span class="mt-1 text-[10px] text-slate-500">{{ formatDate(item.createdAt) }}</span>
-            }
+      @if (order()?.status === 'cancelled') {
+        <div class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+          <svg lucideCircleX class="size-5 shrink-0" aria-hidden="true"></svg>
+          <div>
+            <h3 class="text-sm font-semibold">Order Cancelled</h3>
+            <p class="text-xs opacity-90">This order has been cancelled and cannot be tracked further.</p>
           </div>
-        }
-      </div>
+        </div>
+      } @else {
+        <div class="relative w-full">
+          <div class="absolute left-[8.3333%] right-[8.3333%] top-4.5 h-1.5 -translate-y-1/2 rounded-full bg-slate-200 dark:bg-slate-700">
+            <div
+              class="h-full rounded-full bg-slate-700 transition-all duration-500 dark:bg-slate-300"
+              [style.width]="trackingProgressPercent() + '%'"
+            ></div>
+          </div>
+
+          <div class="grid grid-cols-6 items-start">
+          @for (
+            step of displayTrackingSteps();
+            track step.status;
+            let index = $index
+          ) {
+            <div class="relative z-10 flex min-w-0 flex-col items-center text-center">
+                <div
+                  class="grid size-9 place-items-center rounded-full border-2 transition-all duration-300"
+                  [ngClass]="
+                    index < currentTrackingIndex()
+                      ? 'border-slate-900 bg-slate-800 text-white dark:border-slate-200 dark:bg-slate-200 dark:text-slate-950'
+                      : index === currentTrackingIndex()
+                        ? 'scale-110 border-slate-900 bg-slate-800 text-white ring-4 ring-slate-300 dark:border-slate-200 dark:bg-slate-200 dark:text-slate-950 dark:ring-slate-700'
+                        : 'border-slate-300 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400'
+                  "
+                >
+                @switch (step.status) {
+                  @case ('placed') {
+                    <svg lucideShoppingCart class="size-4.5" aria-hidden="true"></svg>
+                  }
+                  @case ('confirmed') {
+                    <svg lucideCircleCheck class="size-4.5" aria-hidden="true"></svg>
+                  }
+                  @case ('assigned') {
+                    <svg lucideTruck class="size-4.5" aria-hidden="true"></svg>
+                  }
+                  @case ('packed') {
+                    <svg lucidePackageCheck class="size-4.5" aria-hidden="true"></svg>
+                  }
+                  @case ('out_for_delivery') {
+                    <svg lucideTruck class="size-4.5" aria-hidden="true"></svg>
+                  }
+                  @case ('delivered') {
+                    <svg lucideHouse class="size-4.5" aria-hidden="true"></svg>
+                  }
+                }
+              </div>
+              <span
+                class="mt-2 min-h-9 w-full px-0.5 text-center text-[10px] font-semibold leading-tight md:text-xs"
+                [attr.aria-current]="index === currentTrackingIndex() ? 'step' : null"
+                  [ngClass]="
+                    step.status === 'cancelled'
+                      ? 'text-red-700 dark:text-red-300'
+                      : index <= currentTrackingIndex()
+                        ? 'font-bold text-slate-900 dark:text-white'
+                        : 'text-slate-500 dark:text-slate-400'
+                  "
+              >
+                {{ step.label }}
+              </span>
+              @if (step.status === 'placed') {
+                <span class="mt-1 max-w-full text-[9px] leading-tight text-slate-500 dark:text-slate-400">
+                  {{ formatDate(item.createdAt) }}
+                </span>
+              }
+            </div>
+          }
+          </div>
+        </div>
+      }
     </section>
 
-    <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
-      <main class="flex flex-col gap-6">
-        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-900">Items ({{ item.items.length }})</h2>
-          <div class="mt-4 divide-y divide-slate-200">
+        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
+            <svg lucideShoppingBag class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+            Items ({{ item.items.length }})
+          </h2>
+          <div class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
             @for (line of item.items; track line._id || line.productId) {
-              <div
-                class="grid grid-cols-[64px_1fr_auto] items-center gap-4 py-3 first:pt-0 last:pb-0"
-              >
-                <img
-                  [src]="getProductImageUrl(line.image)"
-                  [alt]="line.name"
-                  (error)="onImageError($event)"
-                  class="size-14 rounded-lg object-contain"
-                />
+              <div class="grid min-w-0 grid-cols-[48px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-4 first:pt-3 last:pb-1 sm:grid-cols-[56px_minmax(0,1fr)_auto] sm:gap-x-4">
+                <span class="grid size-12 place-items-center rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950 sm:size-14">
+                  <img
+                    [src]="getProductImageUrl(line.image)"
+                    [alt]="line.name"
+                    (error)="onImageError($event)"
+                    class="size-10 object-contain sm:size-11"
+                  />
+                </span>
                 <div class="min-w-0">
-                  <p class="line-clamp-2 text-sm font-medium text-slate-900">{{ line.name }}</p>
-                  <p class="mt-1 text-xs text-slate-500">
+                  <p class="wrap-break-word text-sm font-semibold text-slate-900 dark:text-white">
+                    {{ line.name }}
+                  </p>
+                  <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     Qty: {{ line.quantity }} · ${{ line.salePrice.toFixed(2) }} each
                   </p>
+                  @if (canReview(line._id || '')) {
+                    <button
+                      type="button"
+                      (click)="startReviewById(line._id)"
+                      class="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-md text-xs font-medium text-slate-700 underline-offset-2 transition-colors hover:text-slate-950 hover:underline focus-visible:outline-none dark:text-slate-300 dark:hover:text-white"
+                    >
+                      <svg lucideStar class="size-3.5" aria-hidden="true"></svg>
+                      Write review
+                    </button>
+                  } @else if (line.isReviewed) {
+                    <span class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                      <svg lucideCircleCheck class="size-3.5" aria-hidden="true"></svg>
+                      Reviewed
+                    </span>
+                  }
                 </div>
-                <p class="text-sm font-semibold text-slate-900">
+                <p class="col-start-2 text-sm font-semibold text-slate-900 dark:text-white sm:col-start-3 sm:text-right">
                   ${{ (line.salePrice * line.quantity).toFixed(2) }}
                 </p>
               </div>
-              @if (canReview(line._id || '')) {
-                <button
-                  type="button"
-                  (click)="startReviewById(line._id)"
-                  class="col-span-full w-fit text-sm font-medium text-slate-700 underline"
-                >
-                  Write review
-                </button>
-              }
             }
           </div>
           @if (reviewMessage()) {
-            <p class="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">
+            <p class="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300">
               {{ reviewMessage() }}
             </p>
           }
           @if (reviewError()) {
-            <p class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ reviewError() }}</p>
+            <p class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300">
+              {{ reviewError() }}
+            </p>
           }
           @if (activeReviewItem(); as reviewItem) {
             <form
               [formGroup]="reviewForm"
               (ngSubmit)="submitReview()"
-              class="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4"
+              class="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950"
             >
-              <h3 class="font-medium text-slate-900">Review {{ reviewItem.name }}</h3>
+              <h3 class="font-medium text-slate-900 dark:text-white">Review {{ reviewItem.name }}</h3>
               <div class="mt-3 flex items-center gap-0" aria-label="Rating from 1 to 5 stars">
                 @for (star of [1, 2, 3, 4, 5]; track star) {
                   <button
                     type="button"
                     (click)="setRating(star)"
-                    [class]="
-                      star <= reviewForm.controls.rating.value ? 'text-amber-500' : 'text-slate-300'
-                    "
+                    class="transition-transform duration-150 hover:scale-110"
+                    [class.text-amber-500]="star <= reviewForm.controls.rating.value"
+                    [class.text-slate-300]="star > reviewForm.controls.rating.value"
+                    [class.dark:text-slate-600]="star > reviewForm.controls.rating.value"
                     [attr.aria-label]="star + ' stars'"
                   >
-                    <svg lucideStar class="size-[18px]"></svg>
+                    <svg lucideStar class="size-4.5" aria-hidden="true"></svg>
                   </button>
                 }
               </div>
               @if (reviewForm.controls.rating.invalid && reviewForm.controls.rating.touched) {
-                <p class="mt-1 text-xs text-red-600">Choose a rating from 1 to 5.</p>
+                <p class="mt-1 text-xs text-red-600 dark:text-red-400">Choose a rating from 1 to 5.</p>
               }
               <textarea
                 formControlName="comment"
                 maxlength="1000"
                 rows="4"
-                class="mt-3 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                class="mt-3 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
                 placeholder="Share your experience (optional)"
               ></textarea>
               <div class="mt-3 flex gap-3">
                 <button
                   type="submit"
                   [disabled]="reviewSubmitting()"
-                  class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                  class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
                 >
-                  {{ reviewSubmitting() ? 'Submitting...' : 'Submit review' }}</button
-                ><button
+                  {{ reviewSubmitting() ? 'Submitting...' : 'Submit review' }}
+                </button>
+                <button
                   type="button"
                   (click)="cancelReview()"
-                  class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+                  class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -278,70 +311,114 @@
             </form>
           }
         </section>
+
         @if (item.statusHistory?.length) {
-          <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-900">Status history</h2>
-            <div class="mt-4 flex flex-col gap-4">
+          <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
+              <svg lucideCalendar class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+              Status History
+            </h2>
+            <div class="mt-4">
               @for (history of item.statusHistory; track history.date + history.status) {
-                <div class="border-l-2 border-slate-300 pl-4">
-                  <p class="text-sm font-medium capitalize text-slate-900">
-                    {{ statusLabel(history.status) }}
-                  </p>
-                  @if (history.note) {
-                    <p class="mt-1 text-sm text-slate-600">{{ history.note }}</p>
+                <div class="relative min-h-16 pb-5 pl-6 last:min-h-0 last:pb-0">
+                  @if (!$last) {
+                    <span class="absolute bottom-0 left-1.25 top-3 w-px bg-slate-200 dark:bg-slate-700"></span>
                   }
-                  <p class="mt-1 text-xs text-slate-500">{{ formatDate(history.date) }}</p>
+                  <span
+                    class="absolute left-0 top-1 size-2.5 rounded-full ring-2 ring-white dark:ring-slate-900"
+                    [ngClass]="
+                      history.status === 'cancelled'
+                        ? 'bg-red-600 dark:bg-red-400'
+                        : $last
+                          ? 'bg-slate-900 dark:bg-slate-200'
+                          : 'bg-slate-500 dark:bg-slate-400'
+                    "
+                  ></span>
+                  <div>
+                    <p
+                      class="text-sm font-semibold"
+                      [ngClass]="history.status === 'cancelled' ? 'text-red-700 dark:text-red-300' : 'text-slate-900 dark:text-white'"
+                    >
+                      {{ statusLabel(history.status) }}
+                    </p>
+                    @if (history.note) {
+                      <p class="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+                        {{ history.note }}
+                      </p>
+                    }
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      {{ formatDate(history.date) }}
+                    </p>
+                  </div>
                 </div>
               }
             </div>
           </section>
         }
-      </main>
+      </div>
+
       <aside class="flex flex-col gap-6">
-        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 class="text-base font-semibold text-slate-900">Delivery address</h2>
-          <div class="mt-3 flex flex-col gap-1 text-sm text-slate-600">
-            <p class="font-medium text-slate-900">{{ item.shippingAddress.recipientName }}</p>
-            <p>{{ item.shippingAddress.street }}</p>
-            <p>
-              {{ item.shippingAddress.city }}, {{ item.shippingAddress.state }}
-              {{ item.shippingAddress.postalCode }}
+        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
+            <svg lucideMapPin class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+            Delivery address
+          </h2>
+          <div class="mt-4 flex min-w-0 flex-col gap-2 text-sm">
+            <p class="wrap-break-word font-semibold text-slate-900 dark:text-white">
+              {{ item.shippingAddress.recipientName }}
             </p>
-            <p>{{ item.shippingAddress.country }}</p>
-            <p class="mt-1">{{ item.shippingAddress.phone }}</p>
+            <p class="wrap-break-word leading-relaxed text-slate-600 dark:text-slate-300">
+              {{ item.shippingAddress.street }}
+            </p>
+            <p class="wrap-break-word leading-relaxed text-slate-600 dark:text-slate-300">
+              {{ item.shippingAddress.city }}, {{ item.shippingAddress.state }} {{ item.shippingAddress.postalCode }}
+            </p>
+            <p class="wrap-break-word text-slate-600 dark:text-slate-300">{{ item.shippingAddress.country }}</p>
+            <p class="mt-1 border-t border-slate-100 pt-3 text-slate-600 dark:border-slate-800 dark:text-slate-300">
+              {{ item.shippingAddress.phone }}
+            </p>
           </div>
         </section>
-        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 class="text-base font-semibold text-slate-900">Payment summary</h2>
+
+        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
+            <svg lucideCreditCard class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+            Payment summary
+          </h2>
           <div class="mt-4 flex flex-col gap-3 text-sm">
-            <div class="flex justify-between gap-3">
-              <span class="text-slate-500">Method</span
-              ><span class="font-medium capitalize text-slate-900">{{
-                paymentLabel(item.paymentMethod)
-              }}</span>
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-slate-500 dark:text-slate-400">Payment Method</span>
+              <span class="font-medium capitalize text-slate-900 dark:text-white">
+                {{ paymentLabel(item.paymentMethod) }}
+              </span>
             </div>
-            <div class="flex justify-between gap-3">
-              <span class="text-slate-500">Status</span
-              ><span class="font-medium capitalize text-slate-900">{{
-                paymentLabel(item.paymentStatus)
-              }}</span>
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-slate-500 dark:text-slate-400">Payment Status</span>
+              <span class="status-badge capitalize" [ngClass]="paymentStatusClass(item.paymentStatus)">
+                {{ paymentLabel(item.paymentStatus) }}
+              </span>
             </div>
-            <div class="my-1 border-t border-slate-200"></div>
-            <div class="flex justify-between gap-3">
-              <span class="text-slate-500">Subtotal</span
-              ><span>${{ item.subtotal.toFixed(2) }}</span>
+
+            <div class="border-t border-slate-200 dark:border-slate-700"></div>
+
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-slate-500 dark:text-slate-400">Subtotal</span>
+              <span class="font-medium text-slate-900 dark:text-white">${{ item.subtotal.toFixed(2) }}</span>
             </div>
-            <div class="flex justify-between gap-3">
-              <span class="text-slate-500">Delivery</span
-              ><span>${{ item.deliveryFee.toFixed(2) }}</span>
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-slate-500 dark:text-slate-400">Delivery</span>
+              <span class="font-medium text-slate-900 dark:text-white">
+                {{ item.deliveryFee === 0 ? 'Free' : '$' + item.deliveryFee.toFixed(2) }}
+              </span>
             </div>
-            <div class="flex justify-between gap-3">
-              <span class="text-slate-500">Tax</span><span>${{ item.tax.toFixed(2) }}</span>
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-slate-500 dark:text-slate-400">Tax</span>
+              <span class="font-medium text-slate-900 dark:text-white">${{ item.tax.toFixed(2) }}</span>
             </div>
-            <div
-              class="mt-1 flex justify-between gap-3 border-t border-slate-200 pt-3 font-semibold text-slate-900"
-            >
-              <span>Total</span><span>${{ item.total.toFixed(2) }}</span>
+            <div class="mt-1 border-t border-slate-200 pt-4 dark:border-slate-700"></div>
+            <div class="flex items-center justify-between gap-4 text-base font-semibold text-slate-900 dark:text-white">
+              <span>Total</span>
+              <span>${{ item.total.toFixed(2) }}</span>
             </div>
           </div>
         </section>

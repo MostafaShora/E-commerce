@@ -1,22 +1,18 @@
-import { Location } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 import {
-  LucideArrowLeft,
-  LucideClipboardList,
+  LucideLayoutDashboard,
   LucideLogOut,
   LucideMapPin,
+  LucideShoppingBag,
   LucideStar,
-  LucideUserRound,
+  LucideStore,
 } from '@lucide/angular';
 
-import {
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { ModeToggleComponent } from '../../shared/components/mode-toggle/mode-toggle';
 
 @Component({
   selector: 'app-account-layout',
@@ -25,25 +21,20 @@ import { AuthService } from '../../core/auth/auth.service';
     RouterLink,
     RouterLinkActive,
     RouterOutlet,
+    ModeToggleComponent,
 
-    LucideArrowLeft,
-    LucideUserRound,
-    LucideClipboardList,
+    LucideLayoutDashboard,
+    LucideShoppingBag,
     LucideStar,
     LucideMapPin,
+    LucideStore,
     LucideLogOut,
   ],
   templateUrl: './account-layout.html',
   styleUrl: './account-layout.css',
 })
 export class AccountLayout {
-  private readonly location = inject(Location);
-
   readonly auth = inject(AuthService);
-
-  back(): void {
-    this.location.back();
-  }
 
   logout(): void {
     this.auth.logout().subscribe();

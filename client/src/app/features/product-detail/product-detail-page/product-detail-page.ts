@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -8,8 +8,8 @@ import {
   LucideShoppingCart,
   LucideStar,
 } from '@lucide/angular';
-import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, distinctUntilChanged, map, of, switchMap } from 'rxjs';
+import { ActivatedRoute, Router, Scroll } from '@angular/router';
+import { catchError, distinctUntilChanged, filter, map, of, switchMap } from 'rxjs';
 
 import { CartService } from '../../../core/cart/cart';
 import type { CatalogProduct } from '../../../shared/models/catalog';
@@ -42,6 +42,7 @@ import { getProductImageUrl, onImageError } from '../../../shared/utils/image.ut
 export class ProductDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly viewportScroller = inject(ViewportScroller);
   private readonly productDetailService = inject(ProductDetailService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly reviewService = inject(ReviewService);
@@ -59,8 +60,21 @@ export class ProductDetailPage {
   readonly reviewsLoading = signal(false);
   readonly reviewsError = signal<string | null>(null);
   readonly onImageError = onImageError;
+  private pendingHistoryScrollPosition: [number, number] | null = null;
 
   constructor() {
+    this.router.events
+      .pipe(
+        filter((event): event is Scroll => event instanceof Scroll),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((event) => {
+        if (!event.position) return;
+
+        this.pendingHistoryScrollPosition = event.position;
+        if (!this.loading()) this.restoreHistoryScrollPosition();
+      });
+
     this.route.paramMap
       .pipe(
         map((params) => params.get('slug')),
@@ -92,6 +106,7 @@ export class ProductDetailPage {
           this.loadReviews(response.product.slug, 1);
         }
         this.loading.set(false);
+        this.restoreHistoryScrollPosition();
       });
   }
 
@@ -242,5 +257,13 @@ export class ProductDetailPage {
 
   goBack(): void {
     void this.router.navigate(['/products']);
+  }
+
+  private restoreHistoryScrollPosition(): void {
+    const position = this.pendingHistoryScrollPosition;
+    if (!position) return;
+
+    this.pendingHistoryScrollPosition = null;
+    requestAnimationFrame(() => this.viewportScroller.scrollToPosition(position));
   }
 }

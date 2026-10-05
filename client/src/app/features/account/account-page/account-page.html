@@ -1,80 +1,94 @@
-<div class="flex w-full min-w-0 max-w-5xl flex-col gap-6 py-2">
-  <!-- Header -->
-  <header class="min-w-0">
-    <h1 class="truncate text-2xl font-semibold text-slate-900">Account</h1>
-
-    <p class="mt-1 break-words text-sm text-slate-600">
-      Manage your customer account and saved details.
-    </p>
-  </header>
-
+<div class="flex flex-col gap-6">
   @if (auth.currentUser(); as user) {
-    <!-- Account Information -->
-    <section class="w-full min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 class="text-lg font-semibold text-slate-900">Account information</h2>
+    <header>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-300">
+        Overview
+      </p>
+      <h2 class="mt-1 text-2xl font-semibold text-slate-900 dark:text-white">
+        Welcome back, {{ user.name }}
+      </h2>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+        Manage your orders, reviews, and saved delivery details.
+      </p>
+    </header>
 
-      <dl class="mt-5 grid min-w-0 gap-4 sm:grid-cols-2">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <a
+        routerLink="/account/orders"
+        class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-500"
+      >
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500 dark:text-slate-400">Orders</p>
+          <svg lucideClipboardList class="size-5 text-sky-700 dark:text-sky-400" aria-hidden="true"></svg>
+        </div>
+        <p class="mt-3 text-2xl font-semibold text-slate-900 dark:text-white">Recent orders</p>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          Track delivery status and review past purchases.
+        </p>
+      </a>
+
+      <a
+        routerLink="/account/reviews"
+        class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-500"
+      >
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500 dark:text-slate-400">Reviews</p>
+          <svg lucideStar class="size-5 text-amber-600 dark:text-amber-400" aria-hidden="true"></svg>
+        </div>
+        <p class="mt-3 text-2xl font-semibold text-slate-900 dark:text-white">Your feedback</p>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          Leave ratings and revisit product reviews you’ve shared.
+        </p>
+      </a>
+
+      <a
+        routerLink="/account/addresses"
+        class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-500"
+      >
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500 dark:text-slate-400">Addresses</p>
+          <svg lucideMapPin class="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true"></svg>
+        </div>
+        <p class="mt-3 text-2xl font-semibold text-slate-900 dark:text-white">Saved places</p>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          Update delivery destinations and manage defaults faster.
+        </p>
+      </a>
+    </div>
+
+    <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <header class="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+        <div>
+          <h3 class="font-semibold text-slate-900 dark:text-white">Personal information</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Details associated with your account.</p>
+        </div>
+        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+          Profile
+        </span>
+      </header>
+
+      <dl class="grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-3">
         <div class="min-w-0">
-          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Name</dt>
-
-          <dd class="mt-1 break-words text-sm text-slate-900">
+          <dt class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Name</dt>
+          <dd class="mt-1 break-words text-sm font-medium text-slate-900 dark:text-slate-100">
             {{ user.name }}
           </dd>
         </div>
-
         <div class="min-w-0">
-          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Email</dt>
-
-          <dd class="mt-1 break-all text-sm text-slate-900">
+          <dt class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Email</dt>
+          <dd class="mt-1 break-all text-sm font-medium text-slate-900 dark:text-slate-100">
             {{ user.email }}
           </dd>
         </div>
-
-        @if (user.role) {
-          <div class="min-w-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Account type</dt>
-
-            <dd class="mt-1 break-words text-sm capitalize text-slate-900">
-              {{ user.role }}
-            </dd>
-          </div>
-        }
-
         @if (user.phone) {
           <div class="min-w-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Phone</dt>
-
-            <dd class="mt-1 break-words text-sm text-slate-900">
+            <dt class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Phone</dt>
+            <dd class="mt-1 break-words text-sm font-medium text-slate-900 dark:text-slate-100">
               {{ user.phone }}
             </dd>
           </div>
         }
       </dl>
     </section>
-
-    <!-- Quick Links -->
-    <div class="grid w-full min-w-0 gap-4 sm:grid-cols-2">
-      <a
-        routerLink="/account/orders"
-        class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-slate-900"
-      >
-        <h2 class="truncate font-semibold text-slate-900">Order history</h2>
-
-        <p class="mt-1 break-words text-sm text-slate-600">
-          Track deliveries and review past orders.
-        </p>
-      </a>
-
-      <a
-        routerLink="/account/addresses"
-        class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-slate-900"
-      >
-        <h2 class="truncate font-semibold text-slate-900">Addresses</h2>
-
-        <p class="mt-1 break-words text-sm text-slate-600">
-          Manage delivery addresses for checkout.
-        </p>
-      </a>
-    </div>
   }
 </div>

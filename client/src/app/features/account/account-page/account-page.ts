@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../core/auth/auth.service';
+import { LucideClipboardList, LucideMapPin, LucideStar } from '@lucide/angular';
 
 @Component({
   selector: 'app-account-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, LucideClipboardList, LucideMapPin, LucideStar],
   templateUrl: './account-page.html',
 })
 export class AccountPageComponent {

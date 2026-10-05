@@ -87,12 +87,25 @@ describe('OrderDetailPageComponent', () => {
     );
   });
 
-  it('uses the six ordered statuses and safely handles cancelled and unknown states', () => {
+  it('uses the six visible tracking statuses and safely handles cancelled and unknown states', () => {
     const component = fixture.componentInstance;
+
+    expect(component.trackingSteps.map((step) => step.status)).toEqual([
+      'placed',
+      'confirmed',
+      'assigned',
+      'packed',
+      'out_for_delivery',
+      'delivered',
+    ]);
 
     component.order.set({ ...baseOrder, status: 'out_for_delivery' });
     expect(component.currentTrackingIndex()).toBe(4);
     expect(component.trackingProgressPercent()).toBe(80);
+
+    component.order.set({ ...baseOrder, status: 'delivered' });
+    expect(component.currentTrackingIndex()).toBe(5);
+    expect(component.trackingProgressPercent()).toBe(100);
 
     component.order.set({ ...baseOrder, status: 'cancelled' });
     expect(component.displayTrackingSteps().map((step) => step.status)).toEqual([

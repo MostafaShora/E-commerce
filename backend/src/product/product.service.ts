@@ -74,6 +74,10 @@ export class ProductService {
       skip,
     } = query;
 
+    if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
+      throw new BadRequestException('Minimum price cannot be greater than maximum price');
+    }
+
     const filter: Record<string, unknown> = {
       isActive: true,
     };
@@ -88,13 +92,13 @@ export class ProductService {
     }
 
     // Discount filter
-    if (hasDiscount !== undefined) {
-      filter.discountPercent = hasDiscount ? { $gt: 0 } : 0;
+    if (hasDiscount === true) {
+      filter.discountPercent = { $gt: 0 };
     }
 
     // Stock filter
-    if (inStock !== undefined) {
-      filter.stockCount = inStock ? { $gt: 0 } : { $eq: 0 };
+    if (inStock === true) {
+      filter.stockCount = { $gt: 0 };
     }
 
     // Price filter

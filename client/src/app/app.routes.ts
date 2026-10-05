@@ -92,6 +92,18 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'account',
+    component: AccountLayout,
+    canActivate: [authGuard],
+    children: [
+      { path: '', pathMatch: 'full', loadComponent: accountPage },
+      { path: 'orders', loadComponent: ordersPage },
+      { path: 'orders/:id', loadComponent: orderDetailPage },
+      { path: 'reviews', loadComponent: reviewsPage },
+      { path: 'addresses', loadComponent: addressesPage },
+    ],
+  },
+  {
     path: '',
     component: StorefrontLayout,
     children: [
@@ -129,18 +141,6 @@ export const routes: Routes = [
         path: 'orders/:id',
         canActivate: [authGuard],
         loadComponent: orderDetailPage,
-      },
-      {
-        path: 'account',
-        component: AccountLayout,
-        canActivate: [authGuard],
-        children: [
-          { path: '', pathMatch: 'full', loadComponent: accountPage },
-          { path: 'orders', loadComponent: ordersPage },
-          { path: 'orders/:id', loadComponent: orderDetailPage },
-          { path: 'reviews', loadComponent: reviewsPage },
-          { path: 'addresses', loadComponent: addressesPage },
-        ],
       },
     ],
   },

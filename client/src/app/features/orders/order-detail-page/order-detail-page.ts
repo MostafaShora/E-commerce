@@ -1,7 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LucideArrowLeft, LucideBike, LucideCircleCheck, LucideCircleX, LucideHouse, LucidePackageCheck, LucideShoppingCart, LucideStar, LucideTruck } from '@lucide/angular';
+import {
+  LucideArrowLeft,
+  LucideCalendar,
+  LucideCircleCheck,
+  LucideCircleX,
+  LucideCreditCard,
+  LucideHouse,
+  LucideMapPin,
+  LucidePackageCheck,
+  LucideShoppingBag,
+  LucideShoppingCart,
+  LucideStar,
+  LucideTruck,
+} from '@lucide/angular';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, finalize, map, merge, of, Subject, switchMap } from 'rxjs';
@@ -18,7 +31,23 @@ import { getProductImageUrl, onImageError } from '../../../shared/utils/image.ut
 @Component({
   selector: 'app-order-detail-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideArrowLeft, LucideShoppingCart, LucideCircleCheck, LucideTruck, LucidePackageCheck, LucideBike, LucideHouse, LucideCircleX, LucideStar],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    LucideArrowLeft,
+    LucideCalendar,
+    LucideCircleCheck,
+    LucideCircleX,
+    LucideCreditCard,
+    LucideHouse,
+    LucideMapPin,
+    LucidePackageCheck,
+    LucideShoppingBag,
+    LucideShoppingCart,
+    LucideStar,
+    LucideTruck,
+  ],
   templateUrl: './order-detail-page.html',
 })
 export class OrderDetailPageComponent {
@@ -152,7 +181,7 @@ export class OrderDetailPageComponent {
     { status: 'confirmed', label: 'Confirmed' },
     { status: 'assigned', label: 'Assigned' },
     { status: 'packed', label: 'Packed' },
-    { status: 'out_for_delivery', label: 'Out for delivery' },
+    { status: 'out_for_delivery', label: 'Out for Delivery' },
     { status: 'delivered', label: 'Delivered' },
   ];
 
@@ -248,11 +277,35 @@ export class OrderDetailPageComponent {
   }
 
   statusLabel(status: OrderStatus): string {
-    return status.replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
+    const labelMap: Record<OrderStatus, string> = {
+      placed: 'Placed',
+      confirmed: 'Confirmed',
+      assigned: 'Assigned',
+      packed: 'Packed',
+      out_for_delivery: 'Out for Delivery',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled',
+    };
+
+    return labelMap[status] ?? status.replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
+  }
+
+  orderStatusClass(status: OrderStatus): string {
+    return `status-${status.replaceAll('_', '-')}`;
   }
 
   paymentLabel(value: PaymentStatus | string): string {
     return value.replaceAll('_', ' ');
+  }
+
+  paymentStatusClass(status: PaymentStatus): string {
+    switch (status) {
+      case 'paid': return 'status-paid';
+      case 'failed': return 'status-failed';
+      case 'refunded': return 'status-inactive';
+      case 'pending':
+      default: return 'status-payment-pending';
+    }
   }
 
   formatDate(value: string): string {

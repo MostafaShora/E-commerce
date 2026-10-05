@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { LucideArrowLeft, LucideChevronRight, LucideShoppingBag } from '@lucide/angular';
 
 import {
   OrderService,
@@ -14,7 +15,7 @@ import {
 @Component({
   selector: 'app-orders-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LucideArrowLeft, LucideChevronRight, LucideShoppingBag],
   templateUrl: './orders-page.html',
 })
 export class OrdersPageComponent {
@@ -43,11 +44,35 @@ export class OrdersPageComponent {
   }
 
   statusLabel(status: OrderStatus): string {
-    return status.replaceAll('_', ' ');
+    const labelMap: Record<OrderStatus, string> = {
+      placed: 'Placed',
+      confirmed: 'Confirmed',
+      assigned: 'Assigned',
+      packed: 'Packed',
+      out_for_delivery: 'Out for Delivery',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled',
+    };
+
+    return labelMap[status] ?? status.replaceAll('_', ' ');
   }
 
   paymentLabel(status: PaymentMethod | PaymentStatus): string {
     return status.replaceAll('_', ' ');
+  }
+
+  orderStatusClass(status: OrderStatus): string {
+    return `status-${status.replaceAll('_', '-')}`;
+  }
+
+  paymentStatusClass(status: PaymentStatus): string {
+    switch (status) {
+      case 'paid': return 'status-paid';
+      case 'failed': return 'status-failed';
+      case 'refunded': return 'status-refunded';
+      case 'pending':
+      default: return 'status-payment-pending';
+    }
   }
 
   formatDate(value: string): string {

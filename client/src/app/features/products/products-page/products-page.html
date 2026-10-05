@@ -119,6 +119,7 @@
           <input
             type="number"
             min="0"
+            step="any"
             placeholder="Min"
             formControlName="min"
             class="h-10 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
@@ -127,6 +128,7 @@
           <input
             type="number"
             min="0"
+            step="any"
             placeholder="Max"
             formControlName="max"
             class="h-10 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
@@ -139,6 +141,9 @@
             Apply
           </button>
         </div>
+        @if (priceValidationError()) {
+          <p class="mt-2 text-xs text-red-600" role="alert">{{ priceValidationError() }}</p>
+        }
       </form>
 
       @if (categoriesError()) {
