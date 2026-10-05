@@ -14,6 +14,7 @@ import { catchError, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { CartService } from '../../../core/cart/cart';
 import type { CatalogProduct } from '../../../shared/models/catalog';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card';
+import { ProductRatingComponent } from '../../../shared/components/product-rating/product-rating';
 import { ProductDetailService } from '../services/product-detail';
 import {
   ReviewService,
@@ -29,6 +30,7 @@ import { getProductImageUrl, onImageError } from '../../../shared/utils/image.ut
   imports: [
     CommonModule,
     ProductCardComponent,
+    ProductRatingComponent,
     LucideArrowLeft,
     LucideMinus,
     LucidePlus,
@@ -203,10 +205,6 @@ export class ProductDetailPage {
 
   categoryName(product: CatalogProduct): string {
     return typeof product.categoryId === 'object' ? product.categoryId.name : '';
-  }
-
-  roundedRating(product: CatalogProduct): number {
-    return Math.round(product.ratingAverage);
   }
 
   hasDiscount(product: CatalogProduct): boolean {

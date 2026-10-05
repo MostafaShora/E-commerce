@@ -8,7 +8,6 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideStar } from '@lucide/angular';
 import { finalize } from 'rxjs';
 
 import { CartService } from '../../../core/cart/cart';
@@ -17,12 +16,13 @@ import { ButtonComponent } from '../../ui/button/button';
 import { CardComponent } from '../../ui/card/card';
 import { BadgeComponent } from '../../ui/badge/badge';
 import { getProductImageUrl, onImageError } from '../../utils/image.util';
+import { ProductRatingComponent } from '../product-rating/product-rating';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, ButtonComponent, CardComponent, BadgeComponent, LucideStar],
+  imports: [CommonModule, RouterLink, ButtonComponent, CardComponent, BadgeComponent, ProductRatingComponent],
   templateUrl: './product-card.html',
 })
 export class ProductCardComponent {
@@ -73,8 +73,6 @@ export class ProductCardComponent {
       tone: 'text-emerald-600',
     };
   });
-
-  readonly roundedRating = computed(() => Math.round(this.product().ratingAverage));
 
   formatPrice(value: number): { dollars: string; cents: string } {
     const whole = Math.floor(value);
