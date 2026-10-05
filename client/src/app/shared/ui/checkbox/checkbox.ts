@@ -1,10 +1,13 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { LucideCheck } from '@lucide/angular';
 
 @Component({
   selector: 'app-checkbox',
   standalone: true,
+  imports: [LucideCheck],
   templateUrl: './checkbox.html',
+  styleUrl: './checkbox.css',
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => CheckboxComponent), multi: true }],
 })
 export class CheckboxComponent implements ControlValueAccessor {

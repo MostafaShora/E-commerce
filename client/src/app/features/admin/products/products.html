@@ -111,7 +111,7 @@
                 <div class="flex items-center gap-1">
                   <a
                     [routerLink]="['/admin/products', product._id, 'edit']"
-                    class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100"
+                    class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
                     aria-label="Edit product"
                     title="Edit product"
                   >
@@ -120,7 +120,7 @@
                   <button
                     type="button"
                     (click)="toggle(product)"
-                    class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100"
+                    class="grid size-8 place-items-center rounded text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
                     [attr.aria-label]="
                       isActive(product) ? 'Deactivate product' : 'Activate product'
                     "

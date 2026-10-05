@@ -6,11 +6,12 @@ import { AuthService } from '../../../core/auth/auth.service';
 import type { LoginRequest, RegisterRequest } from '../../../core/auth/auth.models';
 import { LoginFormComponent } from '../login-form/login-form';
 import { RegisterFormComponent } from '../register-form/register-form';
+import { ModeToggleComponent } from '../../../shared/components/mode-toggle/mode-toggle';
 
 @Component({
   selector: 'app-auth-page',
   standalone: true,
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent],
+  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, ModeToggleComponent],
   templateUrl: './auth-page.html',
 })
 export class AuthPageComponent {

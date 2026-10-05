@@ -8,16 +8,24 @@ export class ThemeService {
 	readonly isDark = signal(false);
 
 	constructor() {
-		effect(() => {
+		effect((onCleanup) => {
 			const mode = this.mode();
-			const isDark =
-				mode === 'system'
-					? typeof window.matchMedia === 'function' &&
-					window.matchMedia('(prefers-color-scheme: dark)').matches
-					: mode === 'dark';
-			this.isDark.set(isDark);
-			document.documentElement.classList.toggle('dark', isDark);
-			document.documentElement.classList.toggle('light', !isDark);
+			const mediaQuery =
+				typeof window.matchMedia === 'function'
+					? window.matchMedia('(prefers-color-scheme: dark)')
+					: null;
+			const applyTheme = () => {
+				const isDark = mode === 'system' ? Boolean(mediaQuery?.matches) : mode === 'dark';
+				this.isDark.set(isDark);
+				document.documentElement.classList.toggle('dark', isDark);
+				document.documentElement.classList.toggle('light', !isDark);
+			};
+
+			applyTheme();
+			if (mode === 'system' && mediaQuery) {
+				mediaQuery.addEventListener('change', applyTheme);
+				onCleanup(() => mediaQuery.removeEventListener('change', applyTheme));
+			}
 			localStorage.setItem('vite-ui-theme', mode);
 		});
 	}

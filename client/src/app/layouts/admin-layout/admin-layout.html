@@ -1,5 +1,5 @@
 <div
-  class="flex h-screen w-full overflow-hidden bg-[var(--app-background)] text-[var(--app-foreground)]"
+  class="admin-portal flex h-screen w-full overflow-hidden bg-[var(--app-background)] text-[var(--app-foreground)]"
 >
   <!-- Sidebar -->
   <aside
@@ -14,12 +14,13 @@
     </div>
 
     <!-- Sidebar Navigation -->
-    <nav class="flex min-h-0 flex-1 flex-col gap-1 p-3">
+    <nav aria-label="Admin navigation" class="flex min-h-0 flex-1 flex-col gap-1 p-3">
       <a
         routerLink="/admin"
         [routerLinkActiveOptions]="{ exact: true }"
-        routerLinkActive="!bg-slate-900 !text-white"
-        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg
           lucideLayoutDashboard
@@ -32,8 +33,9 @@
 
       <a
         routerLink="/admin/products"
-        routerLinkActive="!bg-slate-900 !text-white"
-        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg
           lucidePackage
@@ -46,8 +48,9 @@
 
       <a
         routerLink="/admin/categories"
-        routerLinkActive="!bg-slate-900 !text-white"
-        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg
           lucideTags
@@ -60,8 +63,9 @@
 
       <a
         routerLink="/admin/orders"
-        routerLinkActive="!bg-slate-900 !text-white"
-        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="!bg-slate-900 !text-white dark:!bg-slate-800 dark:!text-orange-300"
+        class="group flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg
           lucideShoppingBag
@@ -107,23 +111,28 @@
         <p class="hidden text-xs text-slate-500 sm:block">Store management</p>
       </div>
 
-      @if (auth.currentUser(); as user) {
-        <div class="text-right text-xs">
-          <p class="font-semibold">{{ user.name }}</p>
-          <p class="text-slate-500">{{ user.email }}</p>
-        </div>
-      }
+      <div class="flex items-center gap-3">
+        <app-mode-toggle />
+        @if (auth.currentUser(); as user) {
+          <div class="text-right text-xs">
+            <p class="font-semibold">{{ user.name }}</p>
+            <p class="text-slate-500">{{ user.email }}</p>
+          </div>
+        }
+      </div>
     </header>
 
     <!-- Mobile Navigation -->
     <nav
-      class="flex shrink-0 gap-2 overflow-x-auto border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
+      aria-label="Admin navigation"
+      class="grid shrink-0 grid-cols-2 gap-2 border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
     >
       <a
         routerLink="/admin"
         [routerLinkActiveOptions]="{ exact: true }"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideLayoutDashboard class="size-[18px]"></svg>
         <span>Dashboard</span>
@@ -131,8 +140,9 @@
 
       <a
         routerLink="/admin/products"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucidePackage class="size-[18px]"></svg>
         <span>Products</span>
@@ -140,8 +150,9 @@
 
       <a
         routerLink="/admin/categories"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideTags class="size-[18px]"></svg>
         <span>Categories</span>
@@ -149,8 +160,9 @@
 
       <a
         routerLink="/admin/orders"
-        routerLinkActive="bg-slate-900 text-white"
-        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600"
+        ariaCurrentWhenActive="page"
+        routerLinkActive="bg-slate-900 text-white dark:bg-slate-800 dark:!text-orange-300"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideShoppingBag class="size-[18px]"></svg>
         <span>Orders</span>

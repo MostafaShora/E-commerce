@@ -9,6 +9,7 @@ import {
 } from '@lucide/angular';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { ModeToggleComponent } from '../../shared/components/mode-toggle/mode-toggle';
 
 @Component({
   selector: 'app-admin-layout',
@@ -17,6 +18,7 @@ import { AuthService } from '../../core/auth/auth.service';
     RouterLink,
     RouterLinkActive,
     RouterOutlet,
+    ModeToggleComponent,
 
     LucideLayoutDashboard,
     LucidePackage,

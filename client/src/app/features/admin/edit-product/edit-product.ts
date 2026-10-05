@@ -14,11 +14,20 @@ import { AdminService, getAiGenerationErrorMessage } from '../services/admin';
 import { HomeService } from '../../home/services/home';
 import type { CatalogCategory, CatalogProduct } from '../../../shared/models/catalog';
 import { prepareProductImages, type PendingProductImage } from '../models/admin.model';
+import { CheckboxComponent } from '../../../shared/ui/checkbox/checkbox';
 
 @Component({
   selector: 'app-admin-edit-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideArrowLeft, LucideUpload, LucideX],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    CheckboxComponent,
+    LucideArrowLeft,
+    LucideUpload,
+    LucideX,
+  ],
   templateUrl: './edit-product.html',
 })
 export class AdminEditProductComponent {

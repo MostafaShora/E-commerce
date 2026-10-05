@@ -144,7 +144,7 @@
 
         <tbody class="divide-y divide-slate-100">
           @for (category of categories(); track category._id) {
-            <tr class="hover:bg-slate-50">
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
                   @if (category.image?.url) {
@@ -176,7 +176,7 @@
                 <span
                   class="status-badge"
                   [class.status-in-stock]="category.isActive"
-                  [class.status-out-of-stock]="!category.isActive"
+                  [class.status-inactive]="!category.isActive"
                 >
                   {{ category.isActive ? 'Active' : 'Inactive' }}
                 </span>
@@ -187,7 +187,7 @@
                   <button
                     type="button"
                     (click)="edit(category)"
-                    class="grid size-8 place-items-center rounded hover:bg-slate-100"
+                    class="grid size-8 place-items-center rounded hover:bg-slate-100 dark:hover:bg-slate-800"
                     aria-label="Edit category"
                   >
                     <svg lucidePencil class="size-[18px]"></svg>
@@ -196,7 +196,7 @@
                   <button
                     type="button"
                     (click)="toggle(category)"
-                    class="grid size-8 place-items-center rounded hover:bg-slate-100"
+                    class="grid size-8 place-items-center rounded hover:bg-slate-100 dark:hover:bg-slate-800"
                     [attr.aria-label]="
                       category.isActive ? 'Deactivate category' : 'Activate category'
                     "

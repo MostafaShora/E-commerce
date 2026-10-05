@@ -8,9 +8,9 @@
     </p>
   </header>
 
-  <div class="grid gap-8 lg:grid-cols-[240px_1fr]">
+  <div class="grid min-w-0 gap-8 lg:grid-cols-[240px_1fr]">
     <!-- Sidebar -->
-    <aside class="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
+    <aside class="flex min-w-0 flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
       <!-- Categories -->
       <section class="flex flex-col">
         <h2 class="mb-2 text-sm font-semibold text-slate-900">Categories</h2>
@@ -22,15 +22,15 @@
             }
           </div>
         } @else {
-          <div class="flex flex-col gap-0.5">
+          <div class="flex w-full min-w-0 max-w-full flex-row gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
             <!-- All -->
             <button
               type="button"
               (click)="selectCategory('all')"
               [class]="
                 selectedCategory() === 'all'
-                  ? 'flex h-9 w-full items-center rounded-lg bg-slate-100 px-3 text-left text-sm font-medium text-slate-900'
-                  : 'flex h-9 w-full items-center rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900'
+                  ? 'flex h-9 w-auto shrink-0 items-center whitespace-nowrap rounded-lg bg-slate-100 px-3 text-left text-sm font-medium text-slate-900 lg:w-full'
+                  : 'flex h-9 w-auto shrink-0 items-center whitespace-nowrap rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:w-full'
               "
             >
               All
@@ -43,8 +43,8 @@
                 (click)="selectCategory(category._id)"
                 [class]="
                   selectedCategory() === category._id
-                    ? 'flex h-9 w-full items-center rounded-lg bg-slate-100 px-3 text-left text-sm font-medium text-slate-900'
-                    : 'flex h-9 w-full items-center rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900'
+                    ? 'flex h-9 w-auto shrink-0 items-center whitespace-nowrap rounded-lg bg-slate-100 px-3 text-left text-sm font-medium text-slate-900 lg:w-full'
+                    : 'flex h-9 w-auto shrink-0 items-center whitespace-nowrap rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:w-full'
                 "
               >
                 {{ category.name }}

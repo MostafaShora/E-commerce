@@ -11,6 +11,12 @@
 :root {
   --app-background: #f8fafc;
   --app-foreground: #0f172a;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+  --text-subtle: #64748b;
+  --focus-ring: #ea580c;
+  --checkbox-active: #ea580c;
   --card: #ffffff;
   --card-foreground: #0f172a;
   --muted: #f1f5f9;
@@ -21,6 +27,7 @@
   --sidebar-background: #ffffff;
   --sidebar-foreground: #475569;
   --header-background: #ffffff;
+  color-scheme: light;
 }
 
 html.dark {
@@ -36,6 +43,27 @@ html.dark {
   --sidebar-background: #0f172a;
   --sidebar-foreground: #cbd5e1;
   --header-background: #0f172a;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-subtle: #94a3b8;
+  --focus-ring: #fb923c;
+  --checkbox-active: #c2410c;
+  --success-surface: #052e16;
+  --success-surface-strong: #064e3b;
+  --success-border: #166534;
+  --success-text: #6ee7b7;
+  --warning-surface: #451a03;
+  --warning-border: #92400e;
+  --warning-text: #fcd34d;
+  --danger-surface: #450a0a;
+  --danger-surface-strong: #7f1d1d;
+  --danger-border: #7f1d1d;
+  --danger-text: #fca5a5;
+  --info-text: #7dd3fc;
+  --violet-text: #d8b4fe;
+  --indigo-text: #c7d2fe;
+  --orange-text: #fdba74;
   color-scheme: dark;
 }
 
@@ -71,15 +99,21 @@ html .border-slate-300 {
 }
 
 html .text-slate-900,
-html .text-slate-800,
+html .text-slate-800 {
+  color: var(--text-primary);
+}
+
 html .text-slate-700 {
-  color: var(--card-foreground);
+  color: var(--text-secondary);
 }
 
 html .text-slate-600,
-html .text-slate-500,
+html .text-slate-500 {
+  color: var(--text-muted);
+}
+
 html .text-slate-400 {
-  color: var(--muted-foreground);
+  color: var(--text-subtle);
 }
 
 html input,
@@ -88,6 +122,88 @@ html select {
   border-color: var(--app-border);
   background-color: var(--input-background);
   color: var(--input-foreground);
+}
+
+html.dark .bg-red-50,
+html.dark .bg-red-100 {
+  background-color: var(--danger-surface);
+}
+html.dark .border-red-100,
+html.dark .border-red-200,
+html.dark .border-red-300 {
+  border-color: var(--danger-border);
+}
+html.dark .text-red-500,
+html.dark .text-red-600,
+html.dark .text-red-700,
+html.dark .text-red-800,
+html.dark .text-red-900 {
+  color: var(--danger-text);
+}
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-100 {
+  background-color: var(--success-surface);
+}
+html.dark .border-emerald-100,
+html.dark .border-emerald-200,
+html.dark .border-emerald-300 {
+  border-color: var(--success-border);
+}
+html.dark .text-emerald-500,
+html.dark .text-emerald-600,
+html.dark .text-emerald-700,
+html.dark .text-emerald-800,
+html.dark .text-emerald-900 {
+  color: var(--success-text);
+}
+html.dark .bg-amber-50,
+html.dark .bg-amber-100 {
+  background-color: var(--warning-surface);
+}
+html.dark .border-amber-100,
+html.dark .border-amber-200,
+html.dark .border-amber-300 {
+  border-color: var(--warning-border);
+}
+html.dark .text-amber-600,
+html.dark .text-amber-700,
+html.dark .text-amber-800,
+html.dark .text-amber-900 {
+  color: var(--warning-text);
+}
+html.dark .text-blue-600,
+html.dark .text-blue-700,
+html.dark .text-sky-600,
+html.dark .text-sky-700 {
+  color: var(--info-text);
+}
+html.dark .text-violet-600,
+html.dark .text-violet-700 {
+  color: var(--violet-text);
+}
+html.dark .text-indigo-600,
+html.dark .text-indigo-700 {
+  color: var(--indigo-text);
+}
+html.dark .text-orange-600,
+html.dark .text-orange-700 {
+  color: var(--orange-text);
+}
+
+html :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring) !important;
+  outline-offset: 2px;
+}
+
+html.dark .mat-mdc-select-panel {
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+html.dark .mat-mdc-option {
+  color: var(--card-foreground);
+}
+html.dark .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background-color: var(--muted);
 }
 
 /* Shared admin status semantics, matching the reference badge palette. */
@@ -102,6 +218,10 @@ html select {
 .status-payment-pending {
   background: rgb(245 158 11 / 0.12);
   color: #b45309;
+}
+.status-placed {
+  background: rgb(100 116 139 / 0.12);
+  color: #475569;
 }
 .status-confirmed {
   background: rgb(59 130 246 / 0.12);
@@ -131,31 +251,60 @@ html select {
   background: rgb(239 68 68 / 0.12);
   color: #b91c1c;
 }
+.status-inactive {
+  background: rgb(100 116 139 / 0.12);
+  color: #475569;
+}
 html.dark .status-placed,
 html.dark .status-payment-pending {
   color: #fcd34d;
+  background-color: #451a03;
+}
+html.dark .status-placed {
+  color: #cbd5e1;
+  background-color: #1e293b;
 }
 html.dark .status-confirmed {
   color: #93c5fd;
+  background-color: #172554;
 }
 html.dark .status-assigned {
   color: #d8b4fe;
+  background-color: #2e1065;
 }
 html.dark .status-packed {
   color: #c7d2fe;
+  background-color: #1e1b4b;
 }
 html.dark .status-out-for-delivery {
   color: #7dd3fc;
+  background-color: #082f49;
 }
 html.dark .status-delivered,
 html.dark .status-paid,
 html.dark .status-in-stock {
   color: #6ee7b7;
+  background-color: #052e16;
 }
 html.dark .status-cancelled,
 html.dark .status-out-of-stock,
 html.dark .status-failed {
   color: #fca5a5;
+  background-color: #450a0a;
+}
+html.dark .status-inactive {
+  color: #cbd5e1;
+  background-color: #1e293b;
+}
+
+html.dark .admin-portal .bg-slate-900 {
+  background-color: #1e293b;
+}
+html.dark .admin-portal .hover\:bg-slate-800:hover {
+  background-color: #334155;
+}
+html.dark .admin-portal input[type='checkbox'] {
+  accent-color: var(--focus-ring);
 }
 
 /* Material's checkbox is retained, with the compact square control used by the MERN admin. */

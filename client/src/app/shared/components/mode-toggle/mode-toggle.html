@@ -15,21 +15,27 @@
     <button
       type="button"
       class="block w-full rounded px-3 py-2 text-left hover:bg-slate-100"
-      (click)="theme.setTheme('light')"
+      [attr.aria-pressed]="theme.mode() === 'light'"
+      [class.bg-slate-100]="theme.mode() === 'light'"
+      (click)="selectTheme('light')"
     >
       Light
     </button>
     <button
       type="button"
       class="block w-full rounded px-3 py-2 text-left hover:bg-slate-100"
-      (click)="theme.setTheme('dark')"
+      [attr.aria-pressed]="theme.mode() === 'dark'"
+      [class.bg-slate-100]="theme.mode() === 'dark'"
+      (click)="selectTheme('dark')"
     >
       Dark
     </button>
     <button
       type="button"
       class="block w-full rounded px-3 py-2 text-left hover:bg-slate-100"
-      (click)="theme.setTheme('system')"
+      [attr.aria-pressed]="theme.mode() === 'system'"
+      [class.bg-slate-100]="theme.mode() === 'system'"
+      (click)="selectTheme('system')"
     >
       System
     </button>

@@ -1,5 +1,25 @@
-<label [for]="id" class="flex cursor-pointer items-center gap-3 text-sm text-slate-700" [class.cursor-not-allowed]="disabled">
-  <input [id]="id" type="checkbox" [checked]="value" [disabled]="disabled" (change)="toggle()" class="size-4 rounded border-slate-300 accent-slate-900" />
-  @if (label) { <span>{{ label }}</span> }
+<label
+  [for]="id"
+  class="inline-flex w-fit items-center gap-2.5 text-sm font-medium text-slate-700"
+  [class.cursor-pointer]="!disabled"
+  [class.cursor-not-allowed]="disabled"
+>
+  <input
+    [id]="id"
+    type="checkbox"
+    [checked]="value"
+    [disabled]="disabled"
+    (change)="toggle()"
+    class="peer sr-only"
+  />
+  <span
+    aria-hidden="true"
+    class="checkbox-visual grid size-5 shrink-0 place-items-center rounded border shadow-sm transition-colors"
+  >
+    <svg lucideCheck class="size-3"></svg>
+  </span>
+  @if (label) {
+    <span>{{ label }}</span>
+  }
   <ng-content />
 </label>

@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular
 
 import { LucideMoon, LucideSun } from '@lucide/angular';
 
-import { ThemeService } from '../../../core/services/theme';
+import { ThemeService, type ThemeMode } from '../../../core/services/theme';
 
 @Component({
   selector: 'app-mode-toggle',
@@ -14,6 +14,11 @@ export class ModeToggleComponent {
   readonly theme = inject(ThemeService);
 
   @ViewChild('themeMenu') themeMenu?: ElementRef<HTMLDetailsElement>;
+
+  selectTheme(mode: ThemeMode): void {
+    this.theme.setTheme(mode);
+    this.themeMenu?.nativeElement.removeAttribute('open');
+  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {

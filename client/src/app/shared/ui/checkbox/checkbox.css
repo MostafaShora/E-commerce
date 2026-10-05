@@ -1,0 +1,33 @@
+.checkbox-visual {
+  background-color: var(--input-background);
+  border-color: var(--app-border);
+}
+
+.checkbox-visual svg {
+  color: #fff;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+input:checked + .checkbox-visual {
+  background-color: var(--checkbox-active);
+  border-color: var(--checkbox-active);
+}
+
+input:checked + .checkbox-visual svg {
+  opacity: 1;
+}
+
+input:focus-visible + .checkbox-visual {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+label:not(.cursor-not-allowed):hover .checkbox-visual {
+  border-color: var(--checkbox-active);
+}
+
+input:disabled + .checkbox-visual {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

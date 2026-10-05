@@ -83,7 +83,7 @@
                   role="option"
                   [attr.aria-selected]="!form.controls.categoryId.value"
                   (click)="form.controls.categoryId.setValue(''); categoryOpen.set(false)"
-                  class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                  class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
                   [class.bg-slate-100]="!form.controls.categoryId.value"
                 >
                   <span>Select a category</span>
@@ -105,7 +105,7 @@
                     role="option"
                     [attr.aria-selected]="form.controls.categoryId.value === category._id"
                     (click)="selectCategory(category._id)"
-                    class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                    class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
                     [class.bg-slate-100]="form.controls.categoryId.value === category._id"
                     [class.font-medium]="form.controls.categoryId.value === category._id"
                   >
