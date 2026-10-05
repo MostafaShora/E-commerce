@@ -2,21 +2,34 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../services/admin';
+import type { AdminAnalyticsResponse } from '../services/admin';
 import type { CreatedOrder } from '../../checkout/services/order';
 import { orderStatusClass, paymentStatusClass } from '../models/admin.model';
+import {
+  LucideCircleAlert,
+  LucideDollarSign,
+  LucidePackage,
+  LucideShoppingBag,
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [
+    CommonModule,
+    RouterLink,
+    LucideCircleAlert,
+    LucideDollarSign,
+    LucidePackage,
+    LucideShoppingBag,
+  ],
   templateUrl: './dashboard.html',
 })
 export class AdminDashboardComponent {
   readonly service = inject(AdminService);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
-  readonly productTotal = signal(0);
-  readonly orderTotal = signal(0);
+  readonly analytics = signal<AdminAnalyticsResponse | null>(null);
   readonly recentOrders = signal<CreatedOrder[]>([]);
   readonly orderStatusClass = orderStatusClass;
   readonly paymentStatusClass = paymentStatusClass;
@@ -26,30 +39,27 @@ export class AdminDashboardComponent {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    let pending = 3;
+    let pending = 2;
     const done = () => {
       pending -= 1;
       if (!pending) this.loading.set(false);
     };
-    this.service
-      .getProducts(1, 1)
-      .subscribe({
-        next: (r) => this.productTotal.set(r.pagination.total),
-        error: () => this.error.set('Unable to load product overview.'),
-        complete: done,
-      });
-    this.service
-      .getOrders(1, 1)
-      .subscribe({
-        next: (r) => this.orderTotal.set(r.pagination.total),
-        error: () => this.error.set('Unable to load order overview.'),
-        complete: done,
-      });
+    this.service.getAnalytics().subscribe({
+      next: (r) => this.analytics.set(r),
+      error: () => {
+        this.error.set('Unable to load dashboard statistics.');
+        done();
+      },
+      complete: done,
+    });
     this.service
       .getOrders(1, 7)
       .subscribe({
         next: (r) => this.recentOrders.set(r.orders ?? []),
-        error: () => this.error.set('Unable to load recent orders.'),
+        error: () => {
+          this.error.set('Unable to load recent orders.');
+          done();
+        },
         complete: done,
       });
   }

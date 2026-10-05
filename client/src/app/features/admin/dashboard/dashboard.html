@@ -10,24 +10,51 @@
     </div>
   }
   @if (loading()) {
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="h-32 animate-pulse rounded-xl bg-slate-200"></div>
+      <div class="h-32 animate-pulse rounded-xl bg-slate-200"></div>
       <div class="h-32 animate-pulse rounded-xl bg-slate-200"></div>
       <div class="h-32 animate-pulse rounded-xl bg-slate-200"></div>
     </div>
   } @else {
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <a
-        routerLink="/admin/products"
+        routerLink="/admin/orders"
         class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-slate-900"
-        ><p class="text-sm text-slate-500">Products</p>
-        <p class="mt-2 text-3xl font-semibold">{{ productTotal() }}</p>
-        <p class="mt-2 text-sm text-slate-600">Manage catalog inventory</p></a
+        ><div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500">Total Revenue</p>
+          <svg lucideDollarSign class="size-5 text-emerald-600"></svg>
+        </div>
+        <p class="mt-2 text-3xl font-semibold">{{ analytics()?.totalSales | currency }}</p>
+        <p class="mt-2 text-sm text-slate-600">Revenue from paid orders</p></a
       ><a
         routerLink="/admin/orders"
         class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-slate-900"
-        ><p class="text-sm text-slate-500">Orders</p>
-        <p class="mt-2 text-3xl font-semibold">{{ orderTotal() }}</p>
+        ><div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500">Total Orders</p>
+          <svg lucideShoppingBag class="size-5 text-sky-700"></svg>
+        </div>
+        <p class="mt-2 text-3xl font-semibold">{{ analytics()?.totalOrders }}</p>
         <p class="mt-2 text-sm text-slate-600">Manage fulfillment status</p></a
+      >
+      <a
+        routerLink="/admin/products"
+        class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-slate-900"
+        ><div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500">Total Products</p>
+          <svg lucidePackage class="size-5 text-violet-700"></svg>
+        </div>
+        <p class="mt-2 text-3xl font-semibold">{{ analytics()?.totalProducts }}</p>
+        <p class="mt-2 text-sm text-slate-600">Products in store catalog</p></a
+      ><a
+        routerLink="/admin/products"
+        class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-slate-900"
+        ><div class="flex items-center justify-between">
+          <p class="text-sm text-slate-500">Out of Stock</p>
+          <svg lucideCircleAlert class="size-5 text-amber-700"></svg>
+        </div>
+        <p class="mt-2 text-3xl font-semibold">{{ analytics()?.totalOutOfStock }}</p>
+        <p class="mt-2 text-sm text-slate-600">Products with no inventory</p></a
       >
     </div>
     <section class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">

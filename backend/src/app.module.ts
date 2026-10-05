@@ -13,6 +13,7 @@ import { ENV } from './config/env.config';
 import { StripeModule } from './webhooks/stripe-webhook.module';
 import { ReviewModule } from './review/review.module';
 import { AIModule } from './ai/ai.module';
+import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AIModule } from './ai/ai.module';
     StripeModule,
     ReviewModule,
     AIModule,
+    AdminDashboardModule,
   ],
 
   controllers: [AppController],

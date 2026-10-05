@@ -39,6 +39,13 @@ export type AdminOrdersResponse = {
   orders: CreatedOrder[];
   pagination: AdminPagination;
 };
+export type AdminAnalyticsResponse = {
+  message: string;
+  totalSales: number;
+  totalOrders: number;
+  totalProducts: number;
+  totalOutOfStock: number;
+};
 export type AdminMutationResponse = {
   message: string;
   product?: CatalogProduct;
@@ -90,6 +97,10 @@ export class AdminService {
     return this.http.get<AdminProductsResponse>('/api/product/admin', {
       params: new HttpParams().set('page', page).set('limit', limit),
     });
+  }
+
+  getAnalytics(): Observable<AdminAnalyticsResponse> {
+    return this.http.get<AdminAnalyticsResponse>('/api/admin/analytics');
   }
 
   createProduct(value: CreateAdminProduct): Observable<AdminMutationResponse> {
