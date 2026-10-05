@@ -68,7 +68,7 @@
 
       <app-button
         [disabled]="product().stockCount <= 0"
-        [loading]="cart.saving()"
+        [loading]="addingToCart()"
         class="mt-1 w-full"
         (pressed)="addToCart()"
       >

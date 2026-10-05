@@ -1,7 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideStar } from '@lucide/angular';
+import { finalize } from 'rxjs';
 
 import { CartService } from '../../../core/cart/cart';
 import type { CatalogProduct } from '../../../shared/models/catalog';
@@ -13,12 +21,14 @@ import { getProductImageUrl, onImageError } from '../../utils/image.util';
 @Component({
   selector: 'app-product-card',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterLink, ButtonComponent, CardComponent, BadgeComponent, LucideStar],
   templateUrl: './product-card.html',
 })
 export class ProductCardComponent {
   readonly cart = inject(CartService);
   readonly product = input.required<CatalogProduct>();
+  readonly addingToCart = signal(false);
 
   readonly productPath = computed(() => `/products/${this.product().slug}`);
   readonly imageUrl = computed(() => getProductImageUrl(this.product().images));
@@ -79,6 +89,14 @@ export class ProductCardComponent {
   }
 
   addToCart(): void {
-    this.cart.addProduct(this.product()).subscribe();
+    if (this.addingToCart()) {
+      return;
+    }
+
+    this.addingToCart.set(true);
+    this.cart
+      .addProduct(this.product())
+      .pipe(finalize(() => this.addingToCart.set(false)))
+      .subscribe();
   }
 }

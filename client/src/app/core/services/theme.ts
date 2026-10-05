@@ -10,9 +10,11 @@ export class ThemeService {
 	constructor() {
 		effect(() => {
 			const mode = this.mode();
-			const isDark = mode === 'system'
-				? typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches
-				: mode === 'dark';
+			const isDark =
+				mode === 'system'
+					? typeof window.matchMedia === 'function' &&
+					window.matchMedia('(prefers-color-scheme: dark)').matches
+					: mode === 'dark';
 			this.isDark.set(isDark);
 			document.documentElement.classList.toggle('dark', isDark);
 			document.documentElement.classList.toggle('light', !isDark);

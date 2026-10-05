@@ -1,4 +1,4 @@
-<div class="flex w-full max-w-5xl flex-col gap-6 py-2">
+<div class="flex flex-col w-full max-w-5xl gap-6 py-2">
   <!-- Page Header -->
   <header class="flex flex-col gap-1">
     <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">Ratings &amp; reviews</h1>
@@ -11,7 +11,7 @@
   <!-- Error -->
   @if (errorMessage()) {
     <section
-      class="flex items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400"
+      class="flex items-center justify-between gap-3 p-4 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400"
     >
       <span>{{ errorMessage() }}</span>
 
@@ -35,11 +35,11 @@
           <div class="size-18 rounded-xl bg-slate-200 dark:bg-slate-800"></div>
 
           <div class="flex flex-col gap-3">
-            <div class="h-5 w-2/3 rounded bg-slate-200 dark:bg-slate-800"></div>
+            <div class="w-2/3 h-5 rounded bg-slate-200 dark:bg-slate-800"></div>
 
-            <div class="h-4 w-1/2 rounded bg-slate-200 dark:bg-slate-800"></div>
+            <div class="w-1/2 h-4 rounded bg-slate-200 dark:bg-slate-800"></div>
 
-            <div class="h-20 w-full rounded bg-slate-200 dark:bg-slate-800"></div>
+            <div class="w-full h-20 rounded bg-slate-200 dark:bg-slate-800"></div>
           </div>
         </div>
       }
@@ -96,7 +96,7 @@
     @if (activeTab() === 'to-review') {
       @if (reviewableEntries().length === 0) {
         <section
-          class="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700"
+          class="flex flex-col items-center justify-center p-8 text-center border border-dashed min-h-64 rounded-xl border-slate-300 dark:border-slate-700"
         >
           <p class="text-lg font-semibold text-slate-900 dark:text-white">All caught up</p>
 
@@ -112,12 +112,12 @@
             >
               <!-- Product Image -->
               <div
-                class="grid size-18 place-items-center rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+                class="grid bg-white border size-18 place-items-center rounded-xl border-slate-200 dark:border-slate-800 dark:bg-slate-900"
               >
                 <img
                   [src]="entry.item.image"
                   [alt]="entry.item.name"
-                  class="size-14 object-contain"
+                  class="object-contain size-14"
                 />
               </div>
 
@@ -125,11 +125,11 @@
               <form
                 [formGroup]="formFor(entry)"
                 (ngSubmit)="submit(entry)"
-                class="flex min-w-0 flex-col gap-3"
+                class="flex flex-col min-w-0 gap-3"
               >
                 <!-- Product Info -->
                 <div>
-                  <h2 class="line-clamp-2 text-base font-semibold text-slate-900 dark:text-white">
+                  <h2 class="text-base font-semibold line-clamp-2 text-slate-900 dark:text-white">
                     {{ entry.item.name }}
                   </h2>
 
@@ -166,7 +166,7 @@
                   formControlName="comment"
                   maxlength="1000"
                   rows="3"
-                  class="min-h-20 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-slate-400"
+                  class="w-full px-3 py-2 text-sm transition bg-white border rounded-lg outline-none min-h-20 border-slate-300 text-slate-900 focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-slate-400"
                   placeholder="Share what other shoppers should know."
                 ></textarea>
 
@@ -195,7 +195,7 @@
     @else {
       @if (submittedReviews().length === 0) {
         <section
-          class="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700"
+          class="flex flex-col items-center justify-center p-8 text-center border border-dashed min-h-64 rounded-xl border-slate-300 dark:border-slate-700"
         >
           <p class="text-lg font-semibold text-slate-900 dark:text-white">No reviews yet</p>
 
@@ -213,12 +213,12 @@
                 <!-- Product Image -->
                 <a
                   [routerLink]="['/products', product.slug]"
-                  class="grid size-18 place-items-center rounded-xl border border-slate-200 bg-white transition-colors duration-200 hover:border-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-600"
+                  class="grid transition-colors duration-200 bg-white border size-18 place-items-center rounded-xl border-slate-200 hover:border-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-600"
                 >
                   <img
                     [src]="productImage(product)"
                     [alt]="product.name"
-                    class="size-14 object-contain"
+                    class="object-contain size-14"
                   />
                 </a>
               } @else {
@@ -232,7 +232,7 @@
               }
 
               <!-- Review Content -->
-              <div class="flex min-w-0 flex-col gap-3">
+              <div class="flex flex-col min-w-0 gap-3">
                 <!-- Product Header -->
                 <div class="flex flex-wrap items-start justify-between gap-3">
                   <div>
