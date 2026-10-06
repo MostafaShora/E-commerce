@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { AddressService, type Address } from '../../addresses/services/address';
 import { CartService } from '../../../core/cart/cart';
+import { LanguageService } from '../../../core/services/language';
 import { OrderService, type PaymentMethod } from '../services/order';
 
 @Component({
@@ -15,6 +16,7 @@ import { OrderService, type PaymentMethod } from '../services/order';
 export class CheckoutPageComponent {
   readonly cart = inject(CartService);
   readonly addressService = inject(AddressService);
+  readonly language = inject(LanguageService);
   private readonly orderService = inject(OrderService);
   readonly selectedAddressId = signal<string | null>(null);
   readonly paymentMethod = signal<PaymentMethod>('cash_on_delivery');
@@ -47,7 +49,9 @@ export class CheckoutPageComponent {
     const addressId = this.selectedAddressId();
     if (!addressId || this.cart.items().length === 0) {
       this.orderError.set(
-        !addressId ? 'Select a delivery address before placing your order.' : 'Your cart is empty.',
+        !addressId
+          ? this.language.t('checkout.selectAddressError')
+          : this.language.t('checkout.emptyCartError'),
       );
       return;
     }
@@ -62,7 +66,7 @@ export class CheckoutPageComponent {
             return;
           }
 
-          this.orderError.set('Card payment could not be started. Please try again.');
+          this.orderError.set(this.language.t('checkout.cardStartError'));
           return;
         }
 
@@ -70,7 +74,7 @@ export class CheckoutPageComponent {
         this.successOrderId.set(response.order._id);
         this.cart.loadCart().subscribe();
       },
-      error: () => this.orderError.set('Unable to place your order right now.'),
+      error: () => this.orderError.set(this.language.t('checkout.placeOrderError')),
       complete: () => this.placingOrder.set(false),
     });
   }

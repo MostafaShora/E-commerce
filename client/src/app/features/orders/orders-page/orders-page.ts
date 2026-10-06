@@ -11,6 +11,7 @@ import {
   type PaymentMethod,
   type PaymentStatus,
 } from '../../checkout/services/order';
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-orders-page',
@@ -21,6 +22,7 @@ import {
 export class OrdersPageComponent {
   private readonly orderService = inject(OrderService);
   private readonly destroyRef = inject(DestroyRef);
+  readonly language = inject(LanguageService);
 
   readonly orders = signal<CreatedOrder[]>([]);
   readonly loading = signal(true);
@@ -38,23 +40,23 @@ export class OrdersPageComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => this.orders.set(response.orders ?? []),
-        error: () => this.errorMessage.set('Unable to load your orders right now.'),
+        error: () => this.errorMessage.set(this.language.t('orders.loadError')),
         complete: () => this.loading.set(false),
       });
   }
 
   statusLabel(status: OrderStatus): string {
     const labelMap: Record<OrderStatus, string> = {
-      placed: 'Placed',
-      confirmed: 'Confirmed',
-      assigned: 'Assigned',
-      packed: 'Packed',
-      out_for_delivery: 'Out for Delivery',
-      delivered: 'Delivered',
-      cancelled: 'Cancelled',
+      placed: 'placed',
+      confirmed: 'confirmed',
+      assigned: 'assigned',
+      packed: 'packed',
+      out_for_delivery: 'outForDelivery',
+      delivered: 'delivered',
+      cancelled: 'cancelled',
     };
 
-    return labelMap[status] ?? status.replaceAll('_', ' ');
+    return this.language.t(`orders.status.${labelMap[status]}`);
   }
 
   paymentLabel(status: PaymentMethod | PaymentStatus): string {
@@ -76,7 +78,7 @@ export class OrdersPageComponent {
   }
 
   formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric',

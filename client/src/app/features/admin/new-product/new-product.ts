@@ -6,6 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { LucideArrowLeft, LucideUpload, LucideImage, LucideX } from '@lucide/angular';
 import { Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
+import { LanguageService } from '../../../core/services/language';
 import { NotificationService } from '../../../core/services/notification';
 import {
   AdminService,
@@ -36,6 +37,7 @@ export class AdminNewProductComponent {
   private readonly homeService = inject(HomeService);
   private readonly router = inject(Router);
   private readonly notifications = inject(NotificationService);
+  readonly language = inject(LanguageService);
 
   readonly categories = signal<CatalogCategory[]>([]);
   readonly selectedImages = signal<PendingProductImage[]>([]);
@@ -70,7 +72,13 @@ export class AdminNewProductComponent {
   chooseImage(event: Event): void {
     const input = event.target as HTMLInputElement;
     const result = prepareProductImages(Array.from(input.files ?? []));
-    if (result.error) this.imageError.set(result.error);
+    if (result.error) {
+      this.imageError.set(
+        result.error.startsWith('Only ')
+          ? this.language.t('adminProducts.onlyImages')
+          : this.language.t('adminProducts.eachImageTooLarge'),
+      );
+    }
     else if (result.images.length) {
       this.selectedImages.update((current) => [...current, ...result.images]);
       this.imageError.set(null);
@@ -87,7 +95,7 @@ export class AdminNewProductComponent {
       this.imageUrlInput.set('');
       this.imageError.set(null);
     } catch {
-      this.imageError.set('Enter a valid image URL.');
+      this.imageError.set(this.language.t('adminProducts.imageUrlError'));
     }
   }
 
@@ -149,7 +157,7 @@ export class AdminNewProductComponent {
       return;
     }
     if (!this.selectedImages().length && !this.imageUrls().length) {
-      this.imageError.set('Add at least one product image or image URL.');
+      this.imageError.set(this.language.t('adminProducts.imageRequired'));
       return;
     }
 

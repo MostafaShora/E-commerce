@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { LucideStar } from '@lucide/angular';
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-product-rating',
@@ -9,6 +10,7 @@ import { LucideStar } from '@lucide/angular';
   templateUrl: './product-rating.html',
 })
 export class ProductRatingComponent {
+  private readonly language = inject(LanguageService);
   readonly rating = input(0);
   readonly reviewCount = input(0);
 
@@ -32,10 +34,15 @@ export class ProductRatingComponent {
   readonly accessibleLabel = computed(() => {
     if (this.hasRating()) {
       const count = this.safeReviewCount();
-      return `Rated ${this.ratingText()} out of 5 from ${count} review${count === 1 ? '' : 's'}`;
+      return this.language.t(count === 1 ? 'productRating.ratedOne' : 'productRating.ratedMany', {
+        rating: this.ratingText(),
+        count,
+      });
     }
 
     const count = this.safeReviewCount();
-    return count > 0 ? `Rating unavailable from ${count} reviews` : 'No reviews yet';
+    return count > 0
+      ? this.language.t('productRating.unavailable', { count })
+      : this.language.t('productRating.noReviews');
   });
 }

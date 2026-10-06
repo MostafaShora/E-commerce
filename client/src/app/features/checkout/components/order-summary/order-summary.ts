@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+
+import { LanguageService } from '../../../../core/services/language';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
@@ -84,6 +86,7 @@ export class OrderSummaryComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly orderService = inject(OrderService);
   private readonly destroyRef = inject(DestroyRef);
+  readonly language = inject(LanguageService);
 
   readonly order = signal<Order | null>(null);
   readonly loading = signal(true);
@@ -97,7 +100,7 @@ export class OrderSummaryComponent {
     const orderId = this.route.snapshot.paramMap.get('id');
 
     if (!orderId) {
-      this.error.set('Order not found.');
+      this.error.set(this.language.t('orderConfirmation.loadError'));
       this.loading.set(false);
       return;
     }
@@ -116,13 +119,13 @@ export class OrderSummaryComponent {
           this.order.set(response.order);
         },
         error: () => {
-          this.error.set('Unable to load this order right now.');
+          this.error.set(this.language.t('orderConfirmation.loadError'));
         },
       });
   }
 
   formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric',
@@ -132,7 +135,7 @@ export class OrderSummaryComponent {
   formatDateTime(value?: string): string {
     if (!value) return '';
 
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -146,10 +149,26 @@ export class OrderSummaryComponent {
   }
 
   statusLabel(status: string): string {
-    return status
-      .split('_')
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(' ');
+    const key = status.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const path = `orders.status.${key}`;
+    const translated = this.language.t(path);
+    return translated === path
+      ? status.split('_').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
+      : translated;
+  }
+
+  paymentLabel(status: string): string {
+    const path = `orderConfirmation.paymentStatuses.${status.toLowerCase()}`;
+    const translated = this.language.t(path);
+    return translated === path ? status.replaceAll('_', ' ') : translated;
+  }
+
+  paymentMethodLabel(method: string | undefined): string {
+    if (!method) return this.language.t('orderConfirmation.card');
+    const key = method.toLowerCase() === 'cash_on_delivery' ? 'cashOnDelivery' : method.toLowerCase();
+    const path = `orders.paymentMethods.${key}`;
+    const translated = this.language.t(path);
+    return translated === path ? method.replaceAll('_', ' ') : translated;
   }
 
   statusClass(status: string): string {

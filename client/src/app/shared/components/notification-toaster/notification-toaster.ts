@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 
 import { NotificationService } from '../../../core/services/notification';
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-notification-toaster',
@@ -9,4 +10,5 @@ import { NotificationService } from '../../../core/services/notification';
 })
 export class NotificationToasterComponent {
   readonly notificationService = inject(NotificationService);
+  readonly language = inject(LanguageService);
 }

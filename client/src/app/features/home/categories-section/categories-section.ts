@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -11,6 +11,7 @@ import {
 import { EmblaCarouselDirective } from 'embla-carousel-angular';
 
 import type { CatalogCategory } from '../../../shared/models/catalog';
+import { LanguageService } from '../../../core/services/language';
 import { HomeService } from '../services/home';
 
 @Component({
@@ -22,6 +23,7 @@ import { HomeService } from '../services/home';
 export class CategoriesSectionComponent {
   private readonly homeService = inject(HomeService);
   private readonly destroyRef = inject(DestroyRef);
+  readonly language = inject(LanguageService);
 
   readonly categories = signal<CatalogCategory[]>([]);
   readonly loading = signal(true);
@@ -29,12 +31,13 @@ export class CategoriesSectionComponent {
 
   readonly emblaRef = viewChild<EmblaCarouselDirective>(EmblaCarouselDirective);
 
-  readonly emblaOptions = {
+  readonly emblaOptions = computed(() => ({
     align: 'start' as const,
     containScroll: 'trimSnaps' as const,
     dragFree: false,
+    direction: this.language.isArabic() ? ('rtl' as const) : ('ltr' as const),
     loop: true,
-  };
+  }));
 
   private autoSlideInterval?: ReturnType<typeof setInterval>;
 
@@ -68,7 +71,7 @@ export class CategoriesSectionComponent {
         },
 
         error: () => {
-          this.errorMessage.set('Unable to load categories right now.');
+          this.errorMessage.set(this.language.t('home.categoriesError'));
 
           this.stopAutoSlide();
         },

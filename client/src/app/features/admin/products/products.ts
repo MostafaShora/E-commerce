@@ -12,6 +12,7 @@ import { AdminService } from '../services/admin';
 import { normalizeApiError } from '../../../core/api/api-error';
 import { NotificationService } from '../../../core/services/notification';
 import type { CatalogProduct } from '../../../shared/models/catalog';
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-admin-products',
@@ -29,6 +30,7 @@ import type { CatalogProduct } from '../../../shared/models/catalog';
 })
 export class AdminProductsComponent {
   readonly service = inject(AdminService);
+  readonly language = inject(LanguageService);
   private readonly notifications = inject(NotificationService);
   readonly products = signal<CatalogProduct[]>([]);
   readonly loading = signal(true);
@@ -66,7 +68,7 @@ export class AdminProductsComponent {
     });
   }
   remove(product: CatalogProduct): void {
-    if (!window.confirm(`Delete ${product.name}?`)) return;
+    if (!window.confirm(this.language.t('adminProducts.deleteConfirm', { name: product.name }))) return;
     this.service.deleteProduct(product._id).subscribe({
       next: (response) => {
         this.notifications.success(response.message);

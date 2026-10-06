@@ -1,10 +1,10 @@
 <div class="flex flex-col gap-6">
   <!-- Header -->
   <header>
-    <h1 class="text-2xl font-semibold text-slate-900">All products</h1>
+    <h1 class="text-2xl font-semibold text-slate-900">{{ language.t('productsPage.title') }}</h1>
 
     <p class="mt-1 text-sm text-slate-600">
-      Browse groceries by category, price, and availability.
+      {{ language.t('productsPage.subtitle') }}
     </p>
   </header>
 
@@ -13,7 +13,7 @@
     <aside class="flex min-w-0 flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
       <!-- Categories -->
       <section class="flex flex-col">
-        <h2 class="mb-2 text-sm font-semibold text-slate-900">Categories</h2>
+        <h2 class="mb-2 text-sm font-semibold text-slate-900">{{ language.t('productsPage.categories') }}</h2>
 
         @if (categoriesLoading()) {
           <div class="flex flex-col gap-1">
@@ -33,7 +33,7 @@
                   : 'flex h-9 w-auto shrink-0 items-center whitespace-nowrap rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:w-full'
               "
             >
-              All
+              {{ language.t('productsPage.all') }}
             </button>
 
             <!-- Categories -->
@@ -47,7 +47,7 @@
                     : 'flex h-9 w-auto shrink-0 items-center whitespace-nowrap rounded-lg px-3 text-left text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:w-full'
                 "
               >
-                {{ category.name }}
+                {{ language.categoryName(category.name) }}
               </button>
             }
           </div>
@@ -56,7 +56,7 @@
 
       <!-- Filters -->
       <form [formGroup]="filters" class="flex flex-col">
-        <h2 class="mb-2 text-sm font-semibold text-slate-900">Filters</h2>
+        <h2 class="mb-2 text-sm font-semibold text-slate-900">{{ language.t('productsPage.filters') }}</h2>
 
         <div class="flex flex-col gap-1">
           <!-- Deals only -->
@@ -67,7 +67,7 @@
               <input
                 type="checkbox"
                 formControlName="dealsOnly"
-                class="peer absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded-[4px] border border-slate-300 bg-white transition-colors checked:border-slate-900 checked:bg-slate-900 focus:outline-none focus:ring-0"
+                class="peer absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded-sm border border-slate-300 bg-white transition-colors checked:border-slate-900 checked:bg-slate-900 focus:outline-none focus:ring-0"
               />
 
               <svg
@@ -81,7 +81,7 @@
               </svg>
             </span>
 
-            <span class="select-none">Deals only</span>
+            <span class="select-none">{{ language.t('productsPage.dealsOnly') }}</span>
           </label>
 
           <!-- In stock -->
@@ -92,7 +92,7 @@
               <input
                 type="checkbox"
                 formControlName="inStockOnly"
-                class="peer absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded-[4px] border border-slate-300 bg-white transition-colors checked:border-slate-900 checked:bg-slate-900 focus:outline-none focus:ring-0"
+                class="peer absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded-sm border border-slate-300 bg-white transition-colors checked:border-slate-900 checked:bg-slate-900 focus:outline-none focus:ring-0"
               />
 
               <svg
@@ -106,21 +106,21 @@
               </svg>
             </span>
 
-            <span class="select-none">In stock</span>
+            <span class="select-none">{{ language.t('productsPage.inStock') }}</span>
           </label>
         </div>
       </form>
 
       <!-- Price -->
       <form [formGroup]="priceInputs" (ngSubmit)="applyPriceFilter()" class="flex flex-col">
-        <h2 class="mb-2 text-sm font-semibold text-slate-900">Price range</h2>
+        <h2 class="mb-2 text-sm font-semibold text-slate-900">{{ language.t('productsPage.priceRange') }}</h2>
 
         <div class="grid grid-cols-[1fr_1fr_auto] gap-2">
           <input
             type="number"
             min="0"
             step="any"
-            placeholder="Min"
+            [placeholder]="language.t('productsPage.minimum')"
             formControlName="min"
             class="h-10 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
           />
@@ -129,7 +129,7 @@
             type="number"
             min="0"
             step="any"
-            placeholder="Max"
+            [placeholder]="language.t('productsPage.maximum')"
             formControlName="max"
             class="h-10 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
           />
@@ -138,7 +138,7 @@
             type="submit"
             class="h-10 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white transition-colors hover:bg-slate-800"
           >
-            Apply
+            {{ language.t('productsPage.apply') }}
           </button>
         </div>
         @if (priceValidationError()) {
@@ -159,11 +159,19 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 class="text-xl font-semibold text-slate-900">
-            {{ currentCategoryName() }}
+            {{
+              selectedCategory() === 'all'
+                ? language.t('productsPage.all')
+                : language.categoryName(currentCategoryName())
+            }}
           </h2>
 
           <p class="text-sm text-slate-600">
-            {{ loading() ? 'Loading...' : (pagination()?.total ?? 0) + ' products' }}
+            {{
+              loading()
+                ? language.t('productsPage.loading')
+                : language.t('productsPage.productCount', { count: pagination()?.total ?? 0 })
+            }}
           </p>
         </div>
 
@@ -173,16 +181,18 @@
             (click)="resetFilters()"
             class="text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline"
           >
-            Reset
+            {{ language.t('productsPage.reset') }}
           </button>
 
           <div class="flex items-center gap-2">
-            <span class="whitespace-nowrap text-sm font-medium text-slate-600"> Sort by: </span>
+            <span class="whitespace-nowrap text-sm font-medium text-slate-600">
+              {{ language.t('productsPage.sortBy') }}
+            </span>
 
             <div class="relative" [formGroup]="filters">
               <button
                 type="button"
-                class="flex h-10 min-w-[175px] items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 shadow-sm transition-all hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-100"
+                class="flex h-10 min-w-43.75 items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 shadow-sm transition-all hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-100"
                 (click)="sortOpen = !sortOpen"
                 [attr.aria-expanded]="sortOpen"
                 aria-haspopup="listbox"
@@ -190,16 +200,16 @@
                 <span>
                   @switch (filters.controls.sort.value) {
                     @case ('best-match') {
-                      Best Match
+                      {{ language.t('productsPage.sort.bestMatch') }}
                     }
                     @case ('price-low') {
-                      Price: low to high
+                      {{ language.t('productsPage.sort.priceLow') }}
                     }
                     @case ('price-high') {
-                      Price: high to low
+                      {{ language.t('productsPage.sort.priceHigh') }}
                     }
                     @case ('highest-rating') {
-                      Highest rated
+                      {{ language.t('productsPage.sort.highestRated') }}
                     }
                   }
                 </span>
@@ -220,7 +230,7 @@
 
               @if (sortOpen) {
                 <div
-                  class="absolute right-0 z-50 mt-2 w-full min-w-[210px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
+                  class="absolute end-0 z-50 mt-2 w-full min-w-52.5 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
                   role="listbox"
                 >
                   <!-- Best Match -->
@@ -233,7 +243,7 @@
                     [class.bg-slate-100]="filters.controls.sort.value === 'best-match'"
                     [class.font-medium]="filters.controls.sort.value === 'best-match'"
                   >
-                    <span>Best Match</span>
+                    <span>{{ language.t('productsPage.sort.bestMatch') }}</span>
 
                     @if (filters.controls.sort.value === 'best-match') {
                       <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
@@ -256,7 +266,7 @@
                     [class.bg-slate-100]="filters.controls.sort.value === 'price-low'"
                     [class.font-medium]="filters.controls.sort.value === 'price-low'"
                   >
-                    <span>Price: low to high</span>
+                    <span>{{ language.t('productsPage.sort.priceLow') }}</span>
 
                     @if (filters.controls.sort.value === 'price-low') {
                       <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
@@ -279,7 +289,7 @@
                     [class.bg-slate-100]="filters.controls.sort.value === 'price-high'"
                     [class.font-medium]="filters.controls.sort.value === 'price-high'"
                   >
-                    <span>Price: high to low</span>
+                    <span>{{ language.t('productsPage.sort.priceHigh') }}</span>
 
                     @if (filters.controls.sort.value === 'price-high') {
                       <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
@@ -302,7 +312,7 @@
                     [class.bg-slate-100]="filters.controls.sort.value === 'highest-rating'"
                     [class.font-medium]="filters.controls.sort.value === 'highest-rating'"
                   >
-                    <span>Highest rated</span>
+                    <span>{{ language.t('productsPage.sort.highestRated') }}</span>
 
                     @if (filters.controls.sort.value === 'highest-rating') {
                       <svg class="h-4 w-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
@@ -335,7 +345,7 @@
             (click)="retryProducts()"
             class="font-medium underline underline-offset-2"
           >
-            Retry
+            {{ language.t('common.retry') }}
           </button>
         </div>
       }
@@ -360,10 +370,10 @@
         <div
           class="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white py-16 text-center shadow-sm"
         >
-          <p class="text-lg font-medium text-slate-900">No products found</p>
+          <p class="text-lg font-medium text-slate-900">{{ language.t('productsPage.noProducts') }}</p>
 
           <p class="mt-1 text-sm text-slate-600">
-            Try modifying your category or filter selection.
+            {{ language.t('productsPage.noProductsHelp') }}
           </p>
 
           <button
@@ -371,7 +381,7 @@
             (click)="resetFilters()"
             class="mt-4 text-sm font-medium text-slate-900 underline underline-offset-4"
           >
-            Clear filters
+            {{ language.t('productsPage.clearFilters') }}
           </button>
         </div>
       }
@@ -388,7 +398,7 @@
         @if (pagination(); as page) {
           <nav
             class="flex items-center justify-between border-t border-slate-200 pt-5"
-            aria-label="Product pagination"
+            [attr.aria-label]="language.t('productsPage.paginationLabel')"
           >
             <button
               type="button"
@@ -396,11 +406,11 @@
               [disabled]="!page.hasPrevPage"
               class="inline-flex h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
             >
-              Previous
+              {{ language.t('productsPage.previous') }}
             </button>
 
             <span class="text-sm text-slate-600">
-              Page {{ page.page }} of {{ page.totalPages }}
+              {{ language.t('productsPage.page', { page: page.page, totalPages: page.totalPages }) }}
             </span>
 
             <button
@@ -409,7 +419,7 @@
               [disabled]="!page.hasNextPage"
               class="inline-flex h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
             >
-              Next
+              {{ language.t('productsPage.next') }}
             </button>
           </nav>
         }

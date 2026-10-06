@@ -3,6 +3,7 @@ import { LucideX } from '@lucide/angular';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthState } from '../../../core/auth/auth.state';
+import { LanguageService } from '../../../core/services/language';
 import { NotificationService } from '../../../core/services/notification';
 import { LoginFormComponent } from '../../../features/auth/login-form/login-form';
 import { RegisterFormComponent } from '../../../features/auth/register-form/register-form';
@@ -17,6 +18,7 @@ import type { LoginRequest, RegisterRequest } from '../../../core/auth/auth.mode
 export class AuthDialogComponent {
   readonly authState = inject(AuthState);
   readonly auth = inject(AuthService);
+  readonly language = inject(LanguageService);
   private readonly notifications = inject(NotificationService);
   readonly errorMessage = computed(() => this.auth.authError()?.message ?? null);
 
@@ -24,7 +26,7 @@ export class AuthDialogComponent {
     this.auth.login(data).subscribe({
       next: () => {
         this.authState.closeAuth();
-        this.notifications.success('Successfully logged in.');
+        this.notifications.success(this.language.t('auth.loginSuccess'));
       },
     });
   }
@@ -33,7 +35,7 @@ export class AuthDialogComponent {
     this.auth.register(data).subscribe({
       next: () => {
         this.authState.closeAuth();
-        this.notifications.success('Successfully registered.');
+        this.notifications.success(this.language.t('auth.registerSuccess'));
       },
     });
   }

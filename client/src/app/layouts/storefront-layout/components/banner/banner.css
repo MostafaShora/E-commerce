@@ -14,48 +14,37 @@
   height: 36px;
   flex: 1;
   overflow: hidden;
-  margin-right: 44px;
+  margin-inline-end: 44px;
 }
 
-.promo-banner__characters {
-  position: relative;
-  width: 100%;
+.promo-banner__track {
+  display: flex;
+  width: max-content;
   height: 100%;
+  align-items: center;
+  animation: promo-marquee 28s linear infinite;
 }
 
-.promo-banner__character {
-  position: absolute;
-  top: 50%;
-  left: 0;
-
-  display: block;
-  white-space: pre;
-
+.promo-banner__track span {
+  flex: none;
+  padding-inline-end: 3rem;
+  white-space: nowrap;
   font-size: 14px;
   font-weight: 600;
-  line-height: 1;
-
-  font-kerning: normal;
-  font-feature-settings: normal;
-
-  will-change: transform;
+  line-height: 1.4;
 }
 
 .promo-banner__close {
   position: absolute;
-  right: 8px;
+  inset-inline-end: 8px;
   top: 50%;
-
   display: grid;
   width: 28px;
   height: 28px;
-
   transform: translateY(-50%);
   place-items: center;
-
   border-radius: 6px;
   color: rgb(255 255 255 / 90%);
-
   transition:
     background-color 160ms ease,
     color 160ms ease;
@@ -66,8 +55,20 @@
   color: white;
 }
 
+@keyframes promo-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .promo-banner__character {
-    transform: none !important;
+  .promo-banner__track {
+    width: 100%;
+    justify-content: center;
+    animation: none;
+  }
+
+  .promo-banner__track span:nth-child(2) {
+    display: none;
   }
 }

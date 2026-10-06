@@ -17,14 +17,16 @@
           [routerLink]="productPath()"
           class="flex items-start text-2xl font-semibold leading-none text-slate-900"
         >
-          <span class="mt-1 text-sm">$</span>
-          <span>{{ formatPrice(product().salePrice).dollars }}</span>
-          <span class="mt-1 text-sm">{{ formatPrice(product().salePrice).cents }}</span>
+          <bdi dir="ltr" class="inline-flex items-baseline">
+            <span class="mt-1 text-sm">$</span>
+            <span>{{ formatPrice(product().salePrice).dollars }}</span>
+            <span class="mt-1 text-sm">{{ formatPrice(product().salePrice).cents }}</span>
+          </bdi>
         </a>
 
         @if (hasDiscount()) {
-          <span class="text-sm text-slate-500 line-through">
-            ${{ product().originalPrice.toFixed(2) }}
+          <span class="text-sm text-slate-500 line-through" dir="ltr">
+            <bdi>${{ product().originalPrice.toFixed(2) }}</bdi>
           </span>
         }
       </div>
@@ -67,7 +69,7 @@
         class="mt-1 w-full"
         (pressed)="addToCart()"
       >
-        Add to cart
+        {{ language.t('common.addToCart') }}
       </app-button>
     </div>
   </article>

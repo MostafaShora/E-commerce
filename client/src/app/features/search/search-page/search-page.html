@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-8 px-4 py-6">
   <section class="flex flex-col gap-4">
-    <p class="text-sm font-medium text-slate-500">Search Instant</p>
+    <p class="text-sm font-medium text-slate-500">{{ language.t('searchPage.eyebrow') }}</p>
     <form
       [formGroup]="searchForm"
       (ngSubmit)="submitSearch()"
@@ -10,42 +10,47 @@
         class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900"
         type="search"
         formControlName="query"
-        placeholder="Search groceries"
-        aria-label="Search groceries"
+        dir="auto"
+        [placeholder]="language.t('searchPage.placeholder')"
+        [attr.aria-label]="language.t('searchPage.placeholder')"
       />
       <button
         type="submit"
         class="rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white"
       >
-        Search
+        {{ language.t('searchPage.search') }}
       </button>
     </form>
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-2xl font-semibold text-slate-900">
-          {{ query() ? 'Search results for "' + query() + '"' : 'Search groceries' }}
+          {{
+            query()
+              ? language.t('searchPage.resultsFor', { query: query() })
+              : language.t('searchPage.placeholder')
+          }}
         </h1>
         <p class="mt-1 text-sm text-slate-600">
           {{
             query()
               ? loading()
-                ? 'Searching...'
-                : (pagination()?.total ?? 0) + ' products found'
-              : 'Type a product or category to begin.'
+                ? language.t('searchPage.loading')
+                : language.t('searchPage.productCount', { count: pagination()?.total ?? 0 })
+              : language.t('searchPage.startHelp')
           }}
         </p>
       </div>
       @if (query() && !loading() && products().length > 0) {
         <label class="flex items-center gap-2 text-sm font-medium text-slate-900"
-          >Sort by
+          >{{ language.t('searchPage.sortBy') }}
           <select
             class="rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal"
             [formControl]="sort"
           >
-            <option value="best-match">Best Match</option>
-            <option value="price-low">Price: low to high</option>
-            <option value="price-high">Price: high to low</option>
-            <option value="highest-rating">Highest rated</option>
+            <option value="best-match">{{ language.t('searchPage.sort.bestMatch') }}</option>
+            <option value="price-low">{{ language.t('searchPage.sort.priceLow') }}</option>
+            <option value="price-high">{{ language.t('searchPage.sort.priceHigh') }}</option>
+            <option value="highest-rating">{{ language.t('searchPage.sort.highestRated') }}</option>
           </select>
         </label>
       }
@@ -56,20 +61,20 @@
     <section
       class="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center"
     >
-      <p class="text-lg font-medium text-slate-900">Start with a product or category</p>
+      <p class="text-lg font-medium text-slate-900">{{ language.t('searchPage.startTitle') }}</p>
       <p class="mt-2 text-sm text-slate-600">
-        Try snacks, produce, pantry staples, or a favorite grocery item.
+        {{ language.t('searchPage.startDescription') }}
       </p>
       <a
         routerLink="/products"
         class="mt-5 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white"
-        >Browse all products</a
+        >{{ language.t('searchPage.browseProducts') }}</a
       >
     </section>
   } @else if (errorMessage()) {
     <section class="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-red-700">
       <p class="font-medium">{{ errorMessage() }}</p>
-      <button type="button" (click)="retry()" class="mt-3 underline">Retry</button>
+      <button type="button" (click)="retry()" class="mt-3 underline">{{ language.t('common.retry') }}</button>
     </section>
   } @else if (loading()) {
     <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
@@ -85,12 +90,14 @@
     <section
       class="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center"
     >
-      <p class="text-lg font-medium text-slate-900">No results for "{{ query() }}"</p>
-      <p class="mt-2 text-sm text-slate-600">Check the spelling or browse all products instead.</p>
+      <p class="text-lg font-medium text-slate-900">
+        {{ language.t('searchPage.noResults', { query: query() }) }}
+      </p>
+      <p class="mt-2 text-sm text-slate-600">{{ language.t('searchPage.noResultsHelp') }}</p>
       <a
         routerLink="/products"
         class="mt-5 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white"
-        >Browse all products</a
+        >{{ language.t('searchPage.browseProducts') }}</a
       >
     </section>
   } @else {
@@ -102,7 +109,7 @@
     @if (pagination(); as page) {
       <nav
         class="flex items-center justify-between border-t border-slate-200 pt-5"
-        aria-label="Search pagination"
+        [attr.aria-label]="language.t('searchPage.paginationLabel')"
       >
         <button
           type="button"
@@ -110,15 +117,17 @@
           [disabled]="!page.hasPrevPage"
           class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
         >
-          Previous</button
-        ><span class="text-sm text-slate-600">Page {{ page.page }} of {{ page.totalPages }}</span
+          {{ language.t('searchPage.previous') }}</button
+        ><span class="text-sm text-slate-600">{{
+          language.t('searchPage.page', { page: page.page, totalPages: page.totalPages })
+        }}</span
         ><button
           type="button"
           (click)="goToPage(page.page + 1)"
           [disabled]="!page.hasNextPage"
           class="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
         >
-          Next
+          {{ language.t('searchPage.next') }}
         </button>
       </nav>
     }

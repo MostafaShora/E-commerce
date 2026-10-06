@@ -2,7 +2,7 @@
   <div class="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4">
 
     <!-- Logo -->
-    <app-logo class="shrink-0 lg:mr-6" />
+    <app-logo class="shrink-0 lg:me-6" />
 
     <!-- Search -->
     <form
@@ -16,27 +16,37 @@
           class="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm outline-none"
           formControlName="query"
           type="search"
-          placeholder="Search products, and recipes"
-          aria-label="Search products"
+          dir="auto"
+          [placeholder]="language.t('nav.search.placeholder')"
+          [attr.aria-label]="language.t('nav.search.label')"
         />
 
         <button
           type="submit"
           class="flex items-center gap-1 px-2 text-sm font-medium text-slate-700"
-          aria-label="Search products"
+          [attr.aria-label]="language.t('nav.search.label')"
         >
           <svg lucideSearch class="size-[18px]"></svg>
-          <span class="hidden sm:inline">Search</span>
+          <span class="hidden sm:inline">{{ language.t('nav.search.label') }}</span>
         </button>
 
       </div>
     </form>
 
     <!-- Right side -->
-    <div class="ml-auto flex shrink-0 items-center gap-3">
+    <div class="ms-auto flex shrink-0 items-center gap-3">
 
       <!-- Dark / Light Mode -->
       <app-mode-toggle />
+
+      <button
+        type="button"
+        (click)="switchLanguage()"
+        class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+        [attr.aria-label]="language.language() === 'ar' ? 'Switch to English' : 'Switch to Arabic'"
+      >
+        <span>{{ language.language() === 'ar' ? 'EN' : 'AR' }}</span>
+      </button>
 
       <!-- Account -->
       @if (auth.currentUser(); as user) {
@@ -62,7 +72,7 @@
 
           <!-- Dropdown Menu -->
           <div
-            class="absolute right-0 top-full z-[9999] mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 text-sm shadow-xl"
+            class="absolute end-0 top-full z-[9999] mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 text-sm shadow-xl"
           >
 
             <!-- User Info -->
@@ -85,21 +95,21 @@
                 routerLink="/account/orders"
                 class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
               >
-                <span>Order history</span>
+                <span>{{ language.t('nav.account.orderHistory') }}</span>
               </a>
 
               <a
                 routerLink="/account/addresses"
                 class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
               >
-                <span>Addresses</span>
+                <span>{{ language.t('nav.account.addresses') }}</span>
               </a>
 
               <a
                 routerLink="/account/reviews"
                 class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
               >
-                <span>Ratings &amp; reviews</span>
+                <span>{{ language.t('nav.account.reviews') }}</span>
               </a>
 
               <!-- Admin -->
@@ -109,7 +119,7 @@
                   routerLink="/admin"
                   class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
                 >
-                  <span>Admin portal</span>
+                  <span>{{ language.t('nav.account.adminPortal') }}</span>
                 </a>
 
               }
@@ -122,11 +132,11 @@
               <button
                 type="button"
                 (click)="logout()"
-                class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-red-600 transition hover:bg-red-50"
+                class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-red-600 transition hover:bg-red-50"
               >
                 <svg lucideLogOut class="size-[18px]"></svg>
 
-                <span>Logout</span>
+                <span>{{ language.t('nav.account.logout') }}</span>
               </button>
 
             </div>
@@ -142,13 +152,13 @@
           type="button"
           class="flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
           (click)="openAuth()"
-          aria-label="Sign in or register"
+          [attr.aria-label]="language.t('nav.account.signIn')"
         >
 
           <svg lucideUser class="size-[18px]"></svg>
 
           <span class="hidden sm:inline">
-            Sign in / Register
+            {{ language.t('nav.account.signIn') }}
           </span>
 
         </button>

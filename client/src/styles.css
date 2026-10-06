@@ -77,6 +77,111 @@ body {
   color: var(--app-foreground);
 }
 
+html {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+html[lang='ar'] body,
+html[lang='ar'] button,
+html[lang='ar'] input,
+html[lang='ar'] select,
+html[lang='ar'] textarea {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: normal;
+}
+
+html[lang='ar'] :where(h1, h2, h3, h4, h5, h6) {
+  line-height: 1.45;
+}
+
+html[dir='rtl'] {
+  direction: rtl;
+}
+
+html[dir='rtl'] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+html[dir='rtl'] .sm\:ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+html[dir='rtl'] .lg\:ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+html[dir='rtl'] .mr-6 {
+  margin-right: 0;
+  margin-left: 1.5rem;
+}
+
+html[dir='rtl'] .lg\:mr-6 {
+  margin-right: 0;
+  margin-left: 1.5rem;
+}
+
+html[dir='rtl'] [class~='text-left'] {
+  text-align: right;
+}
+
+html[dir='rtl'] [class~='text-right'] {
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  html[dir='rtl'] [class~='sm:text-left'] {
+    text-align: right;
+  }
+
+  html[dir='rtl'] [class~='sm:text-right'] {
+    text-align: left;
+  }
+}
+
+@media (min-width: 768px) {
+  html[dir='rtl'] [class~='md:text-left'] {
+    text-align: right;
+  }
+
+  html[dir='rtl'] [class~='md:text-right'] {
+    text-align: left;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[dir='rtl'] [class~='lg:text-left'] {
+    text-align: right;
+  }
+
+  html[dir='rtl'] [class~='lg:text-right'] {
+    text-align: left;
+  }
+}
+
+html[dir='rtl'] .lucide-arrow-left,
+html[dir='rtl'] .lucide-arrow-right,
+html[dir='rtl'] .lucide-chevron-left,
+html[dir='rtl'] .lucide-chevron-right {
+  transform: scaleX(-1);
+}
+
+html[dir='rtl'] input[type='email'],
+html[dir='rtl'] input[type='number'],
+html[dir='rtl'] input[type='tel'],
+html[dir='rtl'] input[type='url'],
+html[dir='rtl'] input[inputmode='numeric'] {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir='rtl'] :where(input[dir='auto']:placeholder-shown, textarea[dir='auto']:placeholder-shown) {
+  direction: rtl;
+  text-align: right;
+}
+
 /* Legacy templates use Tailwind slate utilities. Map their surface tokens to
    the single active theme palette rather than letting OS media queries win. */
 html .bg-white {

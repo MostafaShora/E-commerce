@@ -5,6 +5,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
+import { LanguageService } from '../../../core/services/language';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card';
 import type {
   CatalogProduct,
@@ -24,6 +25,7 @@ export class SearchPage {
   private readonly router = inject(Router);
   private readonly catalogService = inject(CatalogService);
   private readonly destroyRef = inject(DestroyRef);
+  readonly language = inject(LanguageService);
 
   readonly query = signal('');
   readonly products = signal<CatalogProduct[]>([]);
@@ -87,7 +89,7 @@ export class SearchPage {
         catchError(() => {
           this.products.set([]);
           this.pagination.set(null);
-          this.errorMessage.set('Unable to search products right now.');
+          this.errorMessage.set(this.language.t('searchPage.loadError'));
           return of(null);
         }),
         map((response) => {

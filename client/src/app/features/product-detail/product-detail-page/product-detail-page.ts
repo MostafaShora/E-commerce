@@ -12,6 +12,7 @@ import { ActivatedRoute, Router, Scroll } from '@angular/router';
 import { catchError, distinctUntilChanged, filter, map, of, switchMap } from 'rxjs';
 
 import { CartService } from '../../../core/cart/cart';
+import { LanguageService } from '../../../core/services/language';
 import type { CatalogProduct } from '../../../shared/models/catalog';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card';
 import { ProductRatingComponent } from '../../../shared/components/product-rating/product-rating';
@@ -47,6 +48,7 @@ export class ProductDetailPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly reviewService = inject(ReviewService);
   readonly cart = inject(CartService);
+  readonly language = inject(LanguageService);
 
   readonly product = signal<CatalogProduct | null>(null);
   readonly relatedProducts = signal<CatalogProduct[]>([]);
@@ -90,7 +92,7 @@ export class ProductDetailPage {
             catchError(() => {
               this.product.set(null);
               this.relatedProducts.set([]);
-              this.errorMessage.set('Unable to load this product right now.');
+              this.errorMessage.set(this.language.t('productDetail.loadError'));
               return of(null);
             }),
           );
@@ -127,7 +129,7 @@ export class ProductDetailPage {
           this.reviews.set([]);
           this.reviewsPagination.set(null);
           this.ratingBreakdown.set([]);
-          this.reviewsError.set('Reviews are available after signing in.');
+          this.reviewsError.set(this.language.t('productDetail.signInRequired'));
         },
         complete: () => this.reviewsLoading.set(false),
       });
@@ -178,7 +180,9 @@ export class ProductDetailPage {
   }
 
   reviewUserName(review: ProductReview): string {
-    return typeof review.userId === 'object' ? review.userId.name : 'Verified customer';
+    return typeof review.userId === 'object'
+      ? review.userId.name
+      : this.language.t('productDetail.verifiedCustomer');
   }
 
   reviewRating(review: ProductReview): number {
@@ -186,7 +190,7 @@ export class ProductDetailPage {
   }
 
   formatReviewDate(value: string): string {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric',
@@ -212,7 +216,7 @@ export class ProductDetailPage {
             this.selectedImage.set(response.product.images[0] ?? '');
             this.loadReviews(response.product.slug, 1);
           },
-          error: () => this.errorMessage.set('Unable to load this product right now.'),
+          error: () => this.errorMessage.set(this.language.t('productDetail.loadError')),
           complete: () => this.loading.set(false),
         });
     }
@@ -233,9 +237,11 @@ export class ProductDetailPage {
   }
 
   stockText(product: CatalogProduct): string {
-    if (product.stockCount <= 0) return 'Out of stock';
-    if (product.stockCount <= 5) return `Only ${product.stockCount} left`;
-    return 'In stock';
+    if (product.stockCount <= 0) return this.language.t('product.outOfStock');
+    if (product.stockCount <= 5) {
+      return this.language.t('product.onlyLeft', { count: product.stockCount });
+    }
+    return this.language.t('product.inStock');
   }
 
   ratingBreakdownTotal(): number {

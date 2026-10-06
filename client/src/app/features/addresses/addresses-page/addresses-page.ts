@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   LucideCheck,
@@ -10,6 +10,7 @@ import {
 } from '@lucide/angular';
 
 import { normalizeApiError } from '../../../core/api/api-error';
+import { LanguageService } from '../../../core/services/language';
 import { AddressService, type Address, type AddressInput } from '../services/address';
 
 @Component({
@@ -21,11 +22,49 @@ import { AddressService, type Address, type AddressInput } from '../services/add
 export class AddressesPageComponent {
   readonly addressService = inject(AddressService);
   readonly formBuilder = inject(FormBuilder);
+  readonly language = inject(LanguageService);
   readonly editingId = signal<string | null>(null);
   readonly formOpen = signal(false);
   readonly deleteTarget = signal<Address | null>(null);
   readonly successMessage = signal<string | null>(null);
   readonly operationError = signal<string | null>(null);
+  readonly fields = computed(() => [
+    {
+      name: 'recipientName',
+      label: this.language.t('addressesPage.fields.recipientName'),
+      placeholder: this.language.t('addressesPage.fields.recipientPlaceholder'),
+    },
+    {
+      name: 'phone',
+      label: this.language.t('addressesPage.fields.phone'),
+      placeholder: this.language.t('addressesPage.fields.phonePlaceholder'),
+    },
+    {
+      name: 'street',
+      label: this.language.t('addressesPage.fields.street'),
+      placeholder: this.language.t('addressesPage.fields.streetPlaceholder'),
+    },
+    {
+      name: 'city',
+      label: this.language.t('addressesPage.fields.city'),
+      placeholder: this.language.t('addressesPage.fields.cityPlaceholder'),
+    },
+    {
+      name: 'state',
+      label: this.language.t('addressesPage.fields.state'),
+      placeholder: this.language.t('addressesPage.fields.statePlaceholder'),
+    },
+    {
+      name: 'postalCode',
+      label: this.language.t('addressesPage.fields.postalCode'),
+      placeholder: this.language.t('addressesPage.fields.postalPlaceholder'),
+    },
+    {
+      name: 'country',
+      label: this.language.t('addressesPage.fields.country'),
+      placeholder: this.language.t('addressesPage.fields.countryPlaceholder'),
+    },
+  ]);
 
   readonly form = this.formBuilder.nonNullable.group({
     recipientName: ['', Validators.required],

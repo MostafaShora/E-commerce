@@ -5,6 +5,7 @@ import { AdminService } from '../services/admin';
 import type { AdminAnalyticsResponse } from '../services/admin';
 import type { CreatedOrder } from '../../checkout/services/order';
 import { orderStatusClass, paymentStatusClass } from '../models/admin.model';
+import { LanguageService } from '../../../core/services/language';
 import {
   LucideCircleAlert,
   LucideDollarSign,
@@ -27,12 +28,32 @@ import {
 })
 export class AdminDashboardComponent {
   readonly service = inject(AdminService);
+  readonly language = inject(LanguageService);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly analytics = signal<AdminAnalyticsResponse | null>(null);
   readonly recentOrders = signal<CreatedOrder[]>([]);
   readonly orderStatusClass = orderStatusClass;
   readonly paymentStatusClass = paymentStatusClass;
+  orderStatusLabel(status: string): string {
+    const key = status.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const path = `orders.status.${key}`;
+    const translated = this.language.t(path);
+    return translated === path ? status.replaceAll('_', ' ') : translated;
+  }
+
+  paymentStatusLabel(status: string): string {
+    const path = `orders.paymentStatuses.${status.toLowerCase()}`;
+    const translated = this.language.t(path);
+    return translated === path ? status.replaceAll('_', ' ') : translated;
+  }
+
+  formatDate(value: string): string {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
+      dateStyle: 'medium',
+    }).format(new Date(value));
+  }
+
   constructor() {
     this.load();
   }
@@ -47,7 +68,7 @@ export class AdminDashboardComponent {
     this.service.getAnalytics().subscribe({
       next: (r) => this.analytics.set(r),
       error: () => {
-        this.error.set('Unable to load dashboard statistics.');
+        this.error.set(this.language.t('adminDashboard.statisticsError'));
         done();
       },
       complete: done,
@@ -57,7 +78,7 @@ export class AdminDashboardComponent {
       .subscribe({
         next: (r) => this.recentOrders.set(r.orders ?? []),
         error: () => {
-          this.error.set('Unable to load recent orders.');
+          this.error.set(this.language.t('adminDashboard.recentOrdersError'));
           done();
         },
         complete: done,

@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { CartService } from '../../../core/cart/cart';
+import { LanguageService } from '../../../core/services/language';
 import { getProductImageUrl, onImageError } from '../../../shared/utils/image.util';
 
 @Component({
@@ -13,6 +14,7 @@ import { getProductImageUrl, onImageError } from '../../../shared/utils/image.ut
 })
 export class CartPageComponent {
   readonly cart = inject(CartService);
+  readonly language = inject(LanguageService);
   readonly getProductImageUrl = getProductImageUrl;
   readonly onImageError = onImageError;
 

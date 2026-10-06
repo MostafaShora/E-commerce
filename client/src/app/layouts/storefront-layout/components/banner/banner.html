@@ -1,17 +1,13 @@
 @if (isVisible()) {
   <div class="promo-banner">
     <div
-      #tickerViewport
       class="promo-banner__ticker"
-      aria-label="Free delivery on orders above $20. Farm-fresh produce delivered daily."
+      role="img"
+      [attr.aria-label]="tickerText()"
     >
-      <div class="promo-banner__characters" aria-hidden="true">
-        @for (char of tickerCharacters; track $index) {
-          <span
-            #tickerCharacter
-            class="promo-banner__character"
-          >{{ char === ' ' ? '\u00A0' : char }}</span>
-        }
+      <div class="promo-banner__track" aria-hidden="true">
+        <span [attr.dir]="language.language()">{{ tickerText() }}</span>
+        <span [attr.dir]="language.language()">{{ tickerText() }}</span>
       </div>
     </div>
 
@@ -19,7 +15,7 @@
       type="button"
       class="promo-banner__close"
       (click)="dismiss()"
-      aria-label="Dismiss promotion banner"
+      [attr.aria-label]="language.t('promo.dismiss')"
     >
       <svg lucideX class="size-[18px]"></svg>
     </button>

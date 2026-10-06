@@ -42,7 +42,7 @@
         class="w-fit font-semibold underline underline-offset-2 transition hover:no-underline"
         (click)="loadProducts()"
       >
-        Retry
+        {{ language.t('common.retry') }}
       </button>
     </div>
   </section>
@@ -52,11 +52,11 @@
     <div class="flex items-end justify-between gap-4">
       <div class="min-w-0">
         <h2 class="text-xl font-bold tracking-tight text-slate-950 dark:text-slate-50 sm:text-2xl">
-          More products
+          {{ language.t('home.moreProducts') }}
         </h2>
 
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Discover more products you may like
+          {{ language.t('home.moreProductsSubtitle') }}
         </p>
       </div>
 
@@ -65,7 +65,7 @@
         routerLink="/products"
         class="group inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
       >
-        <span>See more</span>
+        <span>{{ language.t('home.seeMore') }}</span>
 
         <svg
           lucideChevronRight

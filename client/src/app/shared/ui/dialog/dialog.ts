@@ -1,5 +1,7 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, inject } from '@angular/core';
 import { LucideX } from '@lucide/angular';
+
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-dialog',
@@ -8,6 +10,7 @@ import { LucideX } from '@lucide/angular';
   templateUrl: './dialog.html',
 })
 export class DialogComponent {
+  readonly language = inject(LanguageService);
   @Input() open = false;
   @Input() title = '';
   @Input() closeOnOutsideClick = true;

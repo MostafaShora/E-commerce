@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { CartService } from '../../../core/cart/cart';
+import { LanguageService } from '../../../core/services/language';
 import type { CatalogProduct } from '../../../shared/models/catalog';
 import { ButtonComponent } from '../../ui/button/button';
 import { CardComponent } from '../../ui/card/card';
@@ -27,6 +28,7 @@ import { ProductRatingComponent } from '../product-rating/product-rating';
 })
 export class ProductCardComponent {
   readonly cart = inject(CartService);
+  readonly language = inject(LanguageService);
   readonly product = input.required<CatalogProduct>();
   readonly addingToCart = signal(false);
 
@@ -45,7 +47,7 @@ export class ProductCardComponent {
     }
 
     if (item.discountPercent > 0) {
-      return `${item.discountPercent}% off`;
+      return this.language.t('product.off', { percent: item.discountPercent });
     }
 
     return '';
@@ -56,20 +58,20 @@ export class ProductCardComponent {
 
     if (item.stockCount <= 0) {
       return {
-        text: 'Out of stock',
+        text: this.language.t('product.outOfStock'),
         tone: 'text-red-600',
       };
     }
 
     if (item.stockCount <= 5) {
       return {
-        text: `Only ${item.stockCount} left`,
+        text: this.language.t('product.onlyLeft', { count: item.stockCount }),
         tone: 'text-amber-600',
       };
     }
 
     return {
-      text: 'In stock',
+      text: this.language.t('product.inStock'),
       tone: 'text-emerald-600',
     };
   });

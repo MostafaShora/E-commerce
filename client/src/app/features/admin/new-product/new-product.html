@@ -5,11 +5,11 @@
       class="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900"
     >
       <svg lucideArrowLeft class="size-[18px]"></svg>
-      <span>Back</span>
+      <span>{{ language.t('adminProducts.back') }}</span>
     </a>
     <div>
-      <h2 class="text-2xl font-bold tracking-tight">New Product</h2>
-      <p class="text-sm text-slate-500">Add a new product to your store catalog.</p>
+      <h2 class="text-2xl font-bold tracking-tight">{{ language.t('adminProducts.newProduct') }}</h2>
+      <p class="text-sm text-slate-500">{{ language.t('adminProducts.createDescription') }}</p>
     </div>
   </div>
 
@@ -18,7 +18,9 @@
       class="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
     >
       <span>{{ errorMessage() }}</span>
-      <button type="button" (click)="errorMessage.set(null)" class="underline">Dismiss</button>
+      <button type="button" (click)="errorMessage.set(null)" class="underline">
+        {{ language.t('adminProducts.dismissError') }}
+      </button>
     </div>
   }
 
@@ -32,9 +34,9 @@
       novalidate
     >
       <section class="space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 class="text-sm font-medium">Basic Information</h3>
+        <h3 class="text-sm font-medium">{{ language.t('adminProducts.basicInformation') }}</h3>
         <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-          Category
+          {{ language.t('adminProducts.category') }}
           <div class="relative">
             <button
               type="button"
@@ -50,11 +52,11 @@
                 @if (form.controls.categoryId.value) {
                   @for (category of categories(); track category._id) {
                     @if (category._id === form.controls.categoryId.value) {
-                      {{ category.name }}
+                      {{ language.categoryName(category.name) }}
                     }
                   }
                 } @else {
-                  Select a category
+                  {{ language.t('adminProducts.selectCategory') }}
                 }
               </span>
 
@@ -74,7 +76,7 @@
 
             @if (categoryOpen()) {
               <div
-                class="absolute left-0 right-0 z-50 mt-2 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
+                class="absolute inset-x-0 z-50 mt-2 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
                 role="listbox"
               >
                 <!-- Placeholder -->
@@ -86,7 +88,7 @@
                   class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
                   [class.bg-slate-100]="!form.controls.categoryId.value"
                 >
-                  <span>Select a category</span>
+                  <span>{{ language.t('adminProducts.selectCategory') }}</span>
 
                   @if (!form.controls.categoryId.value) {
                     <svg class="size-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
@@ -109,7 +111,7 @@
                     [class.bg-slate-100]="form.controls.categoryId.value === category._id"
                     [class.font-medium]="form.controls.categoryId.value === category._id"
                   >
-                    <span>{{ category.name }}</span>
+                    <span>{{ language.categoryName(category.name) }}</span>
 
                     @if (form.controls.categoryId.value === category._id) {
                       <svg class="size-4 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
@@ -128,44 +130,54 @@
         </label>
         <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
           <span class="flex items-center justify-between gap-3"
-            >Product name
+            >{{ language.t('adminProducts.productName') }}
             <button
               type="button"
               (click)="generateTitle()"
               [disabled]="!form.controls.name.value.trim() || aiAction() !== null"
               class="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
             >
-              {{ aiAction() === 'rephrase-title' ? 'Rephrasing...' : 'Rephrase' }}
+              {{
+                aiAction() === 'rephrase-title'
+                  ? language.t('adminProducts.rephrasing')
+                  : language.t('adminProducts.rephrase')
+              }}
             </button>
           </span>
           <input
             formControlName="name"
-            placeholder="e.g. Organic Whole Milk"
+            [placeholder]="language.t('adminProducts.namePlaceholder')"
+            dir="auto"
             class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           />
         </label>
         <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
           <span class="flex items-center justify-between gap-3"
-            >Description
+            >{{ language.t('adminProducts.description') }}
             <button
               type="button"
               (click)="generateDescription()"
               [disabled]="!form.controls.name.value.trim() || aiAction() !== null"
               class="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
             >
-              {{ aiAction() === 'generate-desc' ? 'Generating...' : 'Generate' }}
+              {{
+                aiAction() === 'generate-desc'
+                  ? language.t('adminProducts.generating')
+                  : language.t('adminProducts.generate')
+              }}
             </button>
           </span>
           <textarea
             formControlName="description"
             rows="5"
-            placeholder="Describe this product"
+            [placeholder]="language.t('adminProducts.descriptionPlaceholder')"
+            dir="auto"
             class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           ></textarea>
         </label>
         <div class="grid gap-4 sm:grid-cols-2">
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Original price<input
+            >{{ language.t('adminProducts.originalPrice') }}<input
               type="number"
               min="0"
               step="0.01"
@@ -173,7 +185,7 @@
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Discount (%)<input
+            >{{ language.t('adminProducts.discountPercent') }}<input
               type="number"
               min="0"
               max="100"
@@ -181,19 +193,21 @@
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Discount label<input
+            >{{ language.t('adminProducts.discountLabel') }}<input
               formControlName="discountLabel"
-              placeholder="Fresh deal"
+              [placeholder]="language.t('adminProducts.discountPlaceholder')"
+              dir="auto"
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Unit<input
+            >{{ language.t('adminProducts.unit') }}<input
               formControlName="unit"
-              placeholder="pc"
+              [placeholder]="language.t('adminProducts.unitPlaceholder')"
+              dir="auto"
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Stock count<input
+            >{{ language.t('adminProducts.stockCount') }}<input
               type="number"
               min="0"
               formControlName="stockCount"
@@ -206,7 +220,7 @@
             formControlName="isActive"
             class="size-4 cursor-pointer rounded border-slate-300 accent-slate-900"
           />
-          <span>Active in catalog</span>
+          <span>{{ language.t('adminProducts.activeInCatalog') }}</span>
         </label>
       </section>
 
@@ -214,17 +228,17 @@
         class="flex h-fit flex-col gap-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
       >
         <div>
-          <h3 class="text-sm font-medium">Product Images</h3>
+          <h3 class="text-sm font-medium">{{ language.t('adminProducts.productImages') }}</h3>
           <p class="mt-1 text-xs text-slate-500">
-            Upload JPEG, PNG, or WebP files (5MB each), or add image URLs.
+            {{ language.t('adminProducts.uploadHint') }}
           </p>
         </div>
         <label
           class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center hover:border-slate-500"
         >
           <svg lucideUpload class="size-6"></svg
-          ><span class="text-sm font-medium">Choose Files</span>
-          <span class="text-xs text-slate-500">JPEG, PNG, or WebP · maximum 5MB each</span>
+          ><span class="text-sm font-medium">{{ language.t('adminProducts.chooseFiles') }}</span>
+          <span class="text-xs text-slate-500">{{ language.t('adminProducts.imageRequirements') }}</span>
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
@@ -238,7 +252,8 @@
             [value]="imageUrlInput()"
             (input)="imageUrlInput.set($any($event.target).value)"
             (keydown.enter)="$event.preventDefault(); addImageUrl()"
-            placeholder="Paste image URL"
+            [placeholder]="language.t('adminProducts.imageUrl')"
+            dir="ltr"
             class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
           />
           <button
@@ -246,20 +261,22 @@
             (click)="addImageUrl()"
             class="rounded-lg border border-slate-300 px-3 text-sm font-medium"
           >
-            Add URL
+            {{ language.t('adminProducts.addUrl') }}
           </button>
         </div>
         @if (!selectedImages().length && !imageUrls().length) {
           <div
             class="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 text-sm text-slate-500"
           >
-            <svg lucideImage class="size-6"></svg>Add product images
+            <svg lucideImage class="size-6"></svg>{{ language.t('adminProducts.noImages') }}
           </div>
         }
         @if (selectedImages().length || imageUrls().length) {
           <p class="text-xs font-medium text-slate-500">
-            {{ selectedImages().length + imageUrls().length }} image{{
-              selectedImages().length + imageUrls().length === 1 ? '' : 's'
+            {{
+              language.t('adminProducts.imageCount', {
+                count: selectedImages().length + imageUrls().length,
+              })
             }}
           </p>
           <div class="mt-3 grid grid-cols-2 gap-3">
@@ -272,8 +289,8 @@
                 /><button
                   type="button"
                   (click)="removeSelectedImage(index)"
-                  class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100"
-                  aria-label="Remove image"
+                  class="absolute end-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100"
+                  [attr.aria-label]="language.t('adminProducts.removeImage')"
                 >
                   <svg lucideX class="size-4"></svg>
                 </button>
@@ -281,11 +298,11 @@
             }
             @for (url of imageUrls(); track url) {
               <div class="group relative aspect-square overflow-hidden rounded-lg border">
-                <img [src]="url" alt="Product image" class="size-full object-cover" /><button
+                <img [src]="url" [alt]="language.t('adminProducts.productImages')" class="size-full object-cover" /><button
                   type="button"
                   (click)="removeImageUrl(url)"
-                  class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100"
-                  aria-label="Remove image"
+                  class="absolute end-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100"
+                  [attr.aria-label]="language.t('adminProducts.removeImage')"
                 >
                   <svg lucideX class="size-4"></svg>
                 </button>
@@ -298,8 +315,8 @@
         }
         <div class="border-t border-slate-200 pt-4 text-sm text-slate-600">
           <div class="flex justify-between">
-            <span>Sale price</span
-            ><strong class="text-slate-900">${{ salePrice().toFixed(2) }}</strong>
+            <span>{{ language.t('adminProducts.salePriceLabel') }}</span
+            ><strong class="text-slate-900" dir="ltr">${{ salePrice().toFixed(2) }}</strong>
           </div>
         </div>
         <button
@@ -307,7 +324,11 @@
           [disabled]="saving()"
           class="rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
         >
-          {{ saving() ? 'Creating...' : 'Create product' }}
+          {{
+            saving()
+              ? language.t('adminProducts.creating')
+              : language.t('adminProducts.create')
+          }}
         </button>
       </aside>
     </form>

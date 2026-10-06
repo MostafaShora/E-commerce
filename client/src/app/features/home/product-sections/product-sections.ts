@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { LucideChevronRight } from '@lucide/angular';
 
+import { LanguageService } from '../../../core/services/language';
 import type { CatalogProduct } from '../../../shared/models/catalog';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card';
 import { HomeService } from '../services/home';
@@ -17,6 +18,7 @@ import { HomeService } from '../services/home';
 export class ProductSectionsComponent {
   private readonly homeService = inject(HomeService);
   private readonly destroyRef = inject(DestroyRef);
+  readonly language = inject(LanguageService);
 
   readonly products = signal<CatalogProduct[]>([]);
   readonly loading = signal(true);
@@ -34,7 +36,7 @@ export class ProductSectionsComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => this.products.set(response.products ?? []),
-        error: () => this.errorMessage.set('Unable to load featured products right now.'),
+        error: () => this.errorMessage.set(this.language.t('home.productsError')),
         complete: () => this.loading.set(false),
       });
   }

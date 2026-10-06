@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { LucideStar } from '@lucide/angular';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
+import { LanguageService } from '../../../core/services/language';
 import {
   ReviewService,
   type ProductReview,
@@ -40,6 +41,7 @@ export class AccountReviewsPageComponent {
   private readonly reviewService = inject(ReviewService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  readonly language = inject(LanguageService);
 
   readonly reviewableEntries = signal<ReviewEntry[]>([]);
   readonly submittedReviews = signal<ProductReview[]>([]);
@@ -64,7 +66,7 @@ export class AccountReviewsPageComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(({ reviewable, submitted }) => {
         if (!reviewable || !submitted) {
-          this.errorMessage.set('Unable to load your reviews right now.');
+          this.errorMessage.set(this.language.t('reviewsPage.loadError'));
         }
 
         this.reviewableEntries.set(
@@ -120,7 +122,7 @@ export class AccountReviewsPageComponent {
         next: () => {
           this.loadReviews();
         },
-        error: () => this.errorMessage.set('Unable to submit this review. Please try again.'),
+        error: () => this.errorMessage.set(this.language.t('reviewsPage.submitError')),
       });
   }
 
@@ -148,7 +150,7 @@ export class AccountReviewsPageComponent {
   }
 
   formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric',

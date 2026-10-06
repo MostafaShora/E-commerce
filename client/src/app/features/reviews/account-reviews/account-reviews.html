@@ -1,14 +1,14 @@
 <div class="flex w-full max-w-5xl flex-col gap-6 py-2">
   <header class="flex flex-wrap items-start justify-between gap-3">
     <div>
-      <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">Ratings &amp; reviews</h1>
+      <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">{{ language.t('reviewsPage.title') }}</h1>
       <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
-        Rate recent groceries and manage reviews from past orders.
+        {{ language.t('reviewsPage.subtitle') }}
       </p>
     </div>
     <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
       <svg lucideStar class="size-3.5" aria-hidden="true"></svg>
-      {{ submittedReviews().length + reviewableEntries().length }} items
+      {{ language.t('reviewsPage.itemsCount', { count: submittedReviews().length + reviewableEntries().length }) }}
     </span>
   </header>
 
@@ -18,7 +18,7 @@
     >
       <span>{{ errorMessage() }}</span>
       <button type="button" (click)="loadReviews()" class="font-medium underline underline-offset-2">
-        Retry
+        {{ language.t('common.retry') }}
       </button>
     </section>
   }
@@ -42,7 +42,7 @@
     <div
       class="flex gap-2 border-b border-slate-200 dark:border-slate-800"
       role="tablist"
-      aria-label="Reviews"
+      [attr.aria-label]="language.t('reviewsPage.navigationLabel')"
     >
       <button
         type="button"
@@ -60,7 +60,7 @@
         [class.dark:hover:bg-slate-800]="activeTab() !== 'to-review'"
         [class.dark:hover:text-white]="activeTab() !== 'to-review'"
       >
-        To review ({{ reviewableEntries().length }})
+        {{ language.t('reviewsPage.toReview', { count: reviewableEntries().length }) }}
       </button>
 
       <button
@@ -79,7 +79,7 @@
         [class.dark:hover:bg-slate-800]="activeTab() !== 'reviewed'"
         [class.dark:hover:text-white]="activeTab() !== 'reviewed'"
       >
-        Reviewed ({{ submittedReviews().length }})
+        {{ language.t('reviewsPage.reviewed', { count: submittedReviews().length }) }}
       </button>
     </div>
 
@@ -91,9 +91,9 @@
           <span class="grid size-12 place-items-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
             <svg lucideStar class="size-5" aria-hidden="true"></svg>
           </span>
-          <p class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">All caught up</p>
+          <p class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">{{ language.t('reviewsPage.allCaughtUp') }}</p>
           <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Products ready for review will appear here.
+            {{ language.t('reviewsPage.readyToReview') }}
           </p>
         </section>
       } @else {
@@ -113,14 +113,14 @@
               >
                 <div>
                   <h2 class="line-clamp-2 text-base font-semibold text-slate-900 dark:text-white">
-                    {{ entry.item.name }}
+                    <bdi dir="auto">{{ entry.item.name }}</bdi>
                   </h2>
                   <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Ordered on {{ formatDate(entry.orderDate) }}
+                    {{ language.t('reviewsPage.orderedOn', { date: formatDate(entry.orderDate) }) }}
                   </p>
                 </div>
 
-                <div class="flex items-center gap-1" aria-label="Choose a rating from 1 to 5 stars">
+                <div class="flex items-center gap-1" [attr.aria-label]="language.t('reviewsPage.chooseRating')">
                   @for (star of [1, 2, 3, 4, 5]; track star) {
                     <button
                       type="button"
@@ -128,7 +128,7 @@
                       [class.text-amber-500]="star <= formFor(entry).controls.rating.value"
                       [class.text-slate-300]="star > formFor(entry).controls.rating.value"
                       class="p-0 transition-transform duration-150 hover:scale-110"
-                      [attr.aria-label]="star + ' star' + (star === 1 ? '' : 's')"
+                      [attr.aria-label]="language.t(star === 1 ? 'reviewsPage.star' : 'reviewsPage.stars', { count: star })"
                     >
                       <svg lucideStar class="size-5" aria-hidden="true"></svg>
                     </button>
@@ -136,25 +136,26 @@
                 </div>
 
                 @if (formFor(entry).controls.rating.invalid && formFor(entry).controls.rating.touched) {
-                  <p class="text-xs text-red-600 dark:text-red-400">Choose a rating from 1 to 5.</p>
+                  <p class="text-xs text-red-600 dark:text-red-400">{{ language.t('reviewsPage.ratingRequired') }}</p>
                 }
 
                 <textarea
                   formControlName="comment"
                   maxlength="1000"
                   rows="3"
+                  dir="auto"
                   class="w-full min-h-20 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-800"
-                  placeholder="Share what other shoppers should know."
+                  [placeholder]="language.t('reviewsPage.commentPlaceholder')"
                 ></textarea>
 
                 <div class="flex items-center justify-between gap-3">
-                  <p class="text-xs text-slate-500 dark:text-slate-400">Order #{{ entry.orderNo }}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">{{ language.t('reviewsPage.orderLabel', { number: entry.orderNo }) }}</p>
                   <button
                     type="submit"
                     [disabled]="isSubmitting(entry)"
                     class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
                   >
-                    {{ isSubmitting(entry) ? 'Submitting...' : 'Submit review' }}
+                    {{ isSubmitting(entry) ? language.t('reviewsPage.submitting') : language.t('reviewsPage.submit') }}
                   </button>
                 </div>
               </form>
@@ -172,9 +173,9 @@
           <span class="grid size-12 place-items-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
             <svg lucideStar class="size-5" aria-hidden="true"></svg>
           </span>
-          <p class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">No reviews yet</p>
+          <p class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">{{ language.t('reviewsPage.noReviews') }}</p>
           <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Reviews you submit will appear here.
+            {{ language.t('reviewsPage.noReviewsDescription') }}
           </p>
         </section>
       } @else {
@@ -194,9 +195,9 @@
                 <div
                   class="grid size-18 place-items-center rounded-xl border border-slate-200 bg-slate-50 px-1 text-center text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400"
                   role="img"
-                  aria-label="Unavailable product"
+                  [attr.aria-label]="language.t('reviewsPage.unavailableProduct')"
                 >
-                  Unavailable
+                  {{ language.t('reviewsPage.unavailable') }}
                 </div>
               }
 
@@ -209,23 +210,23 @@
                           [routerLink]="['/products', product.slug]"
                           class="transition-colors hover:text-slate-600 dark:hover:text-slate-300"
                         >
-                          {{ product.name }}
+                          <bdi dir="auto">{{ product.name }}</bdi>
                         </a>
                       } @else {
-                        Unavailable product
+                        {{ language.t('reviewsPage.unavailableProduct') }}
                       }
                     </h2>
                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      Reviewed on {{ formatDate(review.createdAt) }}
+                      {{ language.t('reviewsPage.reviewedOn', { date: formatDate(review.createdAt) }) }}
                     </p>
                   </div>
 
                   <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400">
-                    Verified purchase
+                    {{ language.t('reviewsPage.verifiedPurchase') }}
                   </span>
                 </div>
 
-                <div class="flex items-center gap-0 text-amber-500" aria-label="Submitted rating">
+                <div class="flex items-center gap-0 text-amber-500" [attr.aria-label]="language.t('reviewsPage.submittedRating')">
                   @for (star of [1, 2, 3, 4, 5]; track star) {
                     <svg
                       lucideStar

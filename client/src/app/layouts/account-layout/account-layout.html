@@ -2,18 +2,18 @@
   class="admin-portal flex h-screen w-full overflow-hidden bg-[var(--app-background)] text-[var(--app-foreground)]"
 >
   <aside
-    class="hidden h-full w-64 shrink-0 border-r border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
+    class="hidden h-full w-64 shrink-0 border-e border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
   >
     <div class="flex h-16 shrink-0 items-center border-b border-[var(--app-border)] px-5">
       <a routerLink="/account" class="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-white">
         <span>Nexora</span>
         <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-300">
-          Account
+          {{ language.t('nav.account.layoutTitle') }}
         </span>
       </a>
     </div>
 
-    <nav aria-label="Account navigation" class="flex min-h-0 flex-1 flex-col gap-1 p-3">
+    <nav [attr.aria-label]="language.t('nav.account.navigationLabel')" class="flex min-h-0 flex-1 flex-col gap-1 p-3">
       <a
         routerLink="/account"
         [routerLinkActiveOptions]="{ exact: true }"
@@ -26,7 +26,7 @@
           class="size-[18px] transition-transform duration-200 group-hover:scale-105"
           [strokeWidth]="2"
         ></svg>
-        <span>Overview</span>
+        <span>{{ language.t('account.overview') }}</span>
       </a>
 
       <a
@@ -40,7 +40,7 @@
           class="size-[18px] transition-transform duration-200 group-hover:scale-105"
           [strokeWidth]="2"
         ></svg>
-        <span>Orders</span>
+        <span>{{ language.t('account.orders') }}</span>
       </a>
 
       <a
@@ -54,7 +54,7 @@
           class="size-[18px] transition-transform duration-200 group-hover:scale-105"
           [strokeWidth]="2"
         ></svg>
-        <span>Reviews</span>
+        <span>{{ language.t('account.reviews') }}</span>
       </a>
 
       <a
@@ -68,7 +68,7 @@
           class="size-[18px] transition-transform duration-200 group-hover:scale-105"
           [strokeWidth]="2"
         ></svg>
-        <span>Addresses</span>
+        <span>{{ language.t('account.addresses') }}</span>
       </a>
     </nav>
 
@@ -78,17 +78,17 @@
         class="mb-2 flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white dark:bg-slate-100 dark:text-slate-950"
       >
         <svg lucideStore class="size-[18px]"></svg>
-        <span>Storefront</span>
+        <span>{{ language.t('common.storefront') }}</span>
       </a>
 
       <button
         type="button"
         (click)="logout()"
-        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
-        aria-label="Log out"
+        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-start text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
+        [attr.aria-label]="language.t('nav.account.logout')"
       >
         <svg lucideLogOut class="size-[18px]"></svg>
-        <span>Log out</span>
+        <span>{{ language.t('nav.account.logout') }}</span>
       </button>
     </div>
   </aside>
@@ -98,14 +98,14 @@
       class="flex h-16 shrink-0 items-center justify-between border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 sm:px-6"
     >
       <div>
-        <h1 class="text-lg font-semibold">Account</h1>
-        <p class="hidden text-xs text-slate-500 sm:block">Customer portal</p>
+        <h1 class="text-lg font-semibold">{{ language.t('nav.account.layoutTitle') }}</h1>
+        <p class="hidden text-xs text-slate-500 sm:block">{{ language.t('nav.account.customerPortal') }}</p>
       </div>
 
       <div class="flex items-center gap-3">
         <app-mode-toggle />
         @if (auth.currentUser(); as user) {
-          <div class="text-right text-xs">
+          <div class="text-end text-xs">
             <p class="font-semibold">{{ user.name }}</p>
             <p class="text-slate-500">{{ user.email }}</p>
           </div>
@@ -114,7 +114,7 @@
     </header>
 
     <nav
-      aria-label="Account navigation"
+      [attr.aria-label]="language.t('nav.account.navigationLabel')"
       class="grid shrink-0 grid-cols-2 gap-2 border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
     >
       <a
@@ -125,7 +125,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideLayoutDashboard class="size-[18px]"></svg>
-        <span>Overview</span>
+        <span>{{ language.t('account.overview') }}</span>
       </a>
 
       <a
@@ -135,7 +135,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideShoppingBag class="size-[18px]"></svg>
-        <span>Orders</span>
+        <span>{{ language.t('account.orders') }}</span>
       </a>
 
       <a
@@ -145,7 +145,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideStar class="size-[18px]"></svg>
-        <span>Reviews</span>
+        <span>{{ language.t('account.reviews') }}</span>
       </a>
 
       <a
@@ -155,7 +155,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideMapPin class="size-[18px]"></svg>
-        <span>Addresses</span>
+        <span>{{ language.t('account.addresses') }}</span>
       </a>
     </nav>
 

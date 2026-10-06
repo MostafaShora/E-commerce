@@ -9,6 +9,7 @@ import {
 } from '@lucide/angular';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { normalizeApiError } from '../../../core/api/api-error';
+import { LanguageService } from '../../../core/services/language';
 import { NotificationService } from '../../../core/services/notification';
 import { AdminService, getAiGenerationErrorMessage } from '../services/admin';
 import { HomeService } from '../../home/services/home';
@@ -37,6 +38,7 @@ export class AdminEditProductComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly notifications = inject(NotificationService);
+  readonly language = inject(LanguageService);
 
   readonly categories = signal<CatalogCategory[]>([]);
   readonly product = signal<CatalogProduct | null>(null);
@@ -92,7 +94,7 @@ export class AdminEditProductComponent {
           this.imageUrls.set(foundProduct.images ?? []);
           if (foundProduct.images?.[0]) this.imagePreview.set(foundProduct.images[0]);
         } else {
-          this.errorMessage.set('Product not found.');
+          this.errorMessage.set(this.language.t('adminProducts.notFound'));
         }
       },
       error: (error: unknown) => this.errorMessage.set(normalizeApiError(error).message),
@@ -121,7 +123,13 @@ export class AdminEditProductComponent {
   chooseImage(event: Event): void {
     const input = event.target as HTMLInputElement;
     const result = prepareProductImages(Array.from(input.files ?? []));
-    if (result.error) this.imageError.set(result.error);
+    if (result.error) {
+      this.imageError.set(
+        result.error.startsWith('Only ')
+          ? this.language.t('adminProducts.onlyImages')
+          : this.language.t('adminProducts.eachImageTooLarge'),
+      );
+    }
     else if (result.images.length) {
       this.selectedImages.update((current) => [...current, ...result.images]);
       this.imageError.set(null);
@@ -137,7 +145,7 @@ export class AdminEditProductComponent {
       if (!this.imageUrls().includes(url)) this.imageUrls.update((images) => [...images, url]);
       this.imageUrlInput.set('');
     } catch {
-      this.imageError.set('Enter a valid image URL.');
+      this.imageError.set(this.language.t('adminProducts.imageUrlError'));
     }
   }
 
@@ -198,7 +206,7 @@ export class AdminEditProductComponent {
     }
 
     if (!this.productId) {
-      this.errorMessage.set('Product ID not found.');
+      this.errorMessage.set(this.language.t('adminProducts.idNotFound'));
       return;
     }
 

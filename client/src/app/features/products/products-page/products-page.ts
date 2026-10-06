@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, Scroll } from '@angular/router';
 import { catchError, distinctUntilChanged, filter, map, of, switchMap } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
+import { LanguageService } from '../../../core/services/language';
 import type {
   CatalogCategory,
   CatalogProduct,
@@ -29,6 +30,7 @@ export class ProductsPage {
   private readonly homeService = inject(HomeService);
   private readonly catalogService = inject(CatalogService);
   private readonly destroyRef = inject(DestroyRef);
+  readonly language = inject(LanguageService);
 
   readonly categories = signal<CatalogCategory[]>([]);
   readonly products = signal<CatalogProduct[]>([]);
@@ -39,7 +41,7 @@ export class ProductsPage {
   readonly categoriesError = signal<string | null>(null);
   readonly priceValidationError = signal<string | null>(null);
   readonly selectedCategory = signal('all');
-  readonly currentCategoryName = signal('All');
+  readonly currentCategoryName = signal(this.language.t('productsPage.all'));
 
   readonly filters = new FormGroup({
     dealsOnly: new FormControl(false, { nonNullable: true }),
@@ -96,7 +98,9 @@ export class ProductsPage {
           this.selectedCategory.set(state.category);
           this.currentCategoryName.set(
             this.categories().find((item) => item._id === state.category)?.name ??
-            (state.category === 'all' ? 'All' : 'Category'),
+            (state.category === 'all'
+              ? this.language.t('productsPage.all')
+              : this.language.t('productsPage.unknownCategory')),
           );
           this.filters.patchValue({
             dealsOnly: state.dealsOnly,
@@ -197,10 +201,12 @@ export class ProductsPage {
           const category = this.selectedCategory();
           this.currentCategoryName.set(
             this.categories().find((item) => item._id === category)?.name ??
-            (category === 'all' ? 'All' : 'Category'),
+            (category === 'all'
+              ? this.language.t('productsPage.all')
+              : this.language.t('productsPage.unknownCategory')),
           );
         },
-        error: () => this.categoriesError.set('Unable to load categories right now.'),
+        error: () => this.categoriesError.set(this.language.t('productsPage.categoryError')),
         complete: () => this.categoriesLoading.set(false),
       });
   }
@@ -226,7 +232,7 @@ export class ProductsPage {
       catchError(() => {
         this.products.set([]);
         this.pagination.set(null);
-        this.errorMessage.set('Unable to load products right now.');
+        this.errorMessage.set(this.language.t('productsPage.loadError'));
         return of(null);
       }),
       map((response) => {
@@ -278,13 +284,13 @@ export class ProductsPage {
     const maxPrice = this.toPrice(maxValue);
 
     if (this.hasPriceValue(minValue) && minPrice === undefined) {
-      return 'Enter a valid minimum price of 0 or more.';
+      return this.language.t('productsPage.invalidMinimum');
     }
     if (this.hasPriceValue(maxValue) && maxPrice === undefined) {
-      return 'Enter a valid maximum price of 0 or more.';
+      return this.language.t('productsPage.invalidMaximum');
     }
     if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
-      return 'Minimum price cannot be greater than maximum price.';
+      return this.language.t('productsPage.invalidRange');
     }
 
     return null;

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProductRatingComponent } from './product-rating';
+import { LanguageService } from '../../../core/services/language';
 
 describe('ProductRatingComponent', () => {
   let fixture: ComponentFixture<ProductRatingComponent>;
@@ -11,6 +12,7 @@ describe('ProductRatingComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductRatingComponent);
+    TestBed.inject(LanguageService).setLanguage('en');
   });
 
   it.each([
@@ -42,7 +44,7 @@ describe('ProductRatingComponent', () => {
     const host = fixture.nativeElement.firstElementChild as HTMLElement;
 
     expect(host.textContent?.replace(/\s+/g, '')).toBe('(3)');
-    expect(host.getAttribute('aria-label')).toBe('Rating unavailable from 3 reviews');
+    expect(host.getAttribute('aria-label')).toBe('Rating unavailable from ⁨3⁩ reviews');
     expect(
       Array.from(host.querySelectorAll<HTMLElement>('.rating-star-fill')).every(
         (star) => star.style.width === '0%',
@@ -56,5 +58,16 @@ describe('ProductRatingComponent', () => {
     expect(
       (fixture.nativeElement.firstElementChild as HTMLElement).getAttribute('aria-label'),
     ).toBe('No reviews yet');
+  });
+
+  it('localizes accessible rating labels in Arabic', () => {
+    TestBed.inject(LanguageService).setLanguage('ar');
+    fixture.componentRef.setInput('rating', 4.5);
+    fixture.componentRef.setInput('reviewCount', 2);
+    fixture.detectChanges();
+
+    expect(
+      (fixture.nativeElement.firstElementChild as HTMLElement).getAttribute('aria-label'),
+    ).toBe('التقييم ⁨4.5⁩ من 5 (عدد التقييمات: ⁨2⁩)');
   });
 });

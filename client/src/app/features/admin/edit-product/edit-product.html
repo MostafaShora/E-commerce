@@ -2,11 +2,11 @@
   <div class="flex items-center gap-4">
     <a routerLink="/admin/products" class="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900">
       <svg lucideArrowLeft class="size-4" [strokeWidth]="2"></svg>
-      <span>Back</span>
+      <span>{{ language.t('adminProducts.back') }}</span>
     </a>
     <div>
-      <h2 class="text-2xl font-bold tracking-tight">Edit Product</h2>
-      <p class="text-sm text-slate-500">Update product details and pricing.</p>
+      <h2 class="text-2xl font-bold tracking-tight">{{ language.t('adminProducts.editTitle') }}</h2>
+      <p class="text-sm text-slate-500">{{ language.t('adminProducts.editDescription') }}</p>
     </div>
   </div>
 
@@ -15,7 +15,9 @@
       class="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
     >
       <span>{{ errorMessage() }}</span>
-      <button type="button" (click)="errorMessage.set(null)" class="underline">Dismiss</button>
+      <button type="button" (click)="errorMessage.set(null)" class="underline">
+        {{ language.t('adminProducts.dismissError') }}
+      </button>
     </div>
   }
 
@@ -29,59 +31,69 @@
       novalidate
     >
       <section class="space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 class="text-sm font-medium">Basic Information</h3>
+        <h3 class="text-sm font-medium">{{ language.t('adminProducts.basicInformation') }}</h3>
         <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-          Category
+          {{ language.t('adminProducts.category') }}
           <select
             formControlName="categoryId"
             class="rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal"
           >
-            <option value="">Select a category</option>
+            <option value="">{{ language.t('adminProducts.selectCategory') }}</option>
             @for (category of categories(); track category._id) {
-              <option [value]="category._id">{{ category.name }}</option>
+              <option [value]="category._id">{{ language.categoryName(category.name) }}</option>
             }
           </select>
         </label>
         <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
           <span class="flex items-center justify-between gap-3"
-            >Product name
+            >{{ language.t('adminProducts.productName') }}
             <button
               type="button"
               (click)="generateTitle()"
               [disabled]="!form.controls.name.value.trim() || aiAction() !== null"
               class="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
             >
-              {{ aiAction() === 'rephrase-title' ? 'Rephrasing...' : 'Rephrase' }}
+              {{
+                aiAction() === 'rephrase-title'
+                  ? language.t('adminProducts.rephrasing')
+                  : language.t('adminProducts.rephrase')
+              }}
             </button>
           </span>
           <input
             formControlName="name"
-            placeholder="e.g. Organic Whole Milk"
+            [placeholder]="language.t('adminProducts.namePlaceholder')"
+            dir="auto"
             class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           />
         </label>
         <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
           <span class="flex items-center justify-between gap-3"
-            >Description
+            >{{ language.t('adminProducts.description') }}
             <button
               type="button"
               (click)="generateDescription()"
               [disabled]="!form.controls.name.value.trim() || aiAction() !== null"
               class="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
             >
-              {{ aiAction() === 'generate-desc' ? 'Generating...' : 'Generate' }}
+              {{
+                aiAction() === 'generate-desc'
+                  ? language.t('adminProducts.generating')
+                  : language.t('adminProducts.generate')
+              }}
             </button>
           </span>
           <textarea
             formControlName="description"
             rows="5"
-            placeholder="Describe this product"
+            [placeholder]="language.t('adminProducts.descriptionPlaceholder')"
+            dir="auto"
             class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           ></textarea>
         </label>
         <div class="grid gap-4 sm:grid-cols-2">
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Original price<input
+            >{{ language.t('adminProducts.originalPrice') }}<input
               type="number"
               min="0"
               step="0.01"
@@ -89,7 +101,7 @@
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Discount (%)<input
+            >{{ language.t('adminProducts.discountPercent') }}<input
               type="number"
               min="0"
               max="100"
@@ -97,31 +109,33 @@
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Discount label<input
+            >{{ language.t('adminProducts.discountLabel') }}<input
               formControlName="discountLabel"
-              placeholder="Fresh deal"
+              [placeholder]="language.t('adminProducts.discountPlaceholder')"
+              dir="auto"
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Unit<input
+            >{{ language.t('adminProducts.unit') }}<input
               formControlName="unit"
-              placeholder="pc"
+              [placeholder]="language.t('adminProducts.unitPlaceholder')"
+              dir="auto"
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700"
-            >Stock count<input
+            >{{ language.t('adminProducts.stockCount') }}<input
               type="number"
               min="0"
               formControlName="stockCount"
               class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
           /></label>
         </div>
-        <app-checkbox formControlName="isActive" label="Active" />
+        <app-checkbox formControlName="isActive" [label]="language.t('adminProducts.activeLabel')" />
       </section>
 
       <section class="space-y-5">
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 class="mb-4 text-sm font-medium">Product Images</h3>
+          <h3 class="mb-4 text-sm font-medium">{{ language.t('adminProducts.productImages') }}</h3>
           @if (imageError()) {
             <p class="mb-3 text-sm text-red-600">{{ imageError() }}</p>
           }
@@ -129,8 +143,8 @@
             <div
               class="flex min-h-24 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-4 text-center"
             >
-              <span class="flex items-center gap-2 text-sm font-medium text-slate-900"><svg lucideUpload class="size-4" [strokeWidth]="2"></svg>Upload images</span>
-              <span class="text-xs text-slate-500">PNG, JPG or WebP (max 5MB each)</span>
+              <span class="flex items-center gap-2 text-sm font-medium text-slate-900"><svg lucideUpload class="size-4" [strokeWidth]="2"></svg>{{ language.t('adminProducts.uploadImages') }}</span>
+              <span class="text-xs text-slate-500">{{ language.t('adminProducts.imageRequirementsEdit') }}</span>
             </div>
             <input
               type="file"
@@ -141,16 +155,16 @@
             />
           </label>
           <div class="mt-4 flex gap-2">
-            <input [value]="imageUrlInput()" (input)="imageUrlInput.set($any($event.target).value)" (keydown.enter)="$event.preventDefault(); addImageUrl()" placeholder="Paste image URL" class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <button type="button" (click)="addImageUrl()" class="rounded-lg border border-slate-300 px-3 text-sm font-medium">Add URL</button>
+            <input [value]="imageUrlInput()" (input)="imageUrlInput.set($any($event.target).value)" (keydown.enter)="$event.preventDefault(); addImageUrl()" [placeholder]="language.t('adminProducts.imageUrl')" dir="ltr" class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <button type="button" (click)="addImageUrl()" class="rounded-lg border border-slate-300 px-3 text-sm font-medium">{{ language.t('adminProducts.addUrl') }}</button>
           </div>
           @if (selectedImages().length || imageUrls().length) {
             <div class="mt-4 grid grid-cols-2 gap-3">
             @for (image of selectedImages(); track image.preview; let index = $index) {
-                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="image.preview" [alt]="image.file.name" class="size-full object-cover" /><button type="button" (click)="removeSelectedImage(index)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><svg lucideX class="size-4" [strokeWidth]="2"></svg></button></div>
+                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="image.preview" [alt]="image.file.name" class="size-full object-cover" /><button type="button" (click)="removeSelectedImage(index)" class="absolute end-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" [attr.aria-label]="language.t('adminProducts.removeImage')"><svg lucideX class="size-4" [strokeWidth]="2"></svg></button></div>
               }
               @for (url of imageUrls(); track url) {
-                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="url" alt="Product image" class="size-full object-cover" /><button type="button" (click)="removeImageUrl(url)" class="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" aria-label="Remove image"><svg lucideX class="size-4" [strokeWidth]="2"></svg></button></div>
+                <div class="group relative aspect-square overflow-hidden rounded-lg border"><img [src]="url" [alt]="language.t('adminProducts.productImages')" class="size-full object-cover" /><button type="button" (click)="removeImageUrl(url)" class="absolute end-1 top-1 grid size-7 place-items-center rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100" [attr.aria-label]="language.t('adminProducts.removeImage')"><svg lucideX class="size-4" [strokeWidth]="2"></svg></button></div>
               }
             </div>
           }
@@ -161,14 +175,18 @@
           [disabled]="saving()"
           class="w-full rounded-lg bg-slate-900 px-4 py-3 font-medium text-white disabled:opacity-50"
         >
-          {{ saving() ? 'Saving...' : 'Save Changes' }}
+          {{
+            saving()
+              ? language.t('adminProducts.savingChanges')
+              : language.t('adminProducts.saveChanges')
+          }}
         </button>
       </section>
 
       <div class="grid gap-2 text-sm text-slate-600 lg:col-span-2">
         <div class="flex justify-between">
-          <span>Sale price:</span>
-          <span class="font-medium">₹{{ salePrice().toFixed(2) }}</span>
+          <span>{{ language.t('adminProducts.salePriceLabel') }}:</span>
+          <span class="font-medium" dir="ltr">₹{{ salePrice().toFixed(2) }}</span>
         </div>
       </div>
     </form>

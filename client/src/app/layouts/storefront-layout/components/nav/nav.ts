@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AuthState } from '../../../../core/auth/auth.state';
+import { LanguageService } from '../../../../core/services/language';
 import { CartButtonComponent } from '../../../../shared/components/cart-button/cart-button';
 import { LogoComponent } from '../../../../shared/components/logo/logo';
 import { ModeToggleComponent } from '../../../../shared/components/mode-toggle/mode-toggle';
@@ -29,6 +30,7 @@ import { AvatarComponent } from '../../../../shared/ui/avatar/avatar';
 export class StorefrontNavComponent {
   readonly auth = inject(AuthService);
   readonly authState = inject(AuthState);
+  readonly language = inject(LanguageService);
   readonly searchForm = new FormGroup({
     query: new FormControl('', { nonNullable: true }),
   });
@@ -51,6 +53,10 @@ export class StorefrontNavComponent {
 
   openAuth(): void {
     this.authState.openAuth('login');
+  }
+
+  switchLanguage(): void {
+    this.language.toggleLanguage();
   }
 
   logout(): void {

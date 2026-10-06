@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { LanguageService } from '../../../../core/services/language';
 import { LogoComponent } from '../../../../shared/components/logo/logo';
 
 @Component({
@@ -10,4 +11,6 @@ import { LogoComponent } from '../../../../shared/components/logo/logo';
   templateUrl: './footer.html',
   styleUrl: './footer.css',
 })
-export class FooterComponent {}
+export class FooterComponent {
+  readonly language = inject(LanguageService);
+}

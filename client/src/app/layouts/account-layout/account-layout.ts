@@ -12,6 +12,7 @@ import {
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { LanguageService } from '../../core/services/language';
 import { ModeToggleComponent } from '../../shared/components/mode-toggle/mode-toggle';
 
 @Component({
@@ -35,6 +36,7 @@ import { ModeToggleComponent } from '../../shared/components/mode-toggle/mode-to
 })
 export class AccountLayout {
   readonly auth = inject(AuthService);
+  readonly language = inject(LanguageService);
 
   logout(): void {
     this.auth.logout().subscribe();

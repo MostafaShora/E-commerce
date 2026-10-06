@@ -26,6 +26,7 @@ import {
   type PaymentStatus,
 } from '../../checkout/services/order';
 import { ReviewService, type ReviewableOrderItem } from '../../reviews/services/review';
+import { LanguageService } from '../../../core/services/language';
 import { getProductImageUrl, onImageError } from '../../../shared/utils/image.util';
 
 @Component({
@@ -57,6 +58,7 @@ export class OrderDetailPageComponent {
   private readonly reviewService = inject(ReviewService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly refreshOrder$ = new Subject<string | null>();
+  readonly language = inject(LanguageService);
 
   readonly order = signal<CreatedOrder | null>(null);
   readonly loading = signal(true);
@@ -97,7 +99,7 @@ export class OrderDetailPageComponent {
 
           return this.orderService.getOrderById(id).pipe(
             catchError(() => {
-              this.errorMessage.set('Unable to find this order.');
+              this.errorMessage.set(this.language.t('orders.unableToFind'));
               return of(null);
             }),
             finalize(() => this.loading.set(false)),
@@ -170,7 +172,7 @@ export class OrderDetailPageComponent {
           this.cancelError.set(
             Array.isArray(message)
               ? message.join(', ')
-              : message || 'Unable to cancel this order. Please try again.',
+              : message || this.language.t('orders.cancelError'),
           );
         },
       });
@@ -197,12 +199,14 @@ export class OrderDetailPageComponent {
   });
 
   displayTrackingSteps(): Array<{ status: OrderStatus; label: string }> {
-    return this.order()?.status === 'cancelled'
-      ? [
+    const steps: Array<{ status: OrderStatus; label: string }> =
+      this.order()?.status === 'cancelled'
+        ? [
           { status: 'placed', label: 'Placed' },
           { status: 'cancelled', label: 'Cancelled' },
         ]
       : this.trackingSteps;
+    return steps.map((step) => ({ ...step, label: this.statusLabel(step.status) }));
   }
 
   private loadReviewableItems(orderId: string): void {
@@ -271,23 +275,18 @@ export class OrderDetailPageComponent {
           this.loadReviewableItems(order._id);
           this.loadOrder();
         },
-        error: () => this.reviewError.set('Unable to submit this review. Please try again.'),
+        error: () => this.reviewError.set(this.language.t('orders.reviewSubmitError')),
         complete: () => this.reviewSubmitting.set(false),
       });
   }
 
   statusLabel(status: OrderStatus): string {
-    const labelMap: Record<OrderStatus, string> = {
-      placed: 'Placed',
-      confirmed: 'Confirmed',
-      assigned: 'Assigned',
-      packed: 'Packed',
-      out_for_delivery: 'Out for Delivery',
-      delivered: 'Delivered',
-      cancelled: 'Cancelled',
-    };
-
-    return labelMap[status] ?? status.replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
+    const key = status.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const path = `orders.status.${key}`;
+    const translated = this.language.t(path);
+    return translated === path
+      ? status.replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase())
+      : translated;
   }
 
   orderStatusClass(status: OrderStatus): string {
@@ -295,7 +294,18 @@ export class OrderDetailPageComponent {
   }
 
   paymentLabel(value: PaymentStatus | string): string {
-    return value.replaceAll('_', ' ');
+    const key = value.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const path = `orders.paymentStatuses.${key}`;
+    const translated = this.language.t(path);
+    return translated === path ? value.replaceAll('_', ' ') : translated;
+  }
+
+  paymentMethodLabel(value: string | undefined): string {
+    if (!value) return this.language.t('orders.card');
+    const key = value.toLowerCase() === 'cash_on_delivery' ? 'cashOnDelivery' : value.toLowerCase();
+    const path = `orders.paymentMethods.${key}`;
+    const translated = this.language.t(path);
+    return translated === path ? value.replaceAll('_', ' ') : translated;
   }
 
   paymentStatusClass(status: PaymentStatus): string {
@@ -309,7 +319,7 @@ export class OrderDetailPageComponent {
   }
 
   formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric',

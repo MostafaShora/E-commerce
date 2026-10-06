@@ -17,6 +17,7 @@ import {
 import { AdminService, type AdminCategory } from '../services/admin';
 import { NotificationService } from '../../../core/services/notification';
 import { normalizeApiError } from '../../../core/api/api-error';
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-admin-categories',
@@ -40,6 +41,7 @@ import { normalizeApiError } from '../../../core/api/api-error';
 export class AdminCategoriesComponent {
 
   readonly service = inject(AdminService);
+  readonly language = inject(LanguageService);
   private readonly notifications = inject(NotificationService);
   readonly categories = signal<AdminCategory[]>([]);
   readonly loading = signal(true);
@@ -86,8 +88,8 @@ export class AdminCategoriesComponent {
     const file = input.files?.[0];
     if (!file) return;
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type))
-      this.error.set('Only JPEG, PNG, and WebP images are allowed.');
-    else if (file.size > 5 * 1024 * 1024) this.error.set('Category image must not exceed 5MB.');
+      this.error.set(this.language.t('adminCategories.onlyImages'));
+    else if (file.size > 5 * 1024 * 1024) this.error.set(this.language.t('adminCategories.imageTooLarge'));
     else {
       this.revokePreview();
       this.imageFile.set(file);
@@ -103,7 +105,7 @@ export class AdminCategoriesComponent {
     }
     if (!this.editing() || this.editing() === 'new') {
       if (!this.imageFile()) {
-        this.error.set('Choose a category image before creating the category.');
+        this.error.set(this.language.t('adminCategories.imageRequired'));
         return;
       }
     }
@@ -133,7 +135,7 @@ export class AdminCategoriesComponent {
     });
   }
   remove(category: AdminCategory): void {
-    if (!window.confirm(`Delete ${category.name}?`)) return;
+    if (!window.confirm(this.language.t('adminCategories.deleteConfirm', { name: category.name }))) return;
     this.service.deleteCategory(category._id).subscribe({
       next: (response) => {
         this.notifications.success(response.message);

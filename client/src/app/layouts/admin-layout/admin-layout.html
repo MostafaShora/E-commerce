@@ -3,18 +3,20 @@
 >
   <!-- Sidebar -->
   <aside
-    class="hidden h-full w-64 shrink-0 border-r border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
+    class="hidden h-full w-64 shrink-0 border-e border-[var(--app-border)] bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] md:flex md:flex-col"
   >
     <!-- Logo -->
     <div class="flex h-16 shrink-0 items-center border-b border-[var(--app-border)] px-5">
       <a routerLink="/admin" class="flex items-center gap-2 text-base font-semibold">
         <span>Nexora</span>
-        <span class="text-xs font-bold uppercase tracking-wider text-amber-600"> Admin </span>
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">
+          {{ language.t('admin.portalTitle') }}
+        </span>
       </a>
     </div>
 
     <!-- Sidebar Navigation -->
-    <nav aria-label="Admin navigation" class="flex min-h-0 flex-1 flex-col gap-1 p-3">
+    <nav [attr.aria-label]="language.t('admin.navigationLabel')" class="flex min-h-0 flex-1 flex-col gap-1 p-3">
       <a
         routerLink="/admin"
         [routerLinkActiveOptions]="{ exact: true }"
@@ -28,7 +30,7 @@
           [strokeWidth]="2"
         ></svg>
 
-        <span>Dashboard</span>
+        <span>{{ language.t('admin.dashboard') }}</span>
       </a>
 
       <a
@@ -43,7 +45,7 @@
           [strokeWidth]="2"
         ></svg>
 
-        <span>Products</span>
+        <span>{{ language.t('admin.products') }}</span>
       </a>
 
       <a
@@ -58,7 +60,7 @@
           [strokeWidth]="2"
         ></svg>
 
-        <span>Categories</span>
+        <span>{{ language.t('admin.categories') }}</span>
       </a>
 
       <a
@@ -73,7 +75,7 @@
           [strokeWidth]="2"
         ></svg>
 
-        <span>Orders</span>
+        <span>{{ language.t('admin.orders') }}</span>
       </a>
     </nav>
 
@@ -84,17 +86,17 @@
         class="mb-2 flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-white"
       >
         <svg lucideStore class="size-[18px]"></svg>
-        <span>Storefront</span>
+        <span>{{ language.t('common.storefront') }}</span>
       </a>
 
       <button
         type="button"
         (click)="logout()"
-        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50"
-        aria-label="Log out"
+        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-start text-sm font-medium text-red-600 hover:bg-red-50"
+        [attr.aria-label]="language.t('nav.account.logout')"
       >
         <svg lucideLogOut class="size-[18px]"></svg>
-        <span>Log out</span>
+        <span>{{ language.t('nav.account.logout') }}</span>
       </button>
     </div>
   </aside>
@@ -106,15 +108,15 @@
       class="flex h-16 shrink-0 items-center justify-between border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 sm:px-6"
     >
       <div>
-        <h1 class="text-lg font-semibold">Admin Portal</h1>
+        <h1 class="text-lg font-semibold">{{ language.t('admin.portalTitle') }}</h1>
 
-        <p class="hidden text-xs text-slate-500 sm:block">Store management</p>
+        <p class="hidden text-xs text-slate-500 sm:block">{{ language.t('admin.storeManagement') }}</p>
       </div>
 
       <div class="flex items-center gap-3">
         <app-mode-toggle />
         @if (auth.currentUser(); as user) {
-          <div class="text-right text-xs">
+          <div class="text-end text-xs">
             <p class="font-semibold">{{ user.name }}</p>
             <p class="text-slate-500">{{ user.email }}</p>
           </div>
@@ -124,7 +126,7 @@
 
     <!-- Mobile Navigation -->
     <nav
-      aria-label="Admin navigation"
+      [attr.aria-label]="language.t('admin.navigationLabel')"
       class="grid shrink-0 grid-cols-2 gap-2 border-b border-[var(--app-border)] bg-[var(--header-background)] px-4 py-2 md:hidden"
     >
       <a
@@ -135,7 +137,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideLayoutDashboard class="size-[18px]"></svg>
-        <span>Dashboard</span>
+        <span>{{ language.t('admin.dashboard') }}</span>
       </a>
 
       <a
@@ -145,7 +147,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucidePackage class="size-[18px]"></svg>
-        <span>Products</span>
+        <span>{{ language.t('admin.products') }}</span>
       </a>
 
       <a
@@ -155,7 +157,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideTags class="size-[18px]"></svg>
-        <span>Categories</span>
+        <span>{{ language.t('admin.categories') }}</span>
       </a>
 
       <a
@@ -165,7 +167,7 @@
         class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       >
         <svg lucideShoppingBag class="size-[18px]"></svg>
-        <span>Orders</span>
+        <span>{{ language.t('admin.orders') }}</span>
       </a>
     </nav>
 

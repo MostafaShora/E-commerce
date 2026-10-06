@@ -1,9 +1,9 @@
 <div class="flex w-full max-w-5xl flex-col gap-6 py-2">
   <header class="flex flex-wrap items-start justify-between gap-4">
     <div>
-      <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">Addresses</h1>
+      <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">{{ language.t('addressesPage.title') }}</h1>
       <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
-        Manage delivery addresses for faster checkout.
+        {{ language.t('addressesPage.subtitle') }}
       </p>
     </div>
     @if (!formOpen()) {
@@ -13,7 +13,7 @@
         class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
       >
         <svg lucidePlus class="size-[18px]" aria-hidden="true"></svg>
-        Add new address
+        {{ language.t('addressesPage.addNew') }}
       </button>
     }
   </header>
@@ -24,7 +24,7 @@
     >
       <span>{{ addressService.errorMessage() }}</span>
       <button type="button" (click)="addressService.retry()" class="font-medium underline">
-        Retry
+        {{ language.t('common.retry') }}
       </button>
     </div>
   }
@@ -46,10 +46,10 @@
       <div class="mb-5 flex items-center justify-between gap-3">
         <div>
           <h2 class="text-lg font-semibold text-slate-900 dark:text-white">
-            {{ editingId() ? 'Edit address' : 'Add new address' }}
+            {{ editingId() ? language.t('addressesPage.edit') : language.t('addressesPage.addNew') }}
           </h2>
           <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Save delivery details for faster checkout next time.
+            {{ language.t('addressesPage.saveSubtitle') }}
           </p>
         </div>
       </div>
@@ -60,18 +60,7 @@
         class="grid gap-4 sm:grid-cols-2"
         novalidate
       >
-        @for (
-          field of [
-            { name: 'recipientName', label: 'Receiver name', placeholder: 'Jane Doe' },
-            { name: 'phone', label: 'Phone', placeholder: '+1 555 010 8842' },
-            { name: 'street', label: 'Street address', placeholder: '214 Green Market Avenue' },
-            { name: 'city', label: 'City', placeholder: 'San Francisco' },
-            { name: 'state', label: 'State', placeholder: 'California' },
-            { name: 'postalCode', label: 'Postal code', placeholder: '94105' },
-            { name: 'country', label: 'Country', placeholder: 'United States' },
-          ];
-          track field.name
-        ) {
+        @for (field of fields(); track field.name) {
           <label class="flex flex-col gap-1 text-sm font-medium text-slate-700 dark:text-slate-200" [for]="field.name">
             {{ field.label }}
             <input
@@ -79,10 +68,21 @@
               [class.border-red-500]="controlInvalid(field.name)"
               [id]="field.name"
               [formControlName]="field.name"
+              [attr.type]="field.name === 'phone' ? 'tel' : 'text'"
+              [attr.inputmode]="field.name === 'phone' ? 'tel' : null"
+              [attr.dir]="
+                field.name === 'phone' || field.name === 'postalCode'
+                  ? 'ltr'
+                  : form.get(field.name)?.value
+                    ? 'auto'
+                    : language.isArabic()
+                      ? 'rtl'
+                      : 'ltr'
+              "
               [placeholder]="field.placeholder"
             />
             @if (controlInvalid(field.name)) {
-              <span class="text-xs font-normal text-red-600 dark:text-red-400">This field is required.</span>
+              <span class="text-xs font-normal text-red-600 dark:text-red-400">{{ language.t('addressesPage.required') }}</span>
             }
           </label>
         }
@@ -94,7 +94,13 @@
             class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
           >
             <svg lucideMapPin class="size-[18px]" aria-hidden="true"></svg>
-            {{ addressService.saving() ? 'Saving...' : editingId() ? 'Update address' : 'Save address' }}
+            {{
+              addressService.saving()
+                ? language.t('addressesPage.saving')
+                : editingId()
+                  ? language.t('addressesPage.update')
+                  : language.t('addressesPage.save')
+            }}
           </button>
           @if (editingId()) {
             <button
@@ -102,7 +108,7 @@
               (click)="cancelEdit()"
               class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              Cancel
+              {{ language.t('addressesPage.cancel') }}
             </button>
           }
         </div>
@@ -121,9 +127,9 @@
       <div class="mx-auto grid size-12 place-items-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
         <svg lucideMapPin class="size-5" aria-hidden="true"></svg>
       </div>
-      <p class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">No saved addresses</p>
+      <p class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">{{ language.t('addressesPage.noSaved') }}</p>
       <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-        Add an address to make checkout faster and keep delivery details ready.
+        {{ language.t('addressesPage.emptyHelp') }}
       </p>
       <button
         type="button"
@@ -131,7 +137,7 @@
         class="mt-5 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
       >
         <svg lucidePlus class="size-[18px]" aria-hidden="true"></svg>
-        Add new address
+        {{ language.t('addressesPage.addNew') }}
       </button>
     </section>
   } @else {
@@ -143,26 +149,26 @@
           <div class="flex items-start justify-between gap-3 border-b border-slate-200 pb-3 dark:border-slate-800">
             <div class="min-w-0">
               <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-                Shipping address
+                {{ language.t('addressesPage.shipping') }}
               </p>
               <h2 class="mt-1 text-base font-semibold text-slate-900 dark:text-white">
-                {{ address.street }}
+                <bdi dir="auto">{{ address.street }}</bdi>
               </h2>
             </div>
             @if (address.isDefault) {
               <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
                 <svg lucideCheck class="size-3.5" aria-hidden="true"></svg>
-                Default
+                {{ language.t('addressesPage.default') }}
               </span>
             }
           </div>
 
           <div class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
             <p class="font-medium text-slate-900 dark:text-white">
-              {{ address.recipientName }} · {{ address.phone }}
+              <bdi dir="auto">{{ address.recipientName }}</bdi> · <bdi dir="ltr">{{ address.phone }}</bdi>
             </p>
-            <p>{{ address.city }}, {{ address.state }}</p>
-            <p>{{ address.postalCode }}, {{ address.country }}</p>
+            <p><bdi dir="auto">{{ address.city }}, {{ address.state }}</bdi></p>
+            <p><bdi dir="auto">{{ address.postalCode }}, {{ address.country }}</bdi></p>
           </div>
 
           <div class="mt-4 flex items-center justify-end gap-2 border-t border-slate-200 pt-3 dark:border-slate-800">
@@ -170,22 +176,22 @@
               type="button"
               (click)="startEdit(address)"
               class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-              [attr.aria-label]="'Edit address for ' + address.street"
-              [title]="'Edit address for ' + address.street"
+              [attr.aria-label]="language.t('addressesPage.editFor', { street: address.street })"
+              [title]="language.t('addressesPage.editFor', { street: address.street })"
             >
               <svg lucidePencil class="size-[16px]" aria-hidden="true"></svg>
-              Edit
+              {{ language.t('addressesPage.edit') }}
             </button>
             <button
               type="button"
               (click)="remove(address)"
               [disabled]="addressService.saving()"
               class="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/30"
-              [attr.aria-label]="'Delete address for ' + address.street"
-              [title]="'Delete address for ' + address.street"
+              [attr.aria-label]="language.t('addressesPage.deleteFor', { street: address.street })"
+              [title]="language.t('addressesPage.deleteFor', { street: address.street })"
             >
               <svg lucideTrash2 class="size-[16px]" aria-hidden="true"></svg>
-              Delete
+              {{ language.t('addressesPage.delete') }}
             </button>
           </div>
         </article>
@@ -201,10 +207,10 @@
       aria-labelledby="delete-address-title"
     >
       <h2 id="delete-address-title" class="font-semibold text-red-900 dark:text-red-300">
-        Delete this address?
+        {{ language.t('addressesPage.deleteTitle') }}
       </h2>
       <p class="mt-1 text-sm text-red-800 dark:text-red-200">
-        {{ address.street }}, {{ address.city }} will be removed from your saved addresses.
+        {{ language.t('addressesPage.deleteMessage', { street: address.street, city: address.city }) }}
       </p>
       <div class="mt-4 flex flex-wrap gap-3">
         <button
@@ -213,7 +219,7 @@
           [disabled]="addressService.saving()"
           class="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {{ addressService.saving() ? 'Deleting...' : 'Delete address' }}
+          {{ addressService.saving() ? language.t('addressesPage.deleting') : language.t('addressesPage.delete') }}
         </button>
         <button
           type="button"
@@ -221,7 +227,7 @@
           [disabled]="addressService.saving()"
           class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-700 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-slate-800"
         >
-          Keep address
+          {{ language.t('addressesPage.keep') }}
         </button>
       </div>
     </section>

@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../../core/cart/cart';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthState } from '../../../core/auth/auth.state';
+import { LanguageService } from '../../../core/services/language';
 import { getProductImageUrl, onImageError } from '../../utils/image.util';
 
 @Component({
@@ -22,6 +23,7 @@ export class CartDrawerComponent {
   readonly cart = inject(CartService);
   readonly auth = inject(AuthService);
   readonly authState = inject(AuthState);
+  readonly language = inject(LanguageService);
   private readonly router = inject(Router);
   
   readonly getProductImageUrl = getProductImageUrl;

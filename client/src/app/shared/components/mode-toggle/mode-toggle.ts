@@ -3,6 +3,7 @@ import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular
 import { LucideMoon, LucideSun } from '@lucide/angular';
 
 import { ThemeService, type ThemeMode } from '../../../core/services/theme';
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-mode-toggle',
@@ -12,6 +13,7 @@ import { ThemeService, type ThemeMode } from '../../../core/services/theme';
 })
 export class ModeToggleComponent {
   readonly theme = inject(ThemeService);
+  readonly language = inject(LanguageService);
 
   @ViewChild('themeMenu') themeMenu?: ElementRef<HTMLDetailsElement>;
 

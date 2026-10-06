@@ -1,10 +1,10 @@
 <div class="flex flex-col gap-6">
   <!-- Header -->
   <header>
-    <h1 class="text-2xl font-bold tracking-tight">Orders</h1>
+    <h1 class="text-2xl font-bold tracking-tight">{{ language.t('adminOrders.title') }}</h1>
 
     <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
-      Manage and update customer order status here.
+      {{ language.t('adminOrders.subtitle') }}
     </p>
   </header>
 
@@ -15,7 +15,9 @@
     >
       <span>{{ error() }}</span>
 
-      <button type="button" (click)="load()" class="font-semibold underline">Retry</button>
+      <button type="button" (click)="load()" class="font-semibold underline">
+        {{ language.t('adminOrders.retry') }}
+      </button>
     </div>
   }
 
@@ -56,7 +58,7 @@
                 ];
                 track item
               ) {
-                <th class="px-2 py-3 first:pl-4 last:pr-4">
+                <th class="px-2 py-3 first:ps-4 last:pe-4">
                   <div class="h-3.5 w-16 animate-pulse rounded bg-slate-200"></div>
                 </th>
               }
@@ -67,7 +69,7 @@
             @for (row of [1, 2, 3, 4, 5]; track row) {
               <tr>
                 @for (cell of [1, 2, 3, 4, 5, 6, 7, 8]; track cell) {
-                  <td class="px-2 py-3 first:pl-4 last:pr-4">
+                  <td class="px-2 py-3 first:ps-4 last:pe-4">
                     <div class="h-4 w-full animate-pulse rounded bg-slate-200"></div>
                   </td>
                 }
@@ -88,12 +90,16 @@
     >
       <!-- Card Header -->
       <div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
-        <h2 class="font-semibold">All Orders ({{ pagination()?.total ?? 0 }})</h2>
+        <h2 class="font-semibold">
+          {{ language.t('adminOrders.allOrdersCount', { count: pagination()?.total ?? 0 }) }}
+        </h2>
       </div>
 
       @if (orders().length === 0) {
         <!-- Empty -->
-        <div class="p-8 text-center text-sm text-slate-500">No orders found.</div>
+        <div class="p-8 text-center text-sm text-slate-500">
+          {{ language.t('adminOrders.noOrders') }}
+        </div>
       } @else {
         <!-- Table -->
         <div class="overflow-x-auto">
@@ -114,14 +120,14 @@
               class="border-b border-slate-200 text-xs uppercase text-slate-500 dark:border-slate-800"
             >
               <tr>
-                <th class="px-2 py-3 pl-4 text-left">Order ID</th>
-                <th class="px-2 py-3 text-left">Customer</th>
-                <th class="px-2 py-3 text-left">Shipping To</th>
-                <th class="px-2 py-3 text-left">Date</th>
-                <th class="px-2 py-3 text-left">Items</th>
-                <th class="px-2 py-3 text-left">Total</th>
-                <th class="px-2 py-3 text-left">Payment</th>
-                <th class="px-2 py-3 pr-4 text-left">Status Update</th>
+                <th class="px-2 py-3 ps-4 text-start">{{ language.t('adminOrders.orderId') }}</th>
+                <th class="px-2 py-3 text-start">{{ language.t('adminOrders.customer') }}</th>
+                <th class="px-2 py-3 text-start">{{ language.t('adminOrders.shippingTo') }}</th>
+                <th class="px-2 py-3 text-start">{{ language.t('adminOrders.date') }}</th>
+                <th class="px-2 py-3 text-start">{{ language.t('adminOrders.items') }}</th>
+                <th class="px-2 py-3 text-start">{{ language.t('adminOrders.total') }}</th>
+                <th class="px-2 py-3 text-start">{{ language.t('adminOrders.payment') }}</th>
+                <th class="px-2 py-3 pe-4 text-start">{{ language.t('adminOrders.statusUpdate') }}</th>
               </tr>
             </thead>
 
@@ -132,7 +138,7 @@
                   class="text-[13px] transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60"
                 >
                   <!-- Order ID -->
-                  <td class="px-2 py-3 pl-4 font-medium">
+                  <td class="px-2 py-3 ps-4 font-medium">
                     <span class="block truncate"> #{{ order.orderNo }} </span>
                   </td>
 
@@ -169,18 +175,17 @@
 
                   <!-- Date -->
                   <td class="whitespace-nowrap px-2 py-3 text-xs text-slate-500">
-                    {{ order.createdAt | date: 'mediumDate' }}
+                    {{ formatDate(order.createdAt) }}
                   </td>
 
                   <!-- Items -->
                   <td class="whitespace-nowrap px-2 py-3">
-                    {{ order.items.length }}
-                    {{ order.items.length === 1 ? 'Item' : 'Items' }}
+                    {{ language.t('orders.itemCount', { count: order.items.length }) }}
                   </td>
 
                   <!-- Total -->
                   <td class="whitespace-nowrap px-2 py-3 font-semibold">
-                    ${{ order.total.toFixed(2) }}
+                    <bdi dir="ltr">${{ order.total.toFixed(2) }}</bdi>
                   </td>
 
                   <!-- Payment -->
@@ -189,12 +194,12 @@
                       class="status-badge capitalize"
                       [ngClass]="paymentStatusClass(order.paymentStatus)"
                     >
-                      {{ order.paymentStatus }}
+                      {{ paymentStatusLabel(order.paymentStatus) }}
                     </span>
                   </td>
 
                   <!-- Status -->
-                  <td class="px-2 py-3 pr-4">
+                  <td class="px-2 py-3 pe-4">
                     <div class="order-status-dropdown">
                       <!-- Select Trigger -->
                       <button
@@ -213,37 +218,37 @@
                           @switch (order.status) {
                             @case ('placed') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-slate-500"></span>
-                              <span class="truncate">Placed</span>
+                              <span class="truncate">{{ statusLabel('placed') }}</span>
                             }
 
                             @case ('confirmed') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-blue-500"></span>
-                              <span class="truncate">Confirmed</span>
+                              <span class="truncate">{{ statusLabel('confirmed') }}</span>
                             }
 
                             @case ('assigned') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-violet-500"></span>
-                              <span class="truncate">Assigned</span>
+                              <span class="truncate">{{ statusLabel('assigned') }}</span>
                             }
 
                             @case ('packed') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-amber-500"></span>
-                              <span class="truncate">Packed</span>
+                              <span class="truncate">{{ statusLabel('packed') }}</span>
                             }
 
                             @case ('out_for_delivery') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-orange-500"></span>
-                              <span class="truncate">Out For Delivery</span>
+                              <span class="truncate">{{ statusLabel('out_for_delivery') }}</span>
                             }
 
                             @case ('delivered') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
-                              <span class="truncate">Delivered</span>
+                              <span class="truncate">{{ statusLabel('delivered') }}</span>
                             }
 
                             @case ('cancelled') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-red-500"></span>
-                              <span class="truncate">Cancelled</span>
+                              <span class="truncate">{{ statusLabel('cancelled') }}</span>
                             }
                           }
                         </span>
@@ -283,7 +288,7 @@
                                 >
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-slate-500"></span>
-                                    <span>Placed</span>
+                                    <span>{{ statusLabel('placed') }}</span>
                                   </span>
                                 </button>
                               }
@@ -300,7 +305,7 @@
                                 >
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-blue-500"></span>
-                                    <span>Confirmed</span>
+                                    <span>{{ statusLabel('confirmed') }}</span>
                                   </span>
                                 </button>
                               }
@@ -317,7 +322,7 @@
                                 >
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-violet-500"></span>
-                                    <span>Assigned</span>
+                                    <span>{{ statusLabel('assigned') }}</span>
                                   </span>
                                 </button>
                               }
@@ -334,7 +339,7 @@
                                 >
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-amber-500"></span>
-                                    <span>Packed</span>
+                                    <span>{{ statusLabel('packed') }}</span>
                                   </span>
                                 </button>
                               }
@@ -351,7 +356,7 @@
                                 >
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-orange-500"></span>
-                                    <span>Out For Delivery</span>
+                                    <span>{{ statusLabel('out_for_delivery') }}</span>
                                   </span>
                                 </button>
                               }
@@ -368,7 +373,7 @@
                                 >
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                                    <span>Delivered</span>
+                                    <span>{{ statusLabel('delivered') }}</span>
                                   </span>
                                 </button>
                               }
@@ -385,7 +390,7 @@
                                 >
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-red-500"></span>
-                                    <span>Cancelled</span>
+                                    <span>{{ statusLabel('cancelled') }}</span>
                                   </span>
                                 </button>
                               }
@@ -422,7 +427,7 @@
                   >
                     <span class="flex items-center gap-2">
                       <span class="h-2 w-2 rounded-full bg-slate-500"></span>
-                      <span>Placed</span>
+                      <span>{{ statusLabel('placed') }}</span>
                     </span>
                   </button>
                 }
@@ -437,7 +442,7 @@
                   >
                     <span class="flex items-center gap-2">
                       <span class="h-2 w-2 rounded-full bg-blue-500"></span>
-                      <span>Confirmed</span>
+                      <span>{{ statusLabel('confirmed') }}</span>
                     </span>
                   </button>
                 }
@@ -451,7 +456,7 @@
                   >
                     <span class="flex items-center gap-2">
                       <span class="h-2 w-2 rounded-full bg-violet-500"></span>
-                      <span>Assigned</span>
+                      <span>{{ statusLabel('assigned') }}</span>
                     </span>
                   </button>
                 }
@@ -465,7 +470,7 @@
                   >
                     <span class="flex items-center gap-2">
                       <span class="h-2 w-2 rounded-full bg-amber-500"></span>
-                      <span>Packed</span>
+                      <span>{{ statusLabel('packed') }}</span>
                     </span>
                   </button>
                 }
@@ -479,7 +484,7 @@
                   >
                     <span class="flex items-center gap-2">
                       <span class="h-2 w-2 rounded-full bg-orange-500"></span>
-                      <span>Out For Delivery</span>
+                      <span>{{ statusLabel('out_for_delivery') }}</span>
                     </span>
                   </button>
                 }
@@ -493,7 +498,7 @@
                   >
                     <span class="flex items-center gap-2">
                       <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                      <span>Delivered</span>
+                      <span>{{ statusLabel('delivered') }}</span>
                     </span>
                   </button>
                 }
@@ -507,7 +512,7 @@
                   >
                     <span class="flex items-center gap-2">
                       <span class="h-2 w-2 rounded-full bg-red-500"></span>
-                      <span>Cancelled</span>
+                      <span>{{ statusLabel('cancelled') }}</span>
                     </span>
                   </button>
                 }
@@ -521,9 +526,15 @@
           class="flex flex-col gap-3 border-t border-slate-200 px-5 py-3.5 text-sm dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between"
         >
           <p class="text-slate-500">
-            Page {{ pagination()?.page || 1 }} of
-            {{ pagination()?.totalPages || 1 }}
-            ({{ pagination()?.total || 0 }} orders)
+            {{
+              language.t('adminOrders.page', {
+                page: pagination()?.page || 1,
+                totalPages: pagination()?.totalPages || 1,
+              })
+            }}
+            ({{
+              language.t('adminOrders.ordersCount', { count: pagination()?.total || 0 })
+            }})
           </p>
 
           <div class="flex items-center justify-end gap-1.5">
@@ -533,7 +544,7 @@
               [disabled]="!pagination()?.hasPrevPage"
               class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-xs font-medium transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
-              Previous
+              {{ language.t('adminOrders.previous') }}
             </button>
 
             <span
@@ -548,7 +559,7 @@
               [disabled]="!pagination()?.hasNextPage"
               class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-xs font-medium transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
-              Next
+              {{ language.t('adminOrders.next') }}
             </button>
           </div>
         </nav>

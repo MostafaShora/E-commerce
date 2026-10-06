@@ -5,6 +5,7 @@ import type { CreatedOrder, OrderStatus } from '../../checkout/services/order';
 import { orderStatusClass, paymentStatusClass } from '../models/admin.model';
 import { NotificationService } from '../../../core/services/notification';
 import { normalizeApiError } from '../../../core/api/api-error';
+import { LanguageService } from '../../../core/services/language';
 
 const statuses: OrderStatus[] = [
   'placed',
@@ -23,6 +24,7 @@ const statuses: OrderStatus[] = [
 })
 export class AdminOrdersComponent {
   readonly service = inject(AdminService);
+  readonly language = inject(LanguageService);
   private readonly notifications = inject(NotificationService);
   readonly orders = signal<CreatedOrder[]>([]);
   readonly loading = signal(true);
@@ -81,7 +83,24 @@ export class AdminOrdersComponent {
     return statuses.filter((status) => status === order.status || !used.has(status));
   }
   statusLabel(status: OrderStatus): string {
-    return status.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+    const key = status.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const path = `adminOrders.status.${key}`;
+    const translated = this.language.t(path);
+    return translated === path
+      ? status.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
+      : translated;
+  }
+
+  paymentStatusLabel(status: string): string {
+    const path = `orders.paymentStatuses.${status.toLowerCase()}`;
+    const translated = this.language.t(path);
+    return translated === path ? status.replaceAll('_', ' ') : translated;
+  }
+
+  formatDate(value: string): string {
+    return new Intl.DateTimeFormat(this.language.language() === 'ar' ? 'ar' : 'en-US', {
+      dateStyle: 'medium',
+    }).format(new Date(value));
   }
 
   toggleStatusMenu(orderId: string, event: MouseEvent): void {

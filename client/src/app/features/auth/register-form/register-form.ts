@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 
 import type { RegisterRequest } from '../../../core/auth/auth.models';
+import { LanguageService } from '../../../core/services/language';
 
 @Component({
   selector: 'app-register-form',
@@ -17,6 +18,7 @@ import type { RegisterRequest } from '../../../core/auth/auth.models';
   templateUrl: './register-form.html',
 })
 export class RegisterFormComponent {
+  readonly language = inject(LanguageService);
   @Input() isSubmitting = false;
   @Input() serverError: string | null = null;
   @Output() submitted = new EventEmitter<RegisterRequest>();

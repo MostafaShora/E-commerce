@@ -4,11 +4,15 @@
     class="inline-flex w-fit items-center gap-1 rounded-md text-sm font-medium text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none dark:text-slate-400 dark:hover:text-white"
   >
     <svg lucideArrowLeft class="size-4.5"></svg>
-    <span>Back to orders</span>
+    <span>{{ language.t('common.backToOrders') }}</span>
   </a>
 
   @if (loading()) {
-    <div class="flex flex-col gap-5 sm:gap-6" aria-label="Loading order details" aria-busy="true">
+    <div
+      class="flex flex-col gap-5 sm:gap-6"
+      [attr.aria-label]="language.t('orders.loadingDetails')"
+      aria-busy="true"
+    >
       <div class="h-22 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
       <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] sm:gap-6">
         <div class="flex flex-col gap-5 sm:gap-6">
@@ -26,23 +30,27 @@
     <section
       class="flex min-h-90 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700"
     >
-      <p class="text-lg font-semibold text-slate-900 dark:text-white">Order not found</p>
+      <p class="text-lg font-semibold text-slate-900 dark:text-white">
+        {{ language.t('orders.notFoundTitle') }}
+      </p>
       <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">{{ errorMessage() }}</p>
-      <button type="button" (click)="loadOrder()" class="mt-4 font-medium underline">Retry</button>
+      <button type="button" (click)="loadOrder()" class="mt-4 font-medium underline">
+        {{ language.t('common.retry') }}
+      </button>
     </section>
   } @else if (order(); as item) {
     <header class="flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
       <div class="min-w-0">
         <div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
           <h1 class="min-w-0 break-all text-2xl font-bold text-slate-900 dark:text-white sm:text-[28px]">
-            Order #{{ item.orderNo }}
+            {{ language.t('orders.orderLabel', { number: item.orderNo }) }}
           </h1>
           <span class="status-badge capitalize" [ngClass]="orderStatusClass(item.status)">
             {{ statusLabel(item.status) }}
           </span>
         </div>
         <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
-          Placed on {{ formatDate(item.createdAt) }}
+          {{ language.t('orders.placedOn', { date: formatDate(item.createdAt) }) }}
         </p>
       </div>
       @if (canCancel()) {
@@ -51,7 +59,7 @@
           (click)="requestCancellation()"
           class="inline-flex w-fit shrink-0 items-center justify-center rounded-lg border border-red-200 px-3.5 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-none dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/30"
         >
-          Cancel order
+          {{ language.t('orders.cancelOrder') }}
         </button>
       }
     </header>
@@ -74,22 +82,27 @@
         role="alertdialog"
         aria-modal="true"
       >
-        <h2 class="font-semibold text-red-900 dark:text-red-300">Cancel this order?</h2>
+        <h2 class="font-semibold text-red-900 dark:text-red-300">
+          {{ language.t('orders.cancelTitle') }}
+        </h2>
         <p class="mt-1 text-sm text-red-800 dark:text-red-200">
-          This action cannot be undone. The order status and payment information will be updated by
-          the server.
+          {{ language.t('orders.cancelDescription') }}
         </p>
 
         <form [formGroup]="cancelForm" (ngSubmit)="cancelOrder()" class="mt-4 space-y-3">
           <label class="block text-sm font-medium text-red-900 dark:text-red-300" for="cancel-reason">
-            Reason for cancellation <span class="text-red-600 dark:text-red-400">(optional)</span>
+            {{ language.t('orders.cancelReason') }}
+            <span class="text-red-600 dark:text-red-400">
+              ({{ language.t('orders.optional') }})
+            </span>
           </label>
           <textarea
             id="cancel-reason"
             formControlName="reason"
             rows="3"
             maxlength="500"
-            placeholder="e.g. Changed my mind, ordered twice, shipping delay"
+            [placeholder]="language.t('orders.cancelPlaceholder')"
+            dir="auto"
             class="w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-red-400 focus:outline-none dark:border-red-900/50 dark:bg-slate-950 dark:text-slate-200 dark:placeholder:text-slate-500"
           ></textarea>
 
@@ -99,7 +112,11 @@
               [disabled]="cancelling()"
               class="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {{ cancelling() ? 'Cancelling...' : 'Yes, cancel order' }}
+              {{
+                cancelling()
+                  ? language.t('orders.cancelling')
+                  : language.t('orders.yesCancelOrder')
+              }}
             </button>
             <button
               type="button"
@@ -107,7 +124,7 @@
               [disabled]="cancelling()"
               class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-700 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-slate-800"
             >
-              Keep order
+              {{ language.t('orders.keepOrder') }}
             </button>
           </div>
         </form>
@@ -120,7 +137,7 @@
       <span
         class="sr-only"
         role="progressbar"
-        aria-label="Order progress"
+        [attr.aria-label]="language.t('orders.progress')"
         aria-valuemin="0"
         aria-valuemax="100"
         [attr.aria-valuenow]="trackingProgressPercent()"
@@ -129,8 +146,8 @@
         <div class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
           <svg lucideCircleX class="size-5 shrink-0" aria-hidden="true"></svg>
           <div>
-            <h3 class="text-sm font-semibold">Order Cancelled</h3>
-            <p class="text-xs opacity-90">This order has been cancelled and cannot be tracked further.</p>
+            <h3 class="text-sm font-semibold">{{ language.t('orders.cancelledTitle') }}</h3>
+            <p class="text-xs opacity-90">{{ language.t('orders.cancelledDescription') }}</p>
           </div>
         </div>
       } @else {
@@ -208,7 +225,7 @@
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
             <svg lucideShoppingBag class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
-            Items ({{ item.items.length }})
+            {{ language.t('orders.itemsTitle', { count: item.items.length }) }}
           </h2>
           <div class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
             @for (line of item.items; track line._id || line.productId) {
@@ -226,7 +243,9 @@
                     {{ line.name }}
                   </p>
                   <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Qty: {{ line.quantity }} · ${{ line.salePrice.toFixed(2) }} each
+                    <bdi dir="auto">{{
+                      language.t('orders.quantity', { count: line.quantity })
+                    }} · {{ language.t('orders.each', { price: '$' + line.salePrice.toFixed(2) }) }}</bdi>
                   </p>
                   @if (canReview(line._id || '')) {
                     <button
@@ -235,16 +254,16 @@
                       class="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-md text-xs font-medium text-slate-700 underline-offset-2 transition-colors hover:text-slate-950 hover:underline focus-visible:outline-none dark:text-slate-300 dark:hover:text-white"
                     >
                       <svg lucideStar class="size-3.5" aria-hidden="true"></svg>
-                      Write review
+                      {{ language.t('orders.writeReview') }}
                     </button>
                   } @else if (line.isReviewed) {
                     <span class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
                       <svg lucideCircleCheck class="size-3.5" aria-hidden="true"></svg>
-                      Reviewed
+                      {{ language.t('orders.reviewed') }}
                     </span>
                   }
                 </div>
-                <p class="col-start-2 text-sm font-semibold text-slate-900 dark:text-white sm:col-start-3 sm:text-right">
+                <p class="col-start-2 text-sm font-semibold text-slate-900 dark:text-white sm:col-start-3 sm:text-right" dir="ltr">
                   ${{ (line.salePrice * line.quantity).toFixed(2) }}
                 </p>
               </div>
@@ -266,8 +285,13 @@
               (ngSubmit)="submitReview()"
               class="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950"
             >
-              <h3 class="font-medium text-slate-900 dark:text-white">Review {{ reviewItem.name }}</h3>
-              <div class="mt-3 flex items-center gap-0" aria-label="Rating from 1 to 5 stars">
+              <h3 class="font-medium text-slate-900 dark:text-white">
+                {{ language.t('orders.reviewFor', { name: reviewItem.name }) }}
+              </h3>
+              <div
+                class="mt-3 flex items-center gap-0"
+                [attr.aria-label]="language.t('orders.ratingRange')"
+              >
                 @for (star of [1, 2, 3, 4, 5]; track star) {
                   <button
                     type="button"
@@ -276,21 +300,24 @@
                     [class.text-amber-500]="star <= reviewForm.controls.rating.value"
                     [class.text-slate-300]="star > reviewForm.controls.rating.value"
                     [class.dark:text-slate-600]="star > reviewForm.controls.rating.value"
-                    [attr.aria-label]="star + ' stars'"
+                    [attr.aria-label]="language.t('orders.ratingStar', { count: star })"
                   >
                     <svg lucideStar class="size-4.5" aria-hidden="true"></svg>
                   </button>
                 }
               </div>
               @if (reviewForm.controls.rating.invalid && reviewForm.controls.rating.touched) {
-                <p class="mt-1 text-xs text-red-600 dark:text-red-400">Choose a rating from 1 to 5.</p>
+                <p class="mt-1 text-xs text-red-600 dark:text-red-400">
+                  {{ language.t('orders.ratingRequired') }}
+                </p>
               }
               <textarea
                 formControlName="comment"
                 maxlength="1000"
                 rows="4"
                 class="mt-3 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
-                placeholder="Share your experience (optional)"
+                [placeholder]="language.t('orders.reviewCommentPlaceholder')"
+                dir="auto"
               ></textarea>
               <div class="mt-3 flex gap-3">
                 <button
@@ -298,14 +325,18 @@
                   [disabled]="reviewSubmitting()"
                   class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
                 >
-                  {{ reviewSubmitting() ? 'Submitting...' : 'Submit review' }}
+                  {{
+                    reviewSubmitting()
+                      ? language.t('orders.submittingReview')
+                      : language.t('orders.submitReview')
+                  }}
                 </button>
                 <button
                   type="button"
                   (click)="cancelReview()"
                   class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
-                  Cancel
+                  {{ language.t('orders.cancelReview') }}
                 </button>
               </div>
             </form>
@@ -316,16 +347,16 @@
           <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
               <svg lucideCalendar class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
-              Status History
+              {{ language.t('orders.statusHistory') }}
             </h2>
             <div class="mt-4">
               @for (history of item.statusHistory; track history.date + history.status) {
-                <div class="relative min-h-16 pb-5 pl-6 last:min-h-0 last:pb-0">
+                <div class="relative min-h-16 pb-5 ps-6 last:min-h-0 last:pb-0">
                   @if (!$last) {
-                    <span class="absolute bottom-0 left-1.25 top-3 w-px bg-slate-200 dark:bg-slate-700"></span>
+                    <span class="absolute inset-s-1.25 bottom-0 top-3 w-px bg-slate-200 dark:bg-slate-700"></span>
                   }
                   <span
-                    class="absolute left-0 top-1 size-2.5 rounded-full ring-2 ring-white dark:ring-slate-900"
+                    class="absolute inset-s-0 top-1 size-2.5 rounded-full ring-2 ring-white dark:ring-slate-900"
                     [ngClass]="
                       history.status === 'cancelled'
                         ? 'bg-red-600 dark:bg-red-400'
@@ -361,7 +392,7 @@
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
             <svg lucideMapPin class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
-            Delivery address
+            {{ language.t('checkout.deliveryAddress') }}
           </h2>
           <div class="mt-4 flex min-w-0 flex-col gap-2 text-sm">
             <p class="wrap-break-word font-semibold text-slate-900 dark:text-white">
@@ -383,17 +414,21 @@
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
             <svg lucideCreditCard class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
-            Payment summary
+            {{ language.t('orders.paymentSummary') }}
           </h2>
           <div class="mt-4 flex flex-col gap-3 text-sm">
             <div class="flex items-center justify-between gap-4">
-              <span class="text-slate-500 dark:text-slate-400">Payment Method</span>
+              <span class="text-slate-500 dark:text-slate-400">
+                {{ language.t('orders.paymentMethod') }}
+              </span>
               <span class="font-medium capitalize text-slate-900 dark:text-white">
-                {{ paymentLabel(item.paymentMethod) }}
+                {{ paymentMethodLabel(item.paymentMethod) }}
               </span>
             </div>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-slate-500 dark:text-slate-400">Payment Status</span>
+              <span class="text-slate-500 dark:text-slate-400">
+                {{ language.t('orders.paymentStatus') }}
+              </span>
               <span class="status-badge capitalize" [ngClass]="paymentStatusClass(item.paymentStatus)">
                 {{ paymentLabel(item.paymentStatus) }}
               </span>
@@ -402,23 +437,25 @@
             <div class="border-t border-slate-200 dark:border-slate-700"></div>
 
             <div class="flex items-center justify-between gap-4">
-              <span class="text-slate-500 dark:text-slate-400">Subtotal</span>
-              <span class="font-medium text-slate-900 dark:text-white">${{ item.subtotal.toFixed(2) }}</span>
+              <span class="text-slate-500 dark:text-slate-400">{{ language.t('orders.subtotal') }}</span>
+              <bdi class="font-medium text-slate-900 dark:text-white" dir="ltr">${{ item.subtotal.toFixed(2) }}</bdi>
             </div>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-slate-500 dark:text-slate-400">Delivery</span>
+              <span class="text-slate-500 dark:text-slate-400">{{ language.t('orders.delivery') }}</span>
               <span class="font-medium text-slate-900 dark:text-white">
-                {{ item.deliveryFee === 0 ? 'Free' : '$' + item.deliveryFee.toFixed(2) }}
+                <bdi dir="ltr">{{
+                  item.deliveryFee === 0 ? language.t('orders.free') : '$' + item.deliveryFee.toFixed(2)
+                }}</bdi>
               </span>
             </div>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-slate-500 dark:text-slate-400">Tax</span>
-              <span class="font-medium text-slate-900 dark:text-white">${{ item.tax.toFixed(2) }}</span>
+              <span class="text-slate-500 dark:text-slate-400">{{ language.t('orders.tax') }}</span>
+              <bdi class="font-medium text-slate-900 dark:text-white" dir="ltr">${{ item.tax.toFixed(2) }}</bdi>
             </div>
             <div class="mt-1 border-t border-slate-200 pt-4 dark:border-slate-700"></div>
             <div class="flex items-center justify-between gap-4 text-base font-semibold text-slate-900 dark:text-white">
-              <span>Total</span>
-              <span>${{ item.total.toFixed(2) }}</span>
+              <span>{{ language.t('orders.total') }}</span>
+              <bdi dir="ltr">${{ item.total.toFixed(2) }}</bdi>
             </div>
           </div>
         </section>

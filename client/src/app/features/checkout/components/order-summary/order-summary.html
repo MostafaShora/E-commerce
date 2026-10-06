@@ -17,7 +17,9 @@
         <svg lucideXCircle class="size-6"></svg>
       </div>
 
-      <h1 class="text-lg font-semibold text-slate-900">Unable to load order</h1>
+      <h1 class="text-lg font-semibold text-slate-900">
+        {{ language.t('orderConfirmation.loadErrorTitle') }}
+      </h1>
 
       <p class="mt-1 text-sm text-slate-500">
         {{ error() }}
@@ -28,7 +30,7 @@
         (click)="retry()"
         class="mt-5 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
       >
-        Try again
+        {{ language.t('orderConfirmation.retry') }}
       </button>
     </div>
   </div>
@@ -41,7 +43,7 @@
       class="inline-flex w-fit items-center gap-2 text-sm font-medium text-slate-700 transition hover:text-slate-950"
     >
       <svg lucideArrowLeft class="size-[18px]"></svg>
-      <span>Back to orders</span>
+      <span>{{ language.t('orderConfirmation.backToOrders') }}</span>
     </a>
 
     <!-- Order Header -->
@@ -49,7 +51,9 @@
       <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div class="flex flex-wrap items-center gap-2">
-            <h1 class="text-xl font-semibold text-slate-950">Order #{{ order.orderNo }}</h1>
+            <h1 class="text-xl font-semibold text-slate-950">
+              {{ language.t('orders.orderLabel', { number: order.orderNo }) }}
+            </h1>
 
             <span
               class="rounded-full px-2.5 py-1 text-xs font-semibold"
@@ -59,14 +63,16 @@
             </span>
           </div>
 
-          <p class="mt-2 text-sm text-slate-500">Placed on {{ formatDate(order.createdAt) }}</p>
+          <p class="mt-2 text-sm text-slate-500">
+            {{ language.t('orders.placedOn', { date: formatDate(order.createdAt) }) }}
+          </p>
         </div>
 
-        <div class="text-left sm:text-right">
-          <p class="text-sm text-slate-500">Total</p>
+        <div class="text-start sm:text-end">
+          <p class="text-sm text-slate-500">{{ language.t('orderConfirmation.total') }}</p>
 
           <p class="text-xl font-bold text-slate-950">
-            {{ formatPrice(order.total) }}
+            <bdi dir="ltr">{{ formatPrice(order.total) }}</bdi>
           </p>
         </div>
       </div>
@@ -81,7 +87,7 @@
           <div class="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
             <svg lucidePackage class="size-5 text-slate-700"></svg>
 
-            <h2 class="font-semibold text-slate-950">Order items</h2>
+            <h2 class="font-semibold text-slate-950">{{ language.t('orderConfirmation.orderItems') }}</h2>
           </div>
 
           <div class="divide-y divide-slate-100">
@@ -94,20 +100,24 @@
                 </div>
 
                 <div class="min-w-0 flex-1">
-                  <h3 class="line-clamp-2 text-sm font-semibold text-slate-950">
+                  <h3 class="line-clamp-2 text-sm font-semibold text-slate-950" dir="auto">
                     {{ item.name }}
                   </h3>
 
-                  <p class="mt-1 text-sm text-slate-500">Qty: {{ item.quantity }}</p>
+                  <p class="mt-1 text-sm text-slate-500">
+                    {{ language.t('orderConfirmation.quantity', { count: item.quantity }) }}
+                  </p>
 
                   <p class="mt-2 text-sm font-medium text-slate-700">
-                    {{ formatPrice(itemPrice(item)) }} each
+                    <bdi dir="ltr">
+                      {{ language.t('orderConfirmation.each', { price: formatPrice(itemPrice(item)) }) }}
+                    </bdi>
                   </p>
                 </div>
 
-                <div class="shrink-0 text-right">
+                <div class="shrink-0 text-end">
                   <p class="text-sm font-semibold text-slate-950">
-                    {{ formatPrice(itemTotal(item)) }}
+                    <bdi dir="ltr">{{ formatPrice(itemTotal(item)) }}</bdi>
                   </p>
                 </div>
               </div>
@@ -120,15 +130,17 @@
           <div class="mb-4 flex items-center gap-2">
             <svg lucideMapPin class="size-5 text-slate-700"></svg>
 
-            <h2 class="font-semibold text-slate-950">Delivery address</h2>
+            <h2 class="font-semibold text-slate-950">
+              {{ language.t('orderConfirmation.deliveryAddress') }}
+            </h2>
           </div>
 
           <div class="text-sm leading-6 text-slate-600">
-            <p class="font-medium text-slate-900">
+            <p class="font-medium text-slate-900" dir="auto">
               {{ order.shippingAddress.street }}
             </p>
 
-            <p>
+            <p dir="auto">
               {{ order.shippingAddress.city }}
               @if (order.shippingAddress.state) {
                 , {{ order.shippingAddress.state }}
@@ -136,11 +148,11 @@
             </p>
 
             @if (order.shippingAddress.country) {
-              <p>{{ order.shippingAddress.country }}</p>
+              <p dir="auto">{{ order.shippingAddress.country }}</p>
             }
 
             @if (order.shippingAddress.phone) {
-              <p class="mt-2">
+              <p class="mt-2" dir="ltr">
                 {{ order.shippingAddress.phone }}
               </p>
             }
@@ -155,41 +167,43 @@
           <div class="mb-4 flex items-center gap-2">
             <svg lucideReceipt class="size-5 text-slate-700"></svg>
 
-            <h2 class="font-semibold text-slate-950">Order summary</h2>
+            <h2 class="font-semibold text-slate-950">{{ language.t('orderConfirmation.summary') }}</h2>
           </div>
 
           <div class="flex flex-col gap-3 text-sm">
             <div class="flex justify-between gap-4">
-              <span class="text-slate-500">Subtotal</span>
+              <span class="text-slate-500">{{ language.t('orderConfirmation.subtotal') }}</span>
 
               <span class="font-medium text-slate-900">
-                {{ formatPrice(order.subtotal ?? 0) }}
+                <bdi dir="ltr">{{ formatPrice(order.subtotal ?? 0) }}</bdi>
               </span>
             </div>
 
             <div class="flex justify-between gap-4">
-              <span class="text-slate-500">Delivery</span>
+              <span class="text-slate-500">{{ language.t('orderConfirmation.delivery') }}</span>
 
               <span class="font-medium text-slate-900">
-                {{ formatPrice(order.deliveryFee ?? 0) }}
+                <bdi dir="ltr">{{ formatPrice(order.deliveryFee ?? 0) }}</bdi>
               </span>
             </div>
 
             <div class="flex justify-between gap-4">
-              <span class="text-slate-500">Tax</span>
+              <span class="text-slate-500">{{ language.t('orderConfirmation.tax') }}</span>
 
               <span class="font-medium text-slate-900">
-                {{ formatPrice(order.tax ?? 0) }}
+                <bdi dir="ltr">{{ formatPrice(order.tax ?? 0) }}</bdi>
               </span>
             </div>
 
             <div class="my-1 h-px bg-slate-100"></div>
 
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-slate-950"> Total </span>
+              <span class="font-semibold text-slate-950">
+                {{ language.t('orderConfirmation.total') }}
+              </span>
 
               <span class="font-bold text-slate-950">
-                {{ formatPrice(order.total) }}
+                <bdi dir="ltr">{{ formatPrice(order.total) }}</bdi>
               </span>
             </div>
           </div>
@@ -197,14 +211,14 @@
 
         <!-- Payment -->
         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 class="mb-4 font-semibold text-slate-950">Payment</h2>
+          <h2 class="mb-4 font-semibold text-slate-950">{{ language.t('orderConfirmation.payment') }}</h2>
 
           <div class="flex items-center justify-between gap-4 text-sm">
             <div>
-              <p class="text-slate-500">Method</p>
+              <p class="text-slate-500">{{ language.t('orderConfirmation.method') }}</p>
 
               <p class="mt-1 font-medium text-slate-900">
-                {{ order.paymentMethod || 'Card' }}
+                {{ paymentMethodLabel(order.paymentMethod) }}
               </p>
             </div>
 
@@ -216,7 +230,7 @@
                   : 'bg-amber-50 text-amber-700'
               "
             >
-              {{ order.paymentStatus === 'paid' ? 'Paid' : 'Pending' }}
+              {{ paymentLabel(order.paymentStatus) }}
             </span>
           </div>
         </section>
@@ -229,7 +243,9 @@
         <div class="mb-6 flex items-center gap-2">
           <svg lucideTruck class="size-5 text-slate-700"></svg>
 
-          <h2 class="font-semibold text-slate-950">Order status</h2>
+          <h2 class="font-semibold text-slate-950">
+            {{ language.t('orderConfirmation.orderStatus') }}
+          </h2>
         </div>
 
         <div class="flex flex-col">
@@ -296,9 +312,13 @@
           </div>
 
           <div>
-            <h2 class="font-semibold text-red-900">Order cancelled</h2>
+            <h2 class="font-semibold text-red-900">
+              {{ language.t('orderConfirmation.cancelledTitle') }}
+            </h2>
 
-            <p class="mt-1 text-sm text-red-700">This order has been cancelled.</p>
+            <p class="mt-1 text-sm text-red-700">
+              {{ language.t('orderConfirmation.cancelledDescription') }}
+            </p>
           </div>
         </div>
       </section>
