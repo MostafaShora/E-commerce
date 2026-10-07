@@ -3,6 +3,7 @@ import { getModelToken } from '@nestjs/mongoose';
 
 import { CategoryService } from './category.service';
 import { Category } from './schemas/category.schema';
+import { Product } from '../product/schemas/product.schema';
 
 describe('CategoryService', () => {
   let service: CategoryService;
@@ -18,6 +19,10 @@ describe('CategoryService', () => {
         {
           provide: getModelToken(Category.name),
           useValue: mockCategoryModel,
+        },
+        {
+          provide: getModelToken(Product.name),
+          useValue: {},
         },
       ],
     }).compile();

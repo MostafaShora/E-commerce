@@ -66,6 +66,7 @@ export class LanguageService {
     const doc = document.documentElement;
     doc.lang = language;
     doc.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.title = language === 'ar' ? 'Zad' : 'Zad';
     doc.classList.toggle('rtl', language === 'ar');
     doc.classList.toggle('ltr', language !== 'ar');
     document.body.dir = doc.dir;

@@ -1,4 +1,4 @@
-<span class="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-slate-200 text-sm font-semibold text-slate-700" role="img" [attr.aria-label]="src && !imageFailed() ? alt : fallback">
+<span class="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-slate-200 text-sm font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-200" role="img" [attr.aria-label]="src && !imageFailed() ? alt : fallback">
   @if (src && !imageFailed()) {
     <img [src]="src" [alt]="alt" class="size-full object-cover" (error)="handleError()" />
   } @else {

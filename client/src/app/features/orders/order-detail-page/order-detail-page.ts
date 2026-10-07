@@ -83,10 +83,7 @@ export class OrderDetailPageComponent {
   });
 
   constructor() {
-    merge(
-      this.route.paramMap.pipe(map((params) => params.get('id'))),
-      this.refreshOrder$,
-    )
+    merge(this.route.paramMap.pipe(map((params) => params.get('id'))), this.refreshOrder$)
       .pipe(
         switchMap((id) => {
           this.loading.set(true);
@@ -181,7 +178,6 @@ export class OrderDetailPageComponent {
   readonly trackingSteps: Array<{ status: OrderStatus; label: string }> = [
     { status: 'placed', label: 'Placed' },
     { status: 'confirmed', label: 'Confirmed' },
-    { status: 'assigned', label: 'Assigned' },
     { status: 'packed', label: 'Packed' },
     { status: 'out_for_delivery', label: 'Out for Delivery' },
     { status: 'delivered', label: 'Delivered' },
@@ -202,10 +198,10 @@ export class OrderDetailPageComponent {
     const steps: Array<{ status: OrderStatus; label: string }> =
       this.order()?.status === 'cancelled'
         ? [
-          { status: 'placed', label: 'Placed' },
-          { status: 'cancelled', label: 'Cancelled' },
-        ]
-      : this.trackingSteps;
+            { status: 'placed', label: 'Placed' },
+            { status: 'cancelled', label: 'Cancelled' },
+          ]
+        : this.trackingSteps;
     return steps.map((step) => ({ ...step, label: this.statusLabel(step.status) }));
   }
 
@@ -281,7 +277,9 @@ export class OrderDetailPageComponent {
   }
 
   statusLabel(status: OrderStatus): string {
-    const key = status.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const key = status
+      .toLowerCase()
+      .replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
     const path = `orders.status.${key}`;
     const translated = this.language.t(path);
     return translated === path
@@ -294,7 +292,9 @@ export class OrderDetailPageComponent {
   }
 
   paymentLabel(value: PaymentStatus | string): string {
-    const key = value.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const key = value
+      .toLowerCase()
+      .replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
     const path = `orders.paymentStatuses.${key}`;
     const translated = this.language.t(path);
     return translated === path ? value.replaceAll('_', ' ') : translated;
@@ -310,11 +310,15 @@ export class OrderDetailPageComponent {
 
   paymentStatusClass(status: PaymentStatus): string {
     switch (status) {
-      case 'paid': return 'status-paid';
-      case 'failed': return 'status-failed';
-      case 'refunded': return 'status-inactive';
+      case 'paid':
+        return 'status-paid';
+      case 'failed':
+        return 'status-failed';
+      case 'refunded':
+        return 'status-inactive';
       case 'pending':
-      default: return 'status-payment-pending';
+      default:
+        return 'status-payment-pending';
     }
   }
 

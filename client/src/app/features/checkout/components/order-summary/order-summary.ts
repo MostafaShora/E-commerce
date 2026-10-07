@@ -16,10 +16,7 @@ import {
   LucideTruck,
 } from '@lucide/angular';
 
-import {
-  OrderService,
-  type CreatedOrder,
-} from '../../services/order';
+import { OrderService, type CreatedOrder } from '../../services/order';
 
 interface OrderItem {
   _id?: string;
@@ -149,11 +146,16 @@ export class OrderSummaryComponent {
   }
 
   statusLabel(status: string): string {
-    const key = status.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const key = status
+      .toLowerCase()
+      .replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
     const path = `orders.status.${key}`;
     const translated = this.language.t(path);
     return translated === path
-      ? status.split('_').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
+      ? status
+          .split('_')
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ')
       : translated;
   }
 
@@ -165,7 +167,8 @@ export class OrderSummaryComponent {
 
   paymentMethodLabel(method: string | undefined): string {
     if (!method) return this.language.t('orderConfirmation.card');
-    const key = method.toLowerCase() === 'cash_on_delivery' ? 'cashOnDelivery' : method.toLowerCase();
+    const key =
+      method.toLowerCase() === 'cash_on_delivery' ? 'cashOnDelivery' : method.toLowerCase();
     const path = `orders.paymentMethods.${key}`;
     const translated = this.language.t(path);
     return translated === path ? method.replaceAll('_', ' ') : translated;
@@ -180,7 +183,6 @@ export class OrderSummaryComponent {
         return 'bg-sky-50 text-sky-700';
 
       case 'packed':
-      case 'assigned':
       case 'confirmed':
         return 'bg-amber-50 text-amber-700';
 
@@ -193,14 +195,7 @@ export class OrderSummaryComponent {
   }
 
   isStatusReached(order: Order, status: string): boolean {
-    const statuses = [
-      'placed',
-      'confirmed',
-      'assigned',
-      'packed',
-      'out_for_delivery',
-      'delivered',
-    ];
+    const statuses = ['placed', 'confirmed', 'packed', 'out_for_delivery', 'delivered'];
 
     if (order.status === 'cancelled') {
       return false;

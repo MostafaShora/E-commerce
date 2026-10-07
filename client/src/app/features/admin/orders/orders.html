@@ -127,7 +127,9 @@
                 <th class="px-2 py-3 text-start">{{ language.t('adminOrders.items') }}</th>
                 <th class="px-2 py-3 text-start">{{ language.t('adminOrders.total') }}</th>
                 <th class="px-2 py-3 text-start">{{ language.t('adminOrders.payment') }}</th>
-                <th class="px-2 py-3 pe-4 text-start">{{ language.t('adminOrders.statusUpdate') }}</th>
+                <th class="px-2 py-3 pe-4 text-start">
+                  {{ language.t('adminOrders.statusUpdate') }}
+                </th>
               </tr>
             </thead>
 
@@ -226,11 +228,6 @@
                               <span class="truncate">{{ statusLabel('confirmed') }}</span>
                             }
 
-                            @case ('assigned') {
-                              <span class="h-2 w-2 shrink-0 rounded-full bg-violet-500"></span>
-                              <span class="truncate">{{ statusLabel('assigned') }}</span>
-                            }
-
                             @case ('packed') {
                               <span class="h-2 w-2 shrink-0 rounded-full bg-amber-500"></span>
                               <span class="truncate">{{ statusLabel('packed') }}</span>
@@ -306,23 +303,6 @@
                                   <span class="flex items-center gap-2">
                                     <span class="h-2 w-2 rounded-full bg-blue-500"></span>
                                     <span>{{ statusLabel('confirmed') }}</span>
-                                  </span>
-                                </button>
-                              }
-
-                              @case ('assigned') {
-                                <button
-                                  type="button"
-                                  role="option"
-                                  [attr.aria-selected]="status === order.status"
-                                  (click)="selectStatus(order, status)"
-                                  class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
-                                  [class.bg-slate-100]="status === order.status"
-                                  [class.font-medium]="status === order.status"
-                                >
-                                  <span class="flex items-center gap-2">
-                                    <span class="h-2 w-2 rounded-full bg-violet-500"></span>
-                                    <span>{{ statusLabel('assigned') }}</span>
                                   </span>
                                 </button>
                               }
@@ -447,20 +427,6 @@
                   </button>
                 }
 
-                @case ('assigned') {
-                  <button
-                    type="button"
-                    role="option"
-                    (click)="selectStatus(order, status)"
-                    class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
-                  >
-                    <span class="flex items-center gap-2">
-                      <span class="h-2 w-2 rounded-full bg-violet-500"></span>
-                      <span>{{ statusLabel('assigned') }}</span>
-                    </span>
-                  </button>
-                }
-
                 @case ('packed') {
                   <button
                     type="button"
@@ -532,9 +498,7 @@
                 totalPages: pagination()?.totalPages || 1,
               })
             }}
-            ({{
-              language.t('adminOrders.ordersCount', { count: pagination()?.total || 0 })
-            }})
+            ({{ language.t('adminOrders.ordersCount', { count: pagination()?.total || 0 }) }})
           </p>
 
           <div class="flex items-center justify-end gap-1.5">

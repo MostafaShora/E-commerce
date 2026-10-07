@@ -13,16 +13,28 @@
       [attr.aria-label]="language.t('orders.loadingDetails')"
       aria-busy="true"
     >
-      <div class="h-22 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+      <div
+        class="h-22 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+      ></div>
       <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] sm:gap-6">
         <div class="flex flex-col gap-5 sm:gap-6">
-          <div class="h-28 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
-          <div class="h-64 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
-          <div class="h-52 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+          <div
+            class="h-28 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+          ></div>
+          <div
+            class="h-64 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+          ></div>
+          <div
+            class="h-52 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+          ></div>
         </div>
         <div class="flex flex-col gap-5 sm:gap-6">
-          <div class="h-40 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
-          <div class="h-64 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"></div>
+          <div
+            class="h-40 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+          ></div>
+          <div
+            class="h-64 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+          ></div>
         </div>
       </div>
     </div>
@@ -39,10 +51,14 @@
       </button>
     </section>
   } @else if (order(); as item) {
-    <header class="flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+    <header
+      class="flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between"
+    >
       <div class="min-w-0">
         <div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
-          <h1 class="min-w-0 break-all text-2xl font-bold text-slate-900 dark:text-white sm:text-[28px]">
+          <h1
+            class="min-w-0 break-all text-2xl font-bold text-slate-900 dark:text-white sm:text-[28px]"
+          >
             {{ language.t('orders.orderLabel', { number: item.orderNo }) }}
           </h1>
           <span class="status-badge capitalize" [ngClass]="orderStatusClass(item.status)">
@@ -65,13 +81,17 @@
     </header>
 
     @if (cancelError()) {
-      <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+      <div
+        class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
+      >
         {{ cancelError() }}
       </div>
     }
 
     @if (cancellationMessage()) {
-      <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
+      <div
+        class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300"
+      >
         {{ cancellationMessage() }}
       </div>
     }
@@ -90,7 +110,10 @@
         </p>
 
         <form [formGroup]="cancelForm" (ngSubmit)="cancelOrder()" class="mt-4 space-y-3">
-          <label class="block text-sm font-medium text-red-900 dark:text-red-300" for="cancel-reason">
+          <label
+            class="block text-sm font-medium text-red-900 dark:text-red-300"
+            for="cancel-reason"
+          >
             {{ language.t('orders.cancelReason') }}
             <span class="text-red-600 dark:text-red-400">
               ({{ language.t('orders.optional') }})
@@ -113,9 +136,7 @@
               class="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {{
-                cancelling()
-                  ? language.t('orders.cancelling')
-                  : language.t('orders.yesCancelOrder')
+                cancelling() ? language.t('orders.cancelling') : language.t('orders.yesCancelOrder')
               }}
             </button>
             <button
@@ -133,104 +154,117 @@
 
     <div class="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_340px] sm:gap-6">
       <div class="flex min-w-0 flex-col gap-5 sm:gap-6">
-    <section class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5">
-      <span
-        class="sr-only"
-        role="progressbar"
-        [attr.aria-label]="language.t('orders.progress')"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        [attr.aria-valuenow]="trackingProgressPercent()"
-      ></span>
-      @if (order()?.status === 'cancelled') {
-        <div class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
-          <svg lucideCircleX class="size-5 shrink-0" aria-hidden="true"></svg>
-          <div>
-            <h3 class="text-sm font-semibold">{{ language.t('orders.cancelledTitle') }}</h3>
-            <p class="text-xs opacity-90">{{ language.t('orders.cancelledDescription') }}</p>
-          </div>
-        </div>
-      } @else {
-        <div class="relative w-full">
-          <div class="absolute left-[8.3333%] right-[8.3333%] top-4.5 h-1.5 -translate-y-1/2 rounded-full bg-slate-200 dark:bg-slate-700">
+        <section
+          class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5"
+        >
+          <span
+            class="sr-only"
+            role="progressbar"
+            [attr.aria-label]="language.t('orders.progress')"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [attr.aria-valuenow]="trackingProgressPercent()"
+          ></span>
+          @if (order()?.status === 'cancelled') {
             <div
-              class="h-full rounded-full bg-slate-700 transition-all duration-500 dark:bg-slate-300"
-              [style.width]="trackingProgressPercent() + '%'"
-            ></div>
-          </div>
-
-          <div class="grid grid-cols-6 items-start">
-          @for (
-            step of displayTrackingSteps();
-            track step.status;
-            let index = $index
-          ) {
-            <div class="relative z-10 flex min-w-0 flex-col items-center text-center">
+              class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
+            >
+              <svg lucideCircleX class="size-5 shrink-0" aria-hidden="true"></svg>
+              <div>
+                <h3 class="text-sm font-semibold">{{ language.t('orders.cancelledTitle') }}</h3>
+                <p class="text-xs opacity-90">{{ language.t('orders.cancelledDescription') }}</p>
+              </div>
+            </div>
+          } @else {
+            <div class="relative w-full">
+              <div
+                class="absolute inset-x-[10%] top-4 h-1.5 -translate-y-1/2 rounded-full bg-slate-200 dark:bg-slate-700 sm:top-[18px]"
+              >
                 <div
-                  class="grid size-9 place-items-center rounded-full border-2 transition-all duration-300"
-                  [ngClass]="
-                    index < currentTrackingIndex()
-                      ? 'border-slate-900 bg-slate-800 text-white dark:border-slate-200 dark:bg-slate-200 dark:text-slate-950'
-                      : index === currentTrackingIndex()
-                        ? 'scale-110 border-slate-900 bg-slate-800 text-white ring-4 ring-slate-300 dark:border-slate-200 dark:bg-slate-200 dark:text-slate-950 dark:ring-slate-700'
-                        : 'border-slate-300 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400'
-                  "
-                >
-                @switch (step.status) {
-                  @case ('placed') {
-                    <svg lucideShoppingCart class="size-4.5" aria-hidden="true"></svg>
-                  }
-                  @case ('confirmed') {
-                    <svg lucideCircleCheck class="size-4.5" aria-hidden="true"></svg>
-                  }
-                  @case ('assigned') {
-                    <svg lucideTruck class="size-4.5" aria-hidden="true"></svg>
-                  }
-                  @case ('packed') {
-                    <svg lucidePackageCheck class="size-4.5" aria-hidden="true"></svg>
-                  }
-                  @case ('out_for_delivery') {
-                    <svg lucideTruck class="size-4.5" aria-hidden="true"></svg>
-                  }
-                  @case ('delivered') {
-                    <svg lucideHouse class="size-4.5" aria-hidden="true"></svg>
-                  }
+                  class="h-full rounded-full bg-slate-700 transition-all duration-500 dark:bg-slate-300"
+                  [style.width]="trackingProgressPercent() + '%'"
+                ></div>
+              </div>
+
+              <div class="relative z-10 grid grid-cols-5 items-start">
+                @for (step of displayTrackingSteps(); track step.status; let index = $index) {
+                  <div class="flex min-w-0 flex-col items-center text-center">
+                    <div
+                      class="grid size-8 place-items-center rounded-full border-2 transition-all duration-300 sm:size-9"
+                      [ngClass]="
+                        index < currentTrackingIndex()
+                          ? 'border-slate-900 bg-slate-800 text-white dark:border-slate-200 dark:bg-slate-200 dark:text-slate-950'
+                          : index === currentTrackingIndex()
+                            ? 'scale-110 border-slate-900 bg-slate-800 text-white ring-4 ring-slate-300 dark:border-slate-200 dark:bg-slate-200 dark:text-slate-950 dark:ring-slate-700'
+                            : 'border-slate-300 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400'
+                      "
+                    >
+                      @switch (step.status) {
+                        @case ('placed') {
+                          <svg lucideShoppingCart class="size-4.5" aria-hidden="true"></svg>
+                        }
+                        @case ('confirmed') {
+                          <svg lucideCircleCheck class="size-4.5" aria-hidden="true"></svg>
+                        }
+                        @case ('packed') {
+                          <svg lucidePackageCheck class="size-4.5" aria-hidden="true"></svg>
+                        }
+                        @case ('out_for_delivery') {
+                          <svg lucideTruck class="size-4.5" aria-hidden="true"></svg>
+                        }
+                        @case ('delivered') {
+                          <svg lucideHouse class="size-4.5" aria-hidden="true"></svg>
+                        }
+                      }
+                    </div>
+                    <span
+                      class="mt-2 min-h-9 w-full px-0.5 text-center text-[10px] font-semibold leading-tight sm:text-[11px] md:text-xs"
+                      [attr.aria-current]="index === currentTrackingIndex() ? 'step' : null"
+                      [ngClass]="
+                        step.status === 'cancelled'
+                          ? 'text-red-700 dark:text-red-300'
+                          : index <= currentTrackingIndex()
+                            ? 'font-bold text-slate-900 dark:text-white'
+                            : 'text-slate-500 dark:text-slate-400'
+                      "
+                    >
+                      {{ step.label }}
+                    </span>
+                    @if (step.status === 'placed') {
+                      <span
+                        class="mt-1 w-full text-[9px] leading-tight text-slate-500 dark:text-slate-400"
+                      >
+                        {{ formatDate(item.createdAt) }}
+                      </span>
+                    }
+                  </div>
                 }
               </div>
-              <span
-                class="mt-2 min-h-9 w-full px-0.5 text-center text-[10px] font-semibold leading-tight md:text-xs"
-                [attr.aria-current]="index === currentTrackingIndex() ? 'step' : null"
-                  [ngClass]="
-                    step.status === 'cancelled'
-                      ? 'text-red-700 dark:text-red-300'
-                      : index <= currentTrackingIndex()
-                        ? 'font-bold text-slate-900 dark:text-white'
-                        : 'text-slate-500 dark:text-slate-400'
-                  "
-              >
-                {{ step.label }}
-              </span>
-              @if (step.status === 'placed') {
-                <span class="mt-1 max-w-full text-[9px] leading-tight text-slate-500 dark:text-slate-400">
-                  {{ formatDate(item.createdAt) }}
-                </span>
-              }
             </div>
           }
-          </div>
-        </div>
-      }
-    </section>
+        </section>
 
-        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
-            <svg lucideShoppingBag class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+        <section
+          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+        >
+          <h2
+            class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white"
+          >
+            <svg
+              lucideShoppingBag
+              class="size-4 text-slate-700 dark:text-slate-300"
+              aria-hidden="true"
+            ></svg>
             {{ language.t('orders.itemsTitle', { count: item.items.length }) }}
           </h2>
           <div class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
             @for (line of item.items; track line._id || line.productId) {
-              <div class="grid min-w-0 grid-cols-[48px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-4 first:pt-3 last:pb-1 sm:grid-cols-[56px_minmax(0,1fr)_auto] sm:gap-x-4">
-                <span class="grid size-12 place-items-center rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950 sm:size-14">
+              <div
+                class="grid min-w-0 grid-cols-[48px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-4 first:pt-3 last:pb-1 sm:grid-cols-[56px_minmax(0,1fr)_auto] sm:gap-x-4"
+              >
+                <span
+                  class="grid size-12 place-items-center rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950 sm:size-14"
+                >
                   <img
                     [src]="getProductImageUrl(line.image)"
                     [alt]="line.name"
@@ -243,9 +277,12 @@
                     {{ line.name }}
                   </p>
                   <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    <bdi dir="auto">{{
-                      language.t('orders.quantity', { count: line.quantity })
-                    }} · {{ language.t('orders.each', { price: '$' + line.salePrice.toFixed(2) }) }}</bdi>
+                    <bdi dir="auto"
+                      >{{ language.t('orders.quantity', { count: line.quantity }) }} ·
+                      {{
+                        language.t('orders.each', { price: '$' + line.salePrice.toFixed(2) })
+                      }}</bdi
+                    >
                   </p>
                   @if (canReview(line._id || '')) {
                     <button
@@ -257,25 +294,34 @@
                       {{ language.t('orders.writeReview') }}
                     </button>
                   } @else if (line.isReviewed) {
-                    <span class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span
+                      class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400"
+                    >
                       <svg lucideCircleCheck class="size-3.5" aria-hidden="true"></svg>
                       {{ language.t('orders.reviewed') }}
                     </span>
                   }
                 </div>
-                <p class="col-start-2 text-sm font-semibold text-slate-900 dark:text-white sm:col-start-3 sm:text-right" dir="ltr">
+                <p
+                  class="col-start-2 text-sm font-semibold text-slate-900 dark:text-white sm:col-start-3 sm:text-right"
+                  dir="ltr"
+                >
                   ${{ (line.salePrice * line.quantity).toFixed(2) }}
                 </p>
               </div>
             }
           </div>
           @if (reviewMessage()) {
-            <p class="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300">
+            <p
+              class="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300"
+            >
               {{ reviewMessage() }}
             </p>
           }
           @if (reviewError()) {
-            <p class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300">
+            <p
+              class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300"
+            >
               {{ reviewError() }}
             </p>
           }
@@ -344,16 +390,26 @@
         </section>
 
         @if (item.statusHistory?.length) {
-          <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
-              <svg lucideCalendar class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+          <section
+            class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+          >
+            <h2
+              class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white"
+            >
+              <svg
+                lucideCalendar
+                class="size-4 text-slate-700 dark:text-slate-300"
+                aria-hidden="true"
+              ></svg>
               {{ language.t('orders.statusHistory') }}
             </h2>
             <div class="mt-4">
               @for (history of item.statusHistory; track history.date + history.status) {
                 <div class="relative min-h-16 pb-5 ps-6 last:min-h-0 last:pb-0">
                   @if (!$last) {
-                    <span class="absolute inset-s-1.25 bottom-0 top-3 w-px bg-slate-200 dark:bg-slate-700"></span>
+                    <span
+                      class="absolute inset-s-1.25 bottom-0 top-3 w-px bg-slate-200 dark:bg-slate-700"
+                    ></span>
                   }
                   <span
                     class="absolute inset-s-0 top-1 size-2.5 rounded-full ring-2 ring-white dark:ring-slate-900"
@@ -368,7 +424,11 @@
                   <div>
                     <p
                       class="text-sm font-semibold"
-                      [ngClass]="history.status === 'cancelled' ? 'text-red-700 dark:text-red-300' : 'text-slate-900 dark:text-white'"
+                      [ngClass]="
+                        history.status === 'cancelled'
+                          ? 'text-red-700 dark:text-red-300'
+                          : 'text-slate-900 dark:text-white'
+                      "
                     >
                       {{ statusLabel(history.status) }}
                     </p>
@@ -389,9 +449,17 @@
       </div>
 
       <aside class="flex flex-col gap-6">
-        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
-            <svg lucideMapPin class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+        <section
+          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+        >
+          <h2
+            class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white"
+          >
+            <svg
+              lucideMapPin
+              class="size-4 text-slate-700 dark:text-slate-300"
+              aria-hidden="true"
+            ></svg>
             {{ language.t('checkout.deliveryAddress') }}
           </h2>
           <div class="mt-4 flex min-w-0 flex-col gap-2 text-sm">
@@ -402,18 +470,31 @@
               {{ item.shippingAddress.street }}
             </p>
             <p class="wrap-break-word leading-relaxed text-slate-600 dark:text-slate-300">
-              {{ item.shippingAddress.city }}, {{ item.shippingAddress.state }} {{ item.shippingAddress.postalCode }}
+              {{ item.shippingAddress.city }}, {{ item.shippingAddress.state }}
+              {{ item.shippingAddress.postalCode }}
             </p>
-            <p class="wrap-break-word text-slate-600 dark:text-slate-300">{{ item.shippingAddress.country }}</p>
-            <p class="mt-1 border-t border-slate-100 pt-3 text-slate-600 dark:border-slate-800 dark:text-slate-300">
+            <p class="wrap-break-word text-slate-600 dark:text-slate-300">
+              {{ item.shippingAddress.country }}
+            </p>
+            <p
+              class="mt-1 border-t border-slate-100 pt-3 text-slate-600 dark:border-slate-800 dark:text-slate-300"
+            >
               {{ item.shippingAddress.phone }}
             </p>
           </div>
         </section>
 
-        <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <h2 class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white">
-            <svg lucideCreditCard class="size-4 text-slate-700 dark:text-slate-300" aria-hidden="true"></svg>
+        <section
+          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+        >
+          <h2
+            class="flex items-center gap-2 border-b border-slate-100 pb-3 text-base font-semibold text-slate-900 dark:border-slate-800 dark:text-white"
+          >
+            <svg
+              lucideCreditCard
+              class="size-4 text-slate-700 dark:text-slate-300"
+              aria-hidden="true"
+            ></svg>
             {{ language.t('orders.paymentSummary') }}
           </h2>
           <div class="mt-4 flex flex-col gap-3 text-sm">
@@ -429,7 +510,10 @@
               <span class="text-slate-500 dark:text-slate-400">
                 {{ language.t('orders.paymentStatus') }}
               </span>
-              <span class="status-badge capitalize" [ngClass]="paymentStatusClass(item.paymentStatus)">
+              <span
+                class="status-badge capitalize"
+                [ngClass]="paymentStatusClass(item.paymentStatus)"
+              >
                 {{ paymentLabel(item.paymentStatus) }}
               </span>
             </div>
@@ -437,23 +521,35 @@
             <div class="border-t border-slate-200 dark:border-slate-700"></div>
 
             <div class="flex items-center justify-between gap-4">
-              <span class="text-slate-500 dark:text-slate-400">{{ language.t('orders.subtotal') }}</span>
-              <bdi class="font-medium text-slate-900 dark:text-white" dir="ltr">${{ item.subtotal.toFixed(2) }}</bdi>
+              <span class="text-slate-500 dark:text-slate-400">{{
+                language.t('orders.subtotal')
+              }}</span>
+              <bdi class="font-medium text-slate-900 dark:text-white" dir="ltr"
+                >${{ item.subtotal.toFixed(2) }}</bdi
+              >
             </div>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-slate-500 dark:text-slate-400">{{ language.t('orders.delivery') }}</span>
+              <span class="text-slate-500 dark:text-slate-400">{{
+                language.t('orders.delivery')
+              }}</span>
               <span class="font-medium text-slate-900 dark:text-white">
                 <bdi dir="ltr">{{
-                  item.deliveryFee === 0 ? language.t('orders.free') : '$' + item.deliveryFee.toFixed(2)
+                  item.deliveryFee === 0
+                    ? language.t('orders.free')
+                    : '$' + item.deliveryFee.toFixed(2)
                 }}</bdi>
               </span>
             </div>
             <div class="flex items-center justify-between gap-4">
               <span class="text-slate-500 dark:text-slate-400">{{ language.t('orders.tax') }}</span>
-              <bdi class="font-medium text-slate-900 dark:text-white" dir="ltr">${{ item.tax.toFixed(2) }}</bdi>
+              <bdi class="font-medium text-slate-900 dark:text-white" dir="ltr"
+                >${{ item.tax.toFixed(2) }}</bdi
+              >
             </div>
             <div class="mt-1 border-t border-slate-200 pt-4 dark:border-slate-700"></div>
-            <div class="flex items-center justify-between gap-4 text-base font-semibold text-slate-900 dark:text-white">
+            <div
+              class="flex items-center justify-between gap-4 text-base font-semibold text-slate-900 dark:text-white"
+            >
               <span>{{ language.t('orders.total') }}</span>
               <bdi dir="ltr">${{ item.total.toFixed(2) }}</bdi>
             </div>

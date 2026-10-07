@@ -725,7 +725,7 @@ async function seed() {
         statusHistory: [
           { status: 'placed', date: new Date('2024-08-01') },
           { status: 'confirmed', date: new Date('2024-08-02') },
-          { status: 'assigned', date: new Date('2024-08-03') },
+          { status: 'packed', date: new Date('2024-08-03') },
           { status: 'packed', date: new Date('2024-08-03T12:00:00') },
           { status: 'out_for_delivery', date: new Date('2024-08-04') },
           { status: 'delivered', date: new Date('2024-08-05') },
@@ -765,7 +765,7 @@ async function seed() {
         statusHistory: [
           { status: 'placed', date: new Date('2024-08-10') },
           { status: 'confirmed', date: new Date('2024-08-11') },
-          { status: 'assigned', date: new Date('2024-08-11T12:00:00') },
+          { status: 'packed', date: new Date('2024-08-11T12:00:00') },
           { status: 'packed', date: new Date('2024-08-12') },
           { status: 'out_for_delivery', date: new Date('2024-08-12T14:00:00') },
         ],
@@ -820,7 +820,7 @@ async function seed() {
     ];
 
     const ordersCollection = db.collection('orders');
-    const ordersResult = await ordersCollection.insertMany(orders as any);
+    await ordersCollection.insertMany(orders as any);
 
     console.log(`Created ${orders.length} orders`);
 
@@ -839,4 +839,4 @@ async function seed() {
   }
 }
 
-seed();
+void seed();

@@ -1,4 +1,4 @@
-export const PRODUCT_IMAGE_FALLBACK = '/assets/images/product-img-1.jpeg';
+export const PRODUCT_IMAGE_FALLBACK = '/assets/images/product-placeholder.svg';
 
 type ImageItem = string | { url?: string | null };
 

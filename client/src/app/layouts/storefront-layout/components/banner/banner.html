@@ -3,11 +3,12 @@
     <div
       class="promo-banner__ticker"
       role="img"
+      [attr.dir]="language.isArabic() ? 'rtl' : 'ltr'"
       [attr.aria-label]="tickerText()"
     >
       <div class="promo-banner__track" aria-hidden="true">
-        <span [attr.dir]="language.language()">{{ tickerText() }}</span>
-        <span [attr.dir]="language.language()">{{ tickerText() }}</span>
+        <span [attr.dir]="language.isArabic() ? 'rtl' : 'ltr'">{{ tickerText() }}</span>
+        <span [attr.dir]="language.isArabic() ? 'rtl' : 'ltr'">{{ tickerText() }}</span>
       </div>
     </div>
 

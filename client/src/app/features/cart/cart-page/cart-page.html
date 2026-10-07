@@ -1,57 +1,59 @@
 <div class="flex flex-col gap-6 px-4 py-6">
   <header>
-    <h1 class="text-2xl font-semibold text-slate-900">{{ language.t('cartPage.title') }}</h1>
-    <p class="mt-1 text-sm text-slate-600">{{ language.t('cartPage.subtitle') }}</p>
+    <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">{{ language.t('cartPage.title') }}</h1>
+    <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{{ language.t('cartPage.subtitle') }}</p>
   </header>
 
   @if (cart.loading()) {
     <div class="flex flex-col gap-4">
       @for (item of [1, 2, 3]; track item) {
-        <div class="h-28 animate-pulse rounded-xl bg-slate-200"></div>
+        <div class="h-28 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800"></div>
       }
     </div>
   } @else if (cart.errorMessage() && cart.items().length === 0) {
-    <section class="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-red-700">
+    <section class="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
       <p>{{ cart.errorMessage() }}</p>
-      <button type="button" (click)="cart.retry()" class="mt-3 font-medium underline">{{ language.t('common.retry') }}</button>
+      <button type="button" (click)="cart.retry()" class="mt-3 font-medium underline">
+        {{ language.t('common.retry') }}
+      </button>
     </section>
   } @else if (cart.items().length === 0) {
     <section
-      class="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center"
+      class="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900"
     >
-      <p class="text-lg font-medium text-slate-900">{{ language.t('cartPage.emptyTitle') }}</p>
-      <p class="mt-2 text-sm text-slate-600">
+      <p class="text-lg font-medium text-slate-900 dark:text-white">{{ language.t('cartPage.emptyTitle') }}</p>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
         {{ language.t('cartPage.emptySubtitle') }}
       </p>
       <a
         routerLink="/products"
-        class="mt-5 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white"
+        class="mt-5 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
         >{{ language.t('common.browseProducts') }}</a
       >
     </section>
   } @else {
     @if (cart.errorMessage()) {
-      <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
         {{ cart.errorMessage() }}
       </div>
     }
     <div class="grid gap-8 lg:grid-cols-[1fr_320px]">
-      <section class="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <section class="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-900">
         @for (item of cart.items(); track item.productId._id) {
           <article class="grid grid-cols-[80px_1fr] gap-4 p-4 sm:grid-cols-[96px_1fr]">
             <img
               [src]="getProductImageUrl(item.productId.images)"
               [alt]="item.productId.name"
               (error)="onImageError($event)"
-              class="size-20 object-contain sm:size-24"
+              class="size-20 rounded-lg bg-slate-100 p-1 object-contain sm:size-24 dark:bg-slate-800"
             />
             <div class="flex min-w-0 flex-col gap-3">
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <h2 class="line-clamp-2 text-sm font-medium text-slate-900">
+                  <h2 class="line-clamp-2 text-sm font-medium text-slate-900 dark:text-white">
                     <bdi dir="auto">{{ item.productId.name }}</bdi>
                   </h2>
-                  <p class="mt-1 text-sm text-slate-600">
+                  <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
                     <bdi dir="ltr">${{ item.productId.salePrice.toFixed(2) }}</bdi
                     >{{ item.productId.unit ? ' · ' + item.productId.unit : '' }}
                   </p>
@@ -60,29 +62,44 @@
                   type="button"
                   (click)="remove(item.productId._id)"
                   [disabled]="cart.saving()"
-                  class="text-sm text-slate-500 underline hover:text-slate-900 disabled:opacity-40"
+                  [attr.aria-label]="
+                    language.t('cartPage.removeItem', { name: item.productId.name })
+                  "
+                  [attr.title]="language.t('cartPage.removeItem', { name: item.productId.name })"
+                  class="inline-flex size-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-red-900/60 dark:hover:bg-red-950/30 dark:hover:text-red-400"
                 >
-                  {{ language.t('common.remove') }}
+                  <svg lucideTrash2 class="size-4" aria-hidden="true"></svg>
                 </button>
               </div>
               <div class="flex items-center justify-between gap-3">
-                <span class="text-sm font-semibold text-slate-900"
-                  ><bdi dir="ltr">${{ (item.productId.salePrice * item.quantity).toFixed(2) }}</bdi></span
+                <span class="text-sm font-semibold text-slate-900 dark:text-white"
+                  ><bdi dir="ltr"
+                    >${{ (item.productId.salePrice * item.quantity).toFixed(2) }}</bdi
+                  ></span
                 >
-                <div class="flex items-center rounded-lg border border-slate-300">
+                <div class="flex items-center rounded-lg border border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
                   <button
                     type="button"
                     (click)="decrease(item.productId._id, item.quantity)"
                     [disabled]="cart.saving()"
-                    class="size-9 text-lg disabled:opacity-40"
+                    [attr.aria-label]="
+                      language.t('cartPage.decreaseQuantity', { name: item.productId.name })
+                    "
+                    class="grid size-10 place-items-center rounded-s-lg text-lg font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
-                    {{ item.quantity === 1 ? '-' : '-' }}</button
-                  ><span class="min-w-8 text-center text-sm font-medium">{{ item.quantity }}</span
-                  ><button
+                    -
+                  </button>
+                  <span class="min-w-9 text-center text-sm font-semibold text-slate-900 dark:text-white">{{
+                    item.quantity
+                  }}</span>
+                  <button
                     type="button"
                     (click)="increase(item.productId._id, item.quantity)"
                     [disabled]="cart.saving()"
-                    class="size-9 text-lg disabled:opacity-40"
+                    [attr.aria-label]="
+                      language.t('cartPage.increaseQuantity', { name: item.productId.name })
+                    "
+                    class="grid size-10 place-items-center rounded-e-lg text-lg font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     +
                   </button>
@@ -93,36 +110,46 @@
         }
       </section>
 
-      <aside class="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="flex items-center justify-between text-sm text-slate-600">
-          <span>{{ language.t('common.items') }}</span><span>{{ cart.itemCount() }}</span>
+      <aside class="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
+          <span>{{ language.t('common.items') }}</span
+          ><span>{{ cart.itemCount() }}</span>
         </div>
-        <div class="mt-3 flex items-center justify-between text-sm text-slate-600">
-          <span>{{ language.t('common.subtotal') }}</span><bdi dir="ltr">${{ cart.subtotal().toFixed(2) }}</bdi>
+        <div class="mt-3 flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
+          <span>{{ language.t('common.subtotal') }}</span
+          ><bdi dir="ltr">${{ cart.subtotal().toFixed(2) }}</bdi>
         </div>
-        <div class="mt-2 flex items-center justify-between text-sm text-slate-600">
-          <span>{{ language.t('common.delivery') }}</span><bdi dir="ltr">${{ cart.deliveryFee().toFixed(2) }}</bdi>
+        <div class="mt-2 flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
+          <span>{{ language.t('common.delivery') }}</span
+          ><bdi dir="ltr">${{ cart.deliveryFee().toFixed(2) }}</bdi>
         </div>
-        <div class="mt-2 flex items-center justify-between text-sm text-slate-600">
-          <span>{{ language.t('common.tax') }}</span><bdi dir="ltr">${{ cart.tax().toFixed(2) }}</bdi>
+        <div class="mt-2 flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
+          <span>{{ language.t('common.tax') }}</span
+          ><bdi dir="ltr">${{ cart.tax().toFixed(2) }}</bdi>
         </div>
         <div
-          class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 font-semibold text-slate-900"
+          class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 font-semibold text-slate-900 dark:border-slate-700 dark:text-white"
         >
-          <span>{{ language.t('common.total') }}</span><bdi dir="ltr">${{ cart.orderTotal().toFixed(2) }}</bdi>
+          <span>{{ language.t('common.total') }}</span
+          ><bdi dir="ltr">${{ cart.orderTotal().toFixed(2) }}</bdi>
         </div>
         @if (cart.freeDeliveryThreshold() > 0) {
-          <p class="mt-3 text-xs text-slate-500">
-            {{ language.t('cartPage.freeDelivery', { amount: cart.freeDeliveryThreshold().toFixed(2) }) }}
+          <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">
+            {{
+              language.t('cartPage.freeDelivery', {
+                amount: cart.freeDeliveryThreshold().toFixed(2),
+              })
+            }}
           </p>
         }
         <button
           type="button"
           (click)="clear()"
           [disabled]="cart.saving()"
-          class="mt-5 text-left text-sm font-medium text-slate-600 underline disabled:opacity-40"
+          class="mt-5 inline-flex w-full items-center justify-start gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-red-900/50 dark:hover:bg-red-950/30 dark:hover:text-red-300"
         >
-          {{ language.t('common.clearCart') }}
+          <svg lucideTrash2 class="size-4" aria-hidden="true"></svg>
+          <span>{{ language.t('common.clearCart') }}</span>
         </button>
       </aside>
     </div>

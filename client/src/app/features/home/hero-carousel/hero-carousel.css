@@ -1,0 +1,93 @@
+@keyframes heroImageReveal {
+  from {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes heroOverlayReveal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroCtaReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-carousel__image {
+  animation: heroImageReveal 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center;
+}
+
+.hero-carousel__overlay {
+  animation: heroOverlayReveal 600ms ease-out both;
+}
+
+.hero-carousel__subtitle {
+  animation: heroFadeUp 450ms cubic-bezier(0.22, 1, 0.36, 1) 100ms both;
+}
+
+.hero-carousel__title {
+  animation: heroFadeUp 600ms cubic-bezier(0.22, 1, 0.36, 1) 210ms both;
+}
+
+.hero-carousel__cta {
+  animation: heroCtaReveal 500ms cubic-bezier(0.22, 1, 0.36, 1) 340ms both;
+}
+
+.hero-carousel__note {
+  animation: heroFadeUp 450ms cubic-bezier(0.22, 1, 0.36, 1) 440ms both;
+}
+
+@media (min-width: 768px) {
+  .hero-carousel__content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .hero-carousel__image {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-carousel__image,
+  .hero-carousel__overlay,
+  .hero-carousel__subtitle,
+  .hero-carousel__title,
+  .hero-carousel__cta,
+  .hero-carousel__note {
+    animation: none;
+  }
+}

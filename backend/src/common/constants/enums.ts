@@ -22,7 +22,6 @@ export const PAYMENT_STATUS_VALUES = Object.values(PAYMENT_STATUS);
 export const ORDER_STATUS = {
   PLACED: 'placed',
   CONFIRMED: 'confirmed',
-  ASSIGNED: 'assigned',
   PACKED: 'packed',
   OUT_FOR_DELIVERY: 'out_for_delivery',
   DELIVERED: 'delivered',
@@ -32,6 +31,25 @@ export const ORDER_STATUS = {
 export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
 
 export const ORDER_STATUS_VALUES = Object.values(ORDER_STATUS);
+
+export function normalizeOrderStatus(status?: string | null): OrderStatus {
+  if (status === 'assigned') {
+    return ORDER_STATUS.PACKED;
+  }
+
+  if (
+    status === ORDER_STATUS.PLACED ||
+    status === ORDER_STATUS.CONFIRMED ||
+    status === ORDER_STATUS.PACKED ||
+    status === ORDER_STATUS.OUT_FOR_DELIVERY ||
+    status === ORDER_STATUS.DELIVERED ||
+    status === ORDER_STATUS.CANCELLED
+  ) {
+    return status;
+  }
+
+  return ORDER_STATUS.PLACED;
+}
 
 export const PAYMENT_METHODS = {
   CARD: 'card',

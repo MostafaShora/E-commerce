@@ -1,31 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
 
+import { CategoryController } from './category.controller';
 import { CategoryService } from './category.service';
-import { Category } from './schemas/category.schema';
 
-describe('CategoryService', () => {
-  let service: CategoryService;
-
-  const mockCategoryModel = {
-    find: jest.fn(),
-  };
+describe('CategoryController', () => {
+  let controller: CategoryController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CategoryService,
-        {
-          provide: getModelToken(Category.name),
-          useValue: mockCategoryModel,
-        },
-      ],
+      controllers: [CategoryController],
+      providers: [{ provide: CategoryService, useValue: {} }],
     }).compile();
 
-    service = module.get<CategoryService>(CategoryService);
+    controller = module.get<CategoryController>(CategoryController);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(controller).toBeDefined();
   });
 });

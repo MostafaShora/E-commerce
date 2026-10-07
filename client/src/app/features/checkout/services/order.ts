@@ -1,11 +1,29 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 export type PaymentMethod = 'cash_on_delivery' | 'card';
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 export type OrderStatus =
-  'placed' | 'confirmed' | 'assigned' | 'packed' | 'out_for_delivery' | 'delivered' | 'cancelled';
+  'placed' | 'confirmed' | 'packed' | 'out_for_delivery' | 'delivered' | 'cancelled';
+
+export function normalizeOrderStatus(status?: string | null): OrderStatus {
+  if (status === 'assigned') {
+    return 'packed';
+  }
+
+  switch (status) {
+    case 'placed':
+    case 'confirmed':
+    case 'packed':
+    case 'out_for_delivery':
+    case 'delivered':
+    case 'cancelled':
+      return status;
+    default:
+      return 'placed';
+  }
+}
 
 export type CreateOrderRequest = {
   addressId: string;
@@ -88,16 +106,37 @@ export type CancelOrderResponse = {
 export class OrderService {
   constructor(private readonly http: HttpClient) {}
 
+  private normalizeOrder(order: CreatedOrder): CreatedOrder {
+    return {
+      ...order,
+      status: normalizeOrderStatus(order.status),
+      statusHistory: order.statusHistory?.map((entry) => ({
+        ...entry,
+        status: normalizeOrderStatus(entry.status),
+      })),
+    };
+  }
+
   createOrder(request: CreateOrderRequest): Observable<CreateOrderResponse> {
     return this.http.post<CreateOrderResponse>('/api/order', request);
   }
 
   getOrders(): Observable<OrdersResponse> {
-    return this.http.get<OrdersResponse>('/api/order');
+    return this.http.get<OrdersResponse>('/api/order').pipe(
+      map((response) => ({
+        ...response,
+        orders: response.orders.map((order) => this.normalizeOrder(order)),
+      })),
+    );
   }
 
   getOrderById(id: string): Observable<OrderResponse> {
-    return this.http.get<OrderResponse>(`/api/order/${encodeURIComponent(id)}`);
+    return this.http.get<OrderResponse>(`/api/order/${encodeURIComponent(id)}`).pipe(
+      map((response) => ({
+        ...response,
+        order: this.normalizeOrder(response.order),
+      })),
+    );
   }
 
   cancelOrder(id: string, request: CancelOrderRequest = {}): Observable<CancelOrderResponse> {

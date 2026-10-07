@@ -10,7 +10,6 @@ import { LanguageService } from '../../../core/services/language';
 const statuses: OrderStatus[] = [
   'placed',
   'confirmed',
-  'assigned',
   'packed',
   'out_for_delivery',
   'delivered',
@@ -83,7 +82,9 @@ export class AdminOrdersComponent {
     return statuses.filter((status) => status === order.status || !used.has(status));
   }
   statusLabel(status: OrderStatus): string {
-    const key = status.toLowerCase().replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const key = status
+      .toLowerCase()
+      .replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
     const path = `adminOrders.status.${key}`;
     const translated = this.language.t(path);
     return translated === path
@@ -178,23 +179,20 @@ export class AdminOrdersComponent {
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
 
-    if (
-      !target.closest('.order-status-dropdown') &&
-      !target.closest('.order-status-menu')
-    ) {
+    if (!target.closest('.order-status-dropdown') && !target.closest('.order-status-menu')) {
       this.closeStatusMenu();
     }
   }
 
-selectStatus(order: CreatedOrder, status: OrderStatus): void {
-  this.closeStatusMenu();
+  selectStatus(order: CreatedOrder, status: OrderStatus): void {
+    this.closeStatusMenu();
 
-  if (status === order.status) {
-    return;
+    if (status === order.status) {
+      return;
+    }
+
+    this.update(order, status);
   }
-
-  this.update(order, status);
-}
 
   nextPage(): void {
     if (this.pagination()?.hasNextPage) {

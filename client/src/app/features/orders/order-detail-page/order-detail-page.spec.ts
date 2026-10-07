@@ -73,38 +73,40 @@ describe('OrderDetailPageComponent', () => {
   });
 
   it('refetches and replaces the order when the window regains focus', () => {
-    currentStatus = 'assigned';
+    currentStatus = 'packed';
 
     window.dispatchEvent(new Event('focus'));
     fixture.detectChanges();
 
+    const packedLabel = fixture.componentInstance.statusLabel('packed');
+
     expect(orderService.getOrderById).toHaveBeenCalledTimes(2);
-    expect(fixture.componentInstance.order()?.status).toBe('assigned');
+    expect(fixture.componentInstance.order()?.status).toBe('packed');
     expect(fixture.componentInstance.currentTrackingIndex()).toBe(2);
-    expect(fixture.componentInstance.trackingProgressPercent()).toBe(40);
+    expect(fixture.componentInstance.trackingProgressPercent()).toBe(50);
     expect(fixture.nativeElement.querySelector('[aria-current="step"]')?.textContent).toContain(
-      'Assigned',
+      packedLabel,
     );
   });
 
-  it('uses the six visible tracking statuses and safely handles cancelled and unknown states', () => {
+  it('uses the five visible tracking statuses and safely handles cancelled and unknown states', () => {
     const component = fixture.componentInstance;
 
     expect(component.trackingSteps.map((step) => step.status)).toEqual([
       'placed',
       'confirmed',
-      'assigned',
       'packed',
       'out_for_delivery',
       'delivered',
     ]);
+    expect(fixture.nativeElement.querySelectorAll('.relative.z-10.grid-cols-5 > div')).toHaveLength(5);
 
     component.order.set({ ...baseOrder, status: 'out_for_delivery' });
-    expect(component.currentTrackingIndex()).toBe(4);
-    expect(component.trackingProgressPercent()).toBe(80);
+    expect(component.currentTrackingIndex()).toBe(3);
+    expect(component.trackingProgressPercent()).toBe(75);
 
     component.order.set({ ...baseOrder, status: 'delivered' });
-    expect(component.currentTrackingIndex()).toBe(5);
+    expect(component.currentTrackingIndex()).toBe(4);
     expect(component.trackingProgressPercent()).toBe(100);
 
     component.order.set({ ...baseOrder, status: 'cancelled' });

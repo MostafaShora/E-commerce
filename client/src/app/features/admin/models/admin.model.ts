@@ -26,14 +26,19 @@ export function prepareProductImages(files: File[]): {
 
 export function orderStatusClass(status: string): string {
   switch (status.toLowerCase()) {
-    case 'delivered': return 'status-delivered';
-    case 'confirmed': return 'status-confirmed';
-    case 'assigned': return 'status-assigned';
-    case 'packed': return 'status-packed';
-    case 'out_for_delivery': return 'status-out-for-delivery';
-    case 'cancelled': return 'status-cancelled';
+    case 'delivered':
+      return 'status-delivered';
+    case 'confirmed':
+      return 'status-confirmed';
+    case 'packed':
+      return 'status-packed';
+    case 'out_for_delivery':
+      return 'status-out-for-delivery';
+    case 'cancelled':
+      return 'status-cancelled';
     case 'placed':
-    default: return 'status-placed';
+    default:
+      return 'status-placed';
   }
 }
 

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { LucideTrash2 } from '@lucide/angular';
 import { RouterLink } from '@angular/router';
 
 import { CartService } from '../../../core/cart/cart';
@@ -9,7 +10,7 @@ import { getProductImageUrl, onImageError } from '../../../shared/utils/image.ut
 @Component({
   selector: 'app-cart-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LucideTrash2],
   templateUrl: './cart-page.html',
 })
 export class CartPageComponent {

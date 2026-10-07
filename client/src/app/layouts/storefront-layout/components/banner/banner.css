@@ -15,10 +15,13 @@
   flex: 1;
   overflow: hidden;
   margin-inline-end: 44px;
+  direction: ltr;
+  container-type: inline-size;
 }
 
 .promo-banner__track {
   display: flex;
+  direction: ltr;
   width: max-content;
   height: 100%;
   align-items: center;
@@ -27,11 +30,20 @@
 
 .promo-banner__track span {
   flex: none;
-  padding-inline-end: 3rem;
+  padding-inline-end: 100cqi;
   white-space: nowrap;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
+}
+
+.promo-banner__ticker[dir='rtl'] .promo-banner__track {
+  animation-name: promo-marquee-rtl;
+}
+
+.promo-banner__ticker[dir='rtl'] .promo-banner__track span {
+  padding-inline-end: 0;
+  padding-inline-start: 100cqi;
 }
 
 .promo-banner__close {
@@ -56,8 +68,20 @@
 }
 
 @keyframes promo-marquee {
+  from {
+    transform: translateX(100cqi);
+  }
   to {
+    transform: translateX(calc(100cqi - 50%));
+  }
+}
+
+@keyframes promo-marquee-rtl {
+  from {
     transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -66,6 +90,10 @@
     width: 100%;
     justify-content: center;
     animation: none;
+  }
+
+  .promo-banner__track span {
+    padding-inline: 0;
   }
 
   .promo-banner__track span:nth-child(2) {

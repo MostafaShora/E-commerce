@@ -1,13 +1,13 @@
 <button
   type="button"
   (click)="open()"
-  class="relative flex shrink-0 items-center gap-2 rounded-lg px-2 py-1.5 text-slate-900 transition hover:bg-slate-100"
+  class="relative flex shrink-0 items-center gap-2 rounded-lg px-2 py-1.5 text-slate-900 transition hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800"
   [attr.aria-label]="language.t('nav.openCart')"
 >
   <svg lucideShoppingCart class="size-[18px]" aria-hidden="true"></svg>
   <span class="hidden text-sm font-bold sm:block">{{ language.t('nav.cart') }}</span>
   <span
-    class="absolute -end-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full bg-slate-900 px-1 text-xs font-bold text-white"
+    class="absolute -end-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full bg-slate-900 px-1 text-xs font-bold text-white dark:bg-slate-200 dark:text-slate-950"
     >{{ cart.itemCount() }}</span
   >
 </button>

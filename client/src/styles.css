@@ -177,7 +177,8 @@ html[dir='rtl'] input[inputmode='numeric'] {
   text-align: left;
 }
 
-html[dir='rtl'] :where(input[dir='auto']:placeholder-shown, textarea[dir='auto']:placeholder-shown) {
+html[dir='rtl']
+  :where(input[dir='auto']:placeholder-shown, textarea[dir='auto']:placeholder-shown) {
   direction: rtl;
   text-align: right;
 }
@@ -332,10 +333,6 @@ html.dark .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
   background: rgb(59 130 246 / 0.12);
   color: #2563eb;
 }
-.status-assigned {
-  background: rgb(168 85 247 / 0.12);
-  color: #7e22ce;
-}
 .status-packed {
   background: rgb(99 102 241 / 0.12);
   color: #4f46e5;
@@ -372,10 +369,6 @@ html.dark .status-placed {
 html.dark .status-confirmed {
   color: #93c5fd;
   background-color: #172554;
-}
-html.dark .status-assigned {
-  color: #d8b4fe;
-  background-color: #2e1065;
 }
 html.dark .status-packed {
   color: #c7d2fe;

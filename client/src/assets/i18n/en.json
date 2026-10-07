@@ -1,4 +1,5 @@
 {
+  "brandName": "Zad",
   "promo": {
     "deliveryMessage": "Free delivery on orders above $20 | Farm-fresh produce delivered daily",
     "dismiss": "Dismiss promotion banner"
@@ -103,7 +104,10 @@
     "itemsLabel": "Items",
     "freeDelivery": "Free delivery over ${{amount}}.",
     "remove": "Remove",
-    "clearCart": "Clear cart"
+    "clearCart": "Clear cart",
+    "removeItem": "Remove {{name}} from cart",
+    "decreaseQuantity": "Decrease quantity of {{name}}",
+    "increaseQuantity": "Increase quantity of {{name}}"
   },
   "cartDrawer": {
     "deliveryTime": "Delivery in 30-45 min",
@@ -330,7 +334,6 @@
     "status": {
       "placed": "Placed",
       "confirmed": "Confirmed",
-      "assigned": "Assigned",
       "packed": "Packed",
       "outForDelivery": "Out For Delivery",
       "delivered": "Delivered",
@@ -639,7 +642,6 @@
     "status": {
       "placed": "Placed",
       "confirmed": "Confirmed",
-      "assigned": "Assigned",
       "packed": "Packed",
       "outForDelivery": "Out for delivery",
       "delivered": "Delivered",

@@ -23,6 +23,7 @@ import {
   ORDER_STATUS,
   OrderStatus,
   PAYMENT_STATUS,
+  normalizeOrderStatus,
 } from '../common/constants/enums';
 
 import { generateOrderNo } from '../common/utils/order.util';
@@ -214,7 +215,7 @@ export class OrderService {
         orderId: order._id.toString(),
       },
 
-      success_url: `${ENV.FRONTEND_ORIGIN}/orders/${order._id}`,
+      success_url: `${ENV.FRONTEND_ORIGIN}/orders/${order._id.toString()}`,
       cancel_url: `${ENV.FRONTEND_ORIGIN}/checkout`,
     });
 
@@ -225,6 +226,21 @@ export class OrderService {
       order,
       stripeUrl: session.url,
     };
+  }
+
+  private normalizeLegacyOrderEntry<
+    T extends {
+      status?: string | null;
+      statusHistory?: Array<{ status?: string | null }>;
+    },
+  >(order: T): T {
+    order.status = normalizeOrderStatus(order.status);
+    order.statusHistory = order.statusHistory?.map((entry) => ({
+      ...entry,
+      status: normalizeOrderStatus(entry.status),
+    }));
+
+    return order;
   }
 
   async getUserOrders(userId: string) {
@@ -238,7 +254,7 @@ export class OrderService {
       .lean();
 
     return {
-      orders,
+      orders: orders.map((order) => this.normalizeLegacyOrderEntry(order)),
     };
   }
 
@@ -259,73 +275,9 @@ export class OrderService {
     }
 
     return {
-      order,
+      order: this.normalizeLegacyOrderEntry(order),
     };
   }
-
-  // async updateOrderStatus(
-  //   userId: string,
-  //   orderId: string,
-  //   status: OrderStatus,
-  // ) {
-  //   if (!Types.ObjectId.isValid(orderId)) {
-  //     throw new BadRequestException('Invalid order ID');
-  //   }
-
-  //   const order = await this.orderModel.findOne({
-  //     _id: new Types.ObjectId(orderId),
-  //     userId: new Types.ObjectId(userId),
-  //   });
-
-  //   if (!order) {
-  //     throw new NotFoundException('Order not found');
-  //   }
-
-  //   const currentStatus = order.status;
-
-  //   const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
-  //     [ORDER_STATUS.PLACED]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
-
-  //     [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.ASSIGNED, ORDER_STATUS.CANCELLED],
-
-  //     [ORDER_STATUS.ASSIGNED]: [ORDER_STATUS.PACKED, ORDER_STATUS.CANCELLED],
-
-  //     [ORDER_STATUS.PACKED]: [ORDER_STATUS.OUT_FOR_DELIVERY],
-
-  //     [ORDER_STATUS.OUT_FOR_DELIVERY]: [ORDER_STATUS.DELIVERED],
-
-  //     [ORDER_STATUS.DELIVERED]: [],
-
-  //     [ORDER_STATUS.CANCELLED]: [],
-  //   };
-
-  //   if (!allowedTransitions[currentStatus].includes(status)) {
-  //     throw new BadRequestException(
-  //       `Cannot change order status from ${currentStatus} to ${status}`,
-  //     );
-  //   }
-
-  //   order.status = status;
-
-  //   order.statusHistory.push({
-  //     status,
-  //     note: '',
-  //     date: new Date(),
-  //   });
-
-  //   if (
-  //     status === ORDER_STATUS.DELIVERED &&
-  //     order.paymentStatus !== PAYMENT_STATUS.PAID
-  //   ) {
-  //     order.paymentStatus = PAYMENT_STATUS.PAID;
-  //   }
-
-  //   await order.save();
-
-  //   return {
-  //     order,
-  //   };
-  // }
 
   async getAllOrdersForAdmin(status?: OrderStatus, page = 1, limit = 10) {
     const filter: { status?: OrderStatus } = {};
@@ -348,7 +300,7 @@ export class OrderService {
     ]);
 
     return {
-      orders,
+      orders: orders.map((order) => this.normalizeLegacyOrderEntry(order)),
       pagination: {
         page,
         limit,
@@ -372,7 +324,7 @@ export class OrderService {
     }
 
     return {
-      order,
+      order: this.normalizeLegacyOrderEntry(order),
     };
   }
 
@@ -391,16 +343,22 @@ export class OrderService {
       throw new NotFoundException('Order not found');
     }
 
-    const currentStatus = order.status;
+    const currentStatus = normalizeOrderStatus(order.status);
+    order.status = currentStatus;
+    order.statusHistory = (order.statusHistory ?? []).map((entry) => ({
+      ...entry,
+      status: normalizeOrderStatus(entry?.status),
+    }));
 
     const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
       [ORDER_STATUS.PLACED]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
 
-      [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.ASSIGNED, ORDER_STATUS.CANCELLED],
+      [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.PACKED, ORDER_STATUS.CANCELLED],
 
-      [ORDER_STATUS.ASSIGNED]: [ORDER_STATUS.PACKED, ORDER_STATUS.CANCELLED],
-
-      [ORDER_STATUS.PACKED]: [ORDER_STATUS.OUT_FOR_DELIVERY],
+      [ORDER_STATUS.PACKED]: [
+        ORDER_STATUS.OUT_FOR_DELIVERY,
+        ORDER_STATUS.CANCELLED,
+      ],
 
       [ORDER_STATUS.OUT_FOR_DELIVERY]: [ORDER_STATUS.DELIVERED],
 

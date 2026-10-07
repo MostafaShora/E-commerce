@@ -1,4 +1,5 @@
 {
+  "brandName": "Zad",
   "promo": {
     "deliveryMessage": "توصيل مجاني للطلبات فوق 20 دولارًا | منتجات طازجة من المزرعة يوميًا",
     "dismiss": "إخفاء إعلان التوصيل"
@@ -103,7 +104,10 @@
     "itemsLabel": "العناصر",
     "freeDelivery": "توصيل مجاني فوق {{amount}}.",
     "remove": "إزالة",
-    "clearCart": "إفراغ السلة"
+    "clearCart": "إفراغ السلة",
+    "removeItem": "إزالة {{name}} من السلة",
+    "decreaseQuantity": "تقليل كمية {{name}}",
+    "increaseQuantity": "زيادة كمية {{name}}"
   },
   "cartDrawer": {
     "deliveryTime": "التوصيل خلال 30 إلى 45 دقيقة",
@@ -330,7 +334,6 @@
     "status": {
       "placed": "تم الطلب",
       "confirmed": "مؤكد",
-      "assigned": "تم التعيين",
       "packed": "مجهز",
       "outForDelivery": "قيد التوصيل",
       "delivered": "تم التسليم",
@@ -639,7 +642,6 @@
     "status": {
       "placed": "تم الطلب",
       "confirmed": "مؤكد",
-      "assigned": "تم التعيين",
       "packed": "معبأ",
       "outForDelivery": "قيد التوصيل",
       "delivered": "تم التسليم",

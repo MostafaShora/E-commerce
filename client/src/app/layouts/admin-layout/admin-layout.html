@@ -8,7 +8,7 @@
     <!-- Logo -->
     <div class="flex h-16 shrink-0 items-center border-b border-[var(--app-border)] px-5">
       <a routerLink="/admin" class="flex items-center gap-2 text-base font-semibold">
-        <span>Nexora</span>
+        <span>{{ language.t('brandName') }}</span>
         <span class="text-xs font-bold uppercase tracking-wider text-amber-600">
           {{ language.t('admin.portalTitle') }}
         </span>
@@ -169,6 +169,24 @@
         <svg lucideShoppingBag class="size-[18px]"></svg>
         <span>{{ language.t('admin.orders') }}</span>
       </a>
+
+      <a
+        routerLink="/"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white dark:bg-slate-100 dark:text-slate-950"
+      >
+        <svg lucideStore class="size-[18px]"></svg>
+        <span>{{ language.t('common.storefront') }}</span>
+      </a>
+
+      <button
+        type="button"
+        (click)="logout()"
+        class="flex min-w-0 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
+        [attr.aria-label]="language.t('nav.account.logout')"
+      >
+        <svg lucideLogOut class="size-[18px]"></svg>
+        <span>{{ language.t('nav.account.logout') }}</span>
+      </button>
     </nav>
 
     <!-- Scrollable Content Only -->

@@ -49,7 +49,6 @@ export class OrdersPageComponent {
     const labelMap: Record<OrderStatus, string> = {
       placed: 'placed',
       confirmed: 'confirmed',
-      assigned: 'assigned',
       packed: 'packed',
       out_for_delivery: 'outForDelivery',
       delivered: 'delivered',
@@ -69,11 +68,15 @@ export class OrdersPageComponent {
 
   paymentStatusClass(status: PaymentStatus): string {
     switch (status) {
-      case 'paid': return 'status-paid';
-      case 'failed': return 'status-failed';
-      case 'refunded': return 'status-refunded';
+      case 'paid':
+        return 'status-paid';
+      case 'failed':
+        return 'status-failed';
+      case 'refunded':
+        return 'status-refunded';
       case 'pending':
-      default: return 'status-payment-pending';
+      default:
+        return 'status-payment-pending';
     }
   }
 
