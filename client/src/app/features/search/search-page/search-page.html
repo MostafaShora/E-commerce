@@ -40,20 +40,122 @@
           }}
         </p>
       </div>
-      @if (query() && !loading() && products().length > 0) {
-        <label class="flex items-center gap-2 text-sm font-medium text-slate-900"
-          >{{ language.t('searchPage.sortBy') }}
-          <select
-            class="rounded-lg border border-slate-300 bg-white px-3 py-2 font-normal"
-            [formControl]="sort"
+      <div class="flex items-center gap-2">
+        <span class="whitespace-nowrap text-sm font-medium text-slate-600">
+          {{ language.t('searchPage.sortBy') }}
+        </span>
+
+        <div class="relative">
+          <button
+            type="button"
+            class="flex h-10 min-w-43.75 items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 shadow-sm transition-all hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-100"
+            (click)="sortOpen = !sortOpen"
+            [attr.aria-expanded]="sortOpen"
+            aria-haspopup="listbox"
           >
-            <option value="best-match">{{ language.t('searchPage.sort.bestMatch') }}</option>
-            <option value="price-low">{{ language.t('searchPage.sort.priceLow') }}</option>
-            <option value="price-high">{{ language.t('searchPage.sort.priceHigh') }}</option>
-            <option value="highest-rating">{{ language.t('searchPage.sort.highestRated') }}</option>
-          </select>
-        </label>
-      }
+            <span>
+              @switch (sort.value) {
+                @case ('best-match') {
+                  {{ language.t('searchPage.sort.bestMatch') }}
+                }
+                @case ('price-low') {
+                  {{ language.t('searchPage.sort.priceLow') }}
+                }
+                @case ('price-high') {
+                  {{ language.t('searchPage.sort.priceHigh') }}
+                }
+                @case ('highest-rating') {
+                  {{ language.t('searchPage.sort.highestRated') }}
+                }
+              }
+            </span>
+
+            <svg
+              class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200"
+              [class.rotate-180]="sortOpen"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 011.08 1.04l-4.25 4.51a.75.75 0 01-1.08 0l-4.25-4.51a.75.75 0 01-.02-1.06z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+
+          @if (sortOpen) {
+            <div
+              class="absolute end-0 z-50 mt-2 w-full min-w-52.5 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
+              role="listbox"
+            >
+              <button
+                type="button"
+                role="option"
+                [attr.aria-selected]="sort.value === 'best-match'"
+                (click)="selectSort('best-match')"
+                class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                [class.bg-slate-100]="sort.value === 'best-match'"
+                [class.font-medium]="sort.value === 'best-match'"
+              >
+                <span>{{ language.t('searchPage.sort.bestMatch') }}</span>
+
+                @if (sort.value === 'best-match') {
+                  <span>✓</span>
+                }
+              </button>
+
+              <button
+                type="button"
+                role="option"
+                [attr.aria-selected]="sort.value === 'price-low'"
+                (click)="selectSort('price-low')"
+                class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                [class.bg-slate-100]="sort.value === 'price-low'"
+                [class.font-medium]="sort.value === 'price-low'"
+              >
+                <span>{{ language.t('searchPage.sort.priceLow') }}</span>
+
+                @if (sort.value === 'price-low') {
+                  <span>✓</span>
+                }
+              </button>
+
+              <button
+                type="button"
+                role="option"
+                [attr.aria-selected]="sort.value === 'price-high'"
+                (click)="selectSort('price-high')"
+                class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                [class.bg-slate-100]="sort.value === 'price-high'"
+                [class.font-medium]="sort.value === 'price-high'"
+              >
+                <span>{{ language.t('searchPage.sort.priceHigh') }}</span>
+
+                @if (sort.value === 'price-high') {
+                  <span>✓</span>
+                }
+              </button>
+
+              <button
+                type="button"
+                role="option"
+                [attr.aria-selected]="sort.value === 'highest-rating'"
+                (click)="selectSort('highest-rating')"
+                class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                [class.bg-slate-100]="sort.value === 'highest-rating'"
+                [class.font-medium]="sort.value === 'highest-rating'"
+              >
+                <span>{{ language.t('searchPage.sort.highestRated') }}</span>
+
+                @if (sort.value === 'highest-rating') {
+                  <span>✓</span>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      </div>
     </div>
   </section>
 
@@ -74,7 +176,9 @@
   } @else if (errorMessage()) {
     <section class="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-red-700">
       <p class="font-medium">{{ errorMessage() }}</p>
-      <button type="button" (click)="retry()" class="mt-3 underline">{{ language.t('common.retry') }}</button>
+      <button type="button" (click)="retry()" class="mt-3 underline">
+        {{ language.t('common.retry') }}
+      </button>
     </section>
   } @else if (loading()) {
     <div class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">

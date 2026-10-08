@@ -33,6 +33,14 @@ export class SearchPage {
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
 
+  readonly filters = new FormGroup({
+    dealsOnly: new FormControl(false, { nonNullable: true }),
+    inStockOnly: new FormControl(false, { nonNullable: true }),
+    minPrice: new FormControl('', { nonNullable: true }),
+    maxPrice: new FormControl('', { nonNullable: true }),
+    sort: new FormControl<ProductSort>('best-match', { nonNullable: true }),
+  });
+
   readonly searchForm = new FormGroup({
     query: new FormControl('', { nonNullable: true }),
   });
@@ -101,5 +109,12 @@ export class SearchPage {
           return response;
         }),
       );
+  }
+
+  sortOpen = false;
+
+  selectSort(value: ProductSort): void {
+    this.filters.controls.sort.setValue(value);
+    this.sortOpen = false;
   }
 }
